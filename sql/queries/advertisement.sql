@@ -30,6 +30,13 @@ LIMIT 10;
 SELECT * FROM advertisements 
 WHERE provider_id = $1;
 
+-- name: GetAdvertisementAndCategoryByID :one
+SELECT advertisements.*, categories.name AS category_name, parent_cat.name AS parent_category_name
+FROM advertisements
+JOIN categories ON advertisements.category_id = categories.id
+JOIN categories AS parent_cat ON categories.parent_id = parent_cat.id
+WHERE advertisements.id = $1;
+
 -- name: GetAdvertisementByID :one
 SELECT * FROM advertisements
 WHERE id = $1;
@@ -72,7 +79,7 @@ SET
   created_at = COALESCE($3, created_at),
   attachment = COALESCE($4, attachment),
   experience = COALESCE($5, experience),
-  category_id = COALESCE($6, c_id),
+  category_id = COALESCE(c_id, category_id),
   time = COALESCE($7, time),
   price = COALESCE($8, price),
   format = COALESCE($9, format),

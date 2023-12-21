@@ -3,7 +3,7 @@ CREATE TABLE "advertisements" (
     "title" VARCHAR NOT NULL,
     "provider" VARCHAR NOT NULL,
     "provider_id" BIGINT NOT NULL,
-    "attachment" VARCHAR,
+    "attachment" VARCHAR NOT NULL,
     "experience" INT NOT NULL, 
     "category_id" BIGINT NOT NULL,
     "time" INT NOT NULL,
