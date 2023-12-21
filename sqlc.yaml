@@ -1,0 +1,21 @@
+version: "2"
+cloud:
+  project: '01HJ13HZT6QBVAWDVV7BG220RF'
+sql:
+  - schema: "migrations"
+    queries: "database/queries"
+    engine: "postgresql"
+    gen:
+      go:
+        package: "queries"
+        out: "queries"
+        emit_prepared_queries: false
+        emit_interface: false
+        emit_exact_table_names: false
+        emit_json_tags: true
+        sql_package: "pgx/v5"
+        output_models_file_name: "entities"
+        overrides:
+          - db_type: pg_catalog.timestamp
+            go_type: time.Time
+            

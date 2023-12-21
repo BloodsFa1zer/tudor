@@ -1,0 +1,495 @@
+basePath: /
+definitions:
+  models.AdvertisementFilter:
+    properties:
+      category:
+        type: string
+      format:
+        type: string
+      language:
+        type: string
+      limitadv:
+        type: integer
+      maxexp:
+        type: integer
+      maxprice:
+        type: integer
+      minexp:
+        type: integer
+      minprice:
+        type: integer
+      offsetadv:
+        type: integer
+      orderby:
+        type: string
+      sortorder:
+        type: string
+      timelength:
+        type: integer
+      titlekeyword:
+        type: string
+    type: object
+  models.AdvertisementInput:
+    properties:
+      attachment:
+        type: string
+      category:
+        type: string
+      description:
+        type: string
+      experience:
+        type: integer
+      format:
+        type: string
+      language:
+        type: string
+      mobile_phone:
+        type: string
+      price:
+        type: integer
+      telegram:
+        type: string
+      time:
+        type: integer
+      title:
+        type: string
+    type: object
+  models.AdvertisementUpdate:
+    properties:
+      attachment:
+        type: string
+      category:
+        type: string
+      description:
+        type: string
+      experience:
+        type: integer
+      format:
+        type: string
+      id:
+        type: integer
+      language:
+        type: string
+      mobile_phone:
+        type: string
+      price:
+        type: integer
+      telegram:
+        type: string
+      time:
+        type: integer
+      title:
+        type: string
+    type: object
+  models.EmailRequest:
+    properties:
+      email:
+        type: string
+    type: object
+  models.Id:
+    properties:
+      id:
+        type: integer
+    required:
+    - id
+    type: object
+  models.InLogin:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  models.UserPassword:
+    properties:
+      password:
+        type: string
+    required:
+    - password
+    type: object
+  queries.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      photo:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+      verified:
+        type: boolean
+    type: object
+info:
+  contact:
+    email: '[TODO]'
+    name: API Support
+    url: '[TODO]'
+  description: Marketplace to connect students and teachers
+  license:
+    name: '[TODO]'
+    url: '[TODO]'
+  termsOfService: '[TODO]'
+  title: Study marketplace API
+  version: 0.0.1
+paths:
+  /api/:
+    get:
+      consumes:
+      - '*/*'
+      description: get the status of server.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Show the status of server.
+      tags:
+      - root
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: requires email and password
+      parameters:
+      - description: request info
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.InLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: POST request for login
+      tags:
+      - login
+  /api/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: requires username and password for registration
+      parameters:
+      - description: user info for sign in
+        in: body
+        name: user_info
+        required: true
+        schema:
+          $ref: '#/definitions/queries.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: POST request for registration
+      tags:
+      - register
+  /api/auth/reset-password:
+    post:
+      description: requires registred email address
+      parameters:
+      - description: user email for update
+        in: body
+        name: reset-password
+        required: true
+        schema:
+          $ref: '#/definitions/models.EmailRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: POST request to update password
+      tags:
+      - reset-password
+  /open/advertisements/getall:
+    get:
+      description: endpoint for getting all advertisements
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: GET request to get 10 items sorted by creation date in desc order
+      tags:
+      - advertisements-getall
+  /open/advertisements/getbyid/{id}:
+    get:
+      description: endpoint to get advertisement based on it's id
+      parameters:
+      - description: advertisement ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - JWT: []
+      summary: GET request to get advertisement by id
+      tags:
+      - open/advertisements/getbyid/{id}
+  /open/categories/getall:
+    get:
+      description: endpoint for getting all categories
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: GET all categories parents with children in array
+      tags:
+      - categories/getall
+  /protected/advertisement-create:
+    post:
+      description: endpoint for advertisement creation
+      parameters:
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: advertisement information
+        in: body
+        name: advertisement-create
+        required: true
+        schema:
+          $ref: '#/definitions/models.AdvertisementInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - JWT: []
+      summary: POST request to create advertisement
+      tags:
+      - advertisement-create
+  /protected/advertisement-delete:
+    delete:
+      description: endpoint for advertisement deletion by id
+      parameters:
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: advertisement id
+        in: body
+        name: advertisement-delete
+        required: true
+        schema:
+          $ref: '#/definitions/models.Id'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - JWT: []
+      summary: PATCH request to delete advertisement
+      tags:
+      - advertisement-delete
+  /protected/advertisement-filter:
+    post:
+      description: endpoint for getting specific advertisements
+      parameters:
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: advertisement filter
+        in: body
+        name: advertisement-filter
+        required: true
+        schema:
+          $ref: '#/definitions/models.AdvertisementFilter'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - JWT: []
+      summary: POST request to get advertisement based on params in filter
+      tags:
+      - advertisement-filter
+  /protected/advertisement-getmy:
+    get:
+      description: endpoint for getting user advertisements
+      parameters:
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - JWT: []
+      summary: GET request to get user created advertisements
+      tags:
+      - advertisements-getmy
+  /protected/advertisement-patch:
+    patch:
+      description: endpoint for advertisement update
+      parameters:
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: advertisement information
+        in: body
+        name: advertisement-patch
+        required: true
+        schema:
+          $ref: '#/definitions/models.AdvertisementUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - JWT: []
+      summary: PATCH request to update advertisement
+      tags:
+      - advertisement-patch
+  /protected/create-password:
+    patch:
+      description: requires token
+      parameters:
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: new user password
+        in: body
+        name: create-password
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserPassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: PATCH request to create new password
+      tags:
+      - create-password
+  /protected/user-patch:
+    patch:
+      description: requires valid token
+      parameters:
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: user info for update
+        in: body
+        name: userinfo
+        required: true
+        schema:
+          $ref: '#/definitions/queries.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - JWT: []
+      summary: PATCH request to update user
+      tags:
+      - user-patch
+  /protected/userinfo:
+    get:
+      description: requires valid token
+      parameters:
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - JWT: []
+      summary: Get request to see user info
+      tags:
+      - userinfo
+schemes:
+- http
+- https
+securityDefinitions:
+  JWT:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

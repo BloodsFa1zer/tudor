@@ -1,0 +1,50 @@
+version: '3'
+services:
+  tch_backend:
+    build:
+      context: ./go
+      dockerfile: Dockerfile
+    container_name: tch_backend
+    hostname: tch_backend
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      SERVER_HOSTNAME: ${SERVER_HOSTNAME}
+      DOCS_HOSTNAME: ${DOCS_HOSTNAME}
+      GOOGLE_CALLBACK_DOMAIN: ${GOOGLE_CALLBACK_DOMAIN}
+      GOOGLE_OAUTH_CLIENT_ID: ${GOOGLE_OAUTH_CLIENT_ID}
+      GOOGLE_OAUTH_CLIENT_SECRET: ${GOOGLE_OAUTH_CLIENT_SECRET}
+      GOOGLE_OAUTH_REDIRECT_PAGE: ${GOOGLE_OAUTH_REDIRECT_PAGE}
+      GOOGLE_EMAIL_ADDRESS: ${GOOGLE_EMAIL_ADDRESS}
+      GOOGLE_EMAIL_SECRET: ${GOOGLE_EMAIL_SECRET}      
+      PASSWORD_RESET_REDIRECT_PAGE: ${PASSWORD_RESET_REDIRECT_PAGE}
+    volumes:
+      - ../:/var/www/app
+    ports:
+      - "8000:8000"
+    command: "bash"
+    tty: true
+  tch_postgres:
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
+    container_name: tch_postgres
+    hostname: tch_postgres
+    environment:
+      POSTGRES_USER: ${PG_USER:-postgres}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-postgres}
+      PGDATA: ${PG_DATA:-/pgdata}
+    volumes:
+      - tch_postgres_pg_data:/pgdata
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - '5400:5432'
+
+networks:
+  default:
+    external:
+      name: tch_network
+
+volumes:
+  tch_postgres_pg_data:
+    external:
+      name: tch_postgres_pg_data

@@ -1,0 +1,111 @@
+basePath: /
+host: localhost:8000
+info:
+  contact:
+    email: '[TODO]'
+    name: API Support
+    url: '[TODO]'
+  description: Marketplace to connect students and teachers
+  license:
+    name: '[TODO]'
+    url: '[TODO]'
+  termsOfService: '[TODO]'
+  title: Study marketplace API
+  version: 0.0.1
+paths:
+  /api/:
+    get:
+      consumes:
+      - '*/*'
+      description: get the status of server.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Show the status of server.
+      tags:
+      - root
+  /api/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: requires username, password and valid JWT token
+      parameters:
+      - description: Email for authentication
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: Password for authentication
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: POST request for login
+      tags:
+      - login
+  /api/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: requires username and password for registration
+      parameters:
+      - description: Email for authentication
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: Username for authentication
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: Password for authentication
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: POST request for registration
+      tags:
+      - register
+  /protected/userinfo:
+    get:
+      consumes:
+      - '*/*'
+      description: requires valid token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get request to see user info
+      tags:
+      - user_info
+schemes:
+- http
+swagger: "2.0"
