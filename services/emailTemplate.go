@@ -2,21 +2,17 @@ package services
 
 import (
 	"strings"
-
-	config "study_marketplace/config"
 )
 
 type Email struct {
 	message string
 }
 
-func NewEmail(recepient string, token string) Email {
+func (s *userService) newEmail(recepient string, token string) Email {
 	template := Email{message: emailTemplate}
-
 	template.message = strings.Replace(template.message, "{USERNAME}", recepient, 1)
 	template.message = strings.Replace(template.message, "{TOKEN}", token, 1)
-	template.message = strings.Replace(template.message, "{PAGE}", config.PASSWORD_RESET_REDIRECT_PAGE, 3)
-
+	template.message = strings.Replace(template.message, "{PAGE}", s.conf.PasswordResetRedirectPage, 3)
 	return template
 }
 

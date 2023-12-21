@@ -1,22 +1,21 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 	config "study_marketplace/config"
-	"study_marketplace/controllers"
 	"study_marketplace/models"
-	"study_marketplace/services"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type Middleware interface {
 	CORS() gin.HandlerFunc
 	AuthMiddleware() gin.HandlerFunc
-	PasswordMiddleware(controller controllers.UserController) gin.HandlerFunc
+	PasswordMiddleware() gin.HandlerFunc
 }
 
 type middleware struct {
@@ -52,8 +51,8 @@ func (m *middleware) AuthMiddleware() gin.HandlerFunc {
 		authArray := strings.Split(authString, ":")
 		authJWT := authArray[0]
 
-		token, err := jwt.ParseWithClaims(authJWT, &models.Claims{}, func(token *jwt.Token) (interface{}, error) {
-			return services.SecretKey, nil
+		token, err := jwt.ParseWithClaims(authJWT, &models.AuthClaims{}, func(token *jwt.Token) (interface{}, error) {
+			return m.conf.JWTSecret, nil
 		})
 
 		if err != nil || !token.Valid {
@@ -62,7 +61,7 @@ func (m *middleware) AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		claims, ok := token.Claims.(*models.Claims)
+		claims, ok := token.Claims.(*models.AuthClaims)
 		if !ok {
 			c.JSON(http.StatusUnauthorized, models.NewResponseFailed("Unautorized"))
 			c.Abort()
@@ -75,7 +74,7 @@ func (m *middleware) AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-func (m *middleware) PasswordMiddleware(controller controllers.UserController) gin.HandlerFunc {
+func (m *middleware) PasswordMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authString := c.GetHeader("Authorization")
 		if authString == "" {
@@ -92,16 +91,15 @@ func (m *middleware) PasswordMiddleware(controller controllers.UserController) g
 			return
 		}
 
-		pswd := pswdString[1]
-		userPswd := controller.GetPassword(c)
-		err := services.ComparePassword(userPswd, pswd)
-
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, models.NewResponseFailed("Unauthorized"))
-			c.Abort()
-			return
-		}
-
 		c.Next()
 	}
+}
+
+func jwtValidate(token, signedStr string) (*jwt.Token, error) {
+	return jwt.ParseWithClaims(token, &models.AuthClaims{}, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+		}
+		return []byte(signedStr), nil
+	})
 }

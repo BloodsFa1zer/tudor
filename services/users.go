@@ -26,28 +26,36 @@ type UserService interface {
 }
 
 type userService struct {
-	db   repositories.UsersRepository
-	conf *config.Config
+	db          repositories.UsersRepository
+	conf        *config.Config
+	genToken    func(userid int64, userName string) (string, error)
+	hashPass    func(password string) string
+	comparePass func(hashedPassword string, password string) error
 }
 
-func NewUserService(conf *config.Config, db repositories.UsersRepository) UserService {
-	return &userService{db, conf}
+func NewUserService(
+	conf *config.Config,
+	gTF func(userid int64, userName string) (string, error),
+	hPass func(password string) string,
+	cPass func(hashedPassword string, password string) error,
+	db repositories.UsersRepository) UserService {
+	return &userService{db, conf, gTF, hPass, cPass}
 }
 
-func (t *userService) UserLogin(ctx *gin.Context, inputModel models.InLogin) (string, error) {
+func (s *userService) UserLogin(ctx *gin.Context, inputModel models.InLogin) (string, error) {
 
-	user, err := t.db.GetUserByEmail(ctx, inputModel.Email)
+	user, err := s.db.GetUserByEmail(ctx, inputModel.Email)
 	if err != nil {
 		return "error", err
 	}
 
-	cmpPassword := ComparePassword(user.Password, inputModel.Password)
+	cmpPassword := s.comparePass(user.Password, inputModel.Password)
 	if cmpPassword != nil {
 		err := fmt.Errorf("invalid email or password")
 		return "error", err
 	}
 
-	token, err := GenerateToken(user)
+	token, err := s.genToken(user.ID, user.Name)
 	if err != nil {
 		return "error", err
 	}
@@ -55,8 +63,8 @@ func (t *userService) UserLogin(ctx *gin.Context, inputModel models.InLogin) (st
 	return token, nil
 }
 
-func (t *userService) UserRegister(ctx *gin.Context, inputModel queries.User) (queries.User, error) {
-	isEmailExist, err := t.db.IsUserEmailExist(ctx, inputModel.Email)
+func (s *userService) UserRegister(ctx *gin.Context, inputModel queries.User) (queries.User, error) {
+	isEmailExist, err := s.db.IsUserEmailExist(ctx, inputModel.Email)
 	if err != nil {
 		err = fmt.Errorf("db search error")
 		return queries.User{}, err
@@ -66,19 +74,17 @@ func (t *userService) UserRegister(ctx *gin.Context, inputModel queries.User) (q
 		return queries.User{}, err
 	}
 
-	hashedPassword := hashPassword(inputModel.Password)
-
 	args := &queries.CreateUserParams{
 		Name:      inputModel.Name,
 		Email:     inputModel.Email,
-		Password:  hashedPassword,
+		Password:  s.hashPass(inputModel.Password),
 		Photo:     "default.jpeg",
 		Verified:  false,
 		Role:      "user",
 		UpdatedAt: time.Now(),
 	}
 
-	user, err := t.db.CreateUser(ctx, *args)
+	user, err := s.db.CreateUser(ctx, *args)
 	if err != nil {
 		return queries.User{}, err
 	}
@@ -86,8 +92,8 @@ func (t *userService) UserRegister(ctx *gin.Context, inputModel queries.User) (q
 	return user, nil
 }
 
-func (t *userService) UserInfo(ctx *gin.Context, userId int64) (queries.User, error) {
-	user, err := t.db.GetUserById(ctx, userId)
+func (s *userService) UserInfo(ctx *gin.Context, userId int64) (queries.User, error) {
+	user, err := s.db.GetUserById(ctx, userId)
 	if err != nil {
 		return queries.User{}, err
 	}
@@ -127,10 +133,8 @@ func (t *userService) GetOrCreateUser(ctx *gin.Context, userInfo models.GoogleRe
 	return user, nil
 }
 
-func (t *userService) UserPatch(ctx *gin.Context, patch queries.User) (queries.User, error) {
-
-	user, err := t.db.GetUserById(ctx, patch.ID)
-
+func (s *userService) UserPatch(ctx *gin.Context, patch queries.User) (queries.User, error) {
+	user, err := s.db.GetUserById(ctx, patch.ID)
 	userTmp := &queries.UpdateUserParams{
 		ID:        user.ID,
 		Name:      user.Name,
@@ -143,7 +147,7 @@ func (t *userService) UserPatch(ctx *gin.Context, patch queries.User) (queries.U
 	}
 
 	if patch.Password != "" {
-		patch.Password = hashPassword(patch.Password)
+		patch.Password = s.hashPass(patch.Password)
 	}
 
 	userValue := reflect.ValueOf(userTmp).Elem()
@@ -159,7 +163,7 @@ func (t *userService) UserPatch(ctx *gin.Context, patch queries.User) (queries.U
 
 	userTmp.UpdatedAt = time.Now()
 
-	patchedUser, err := t.db.UpdateUser(ctx, *userTmp)
+	patchedUser, err := s.db.UpdateUser(ctx, *userTmp)
 	if err != nil {
 		fmt.Println("Faield to update user")
 	}
@@ -167,20 +171,20 @@ func (t *userService) UserPatch(ctx *gin.Context, patch queries.User) (queries.U
 	return patchedUser, nil
 }
 
-func (t *userService) PasswordReset(ctx *gin.Context, email models.EmailRequest) (bool, error) {
-	validEmail, _ := t.db.IsUserEmailExist(ctx, email.Email)
+func (s *userService) PasswordReset(ctx *gin.Context, email models.EmailRequest) (bool, error) {
+	validEmail, _ := s.db.IsUserEmailExist(ctx, email.Email)
 
 	if !validEmail {
 		fmt.Println("Email not found")
 		return validEmail, fmt.Errorf("Email not found")
 	}
 
-	user, err := t.db.GetUserByEmail(ctx, email.Email)
+	user, err := s.db.GetUserByEmail(ctx, email.Email)
 	if err != nil {
 		return validEmail, fmt.Errorf("Failed request to DB.")
 	}
 
-	_, err = t.EmailSend(email.Email, user)
+	_, err = s.EmailSend(email.Email, user)
 	if err != nil {
 		return false, err
 	}
@@ -188,13 +192,13 @@ func (t *userService) PasswordReset(ctx *gin.Context, email models.EmailRequest)
 	return validEmail, nil
 }
 
-func (t *userService) PasswordCreate(ctx *gin.Context, userID int64, newPassword models.UserPassword) error {
+func (s *userService) PasswordCreate(ctx *gin.Context, userID int64, newPassword models.UserPassword) error {
 	if newPassword.Password == "" {
 		return fmt.Errorf("New password not valid.")
 	}
-	patchPassword := hashPassword(newPassword.Password)
+	patchPassword := s.hashPass(newPassword.Password)
 
-	user, err := t.db.GetUserById(ctx, userID)
+	user, err := s.db.GetUserById(ctx, userID)
 	if err != nil {
 		return fmt.Errorf("Failed to find user.")
 	}
@@ -210,7 +214,7 @@ func (t *userService) PasswordCreate(ctx *gin.Context, userID int64, newPassword
 		UpdatedAt: time.Now(),
 	}
 
-	_, err = t.db.UpdateUser(ctx, updateUser)
+	_, err = s.db.UpdateUser(ctx, updateUser)
 
 	if err != nil {
 		return err
@@ -219,14 +223,14 @@ func (t *userService) PasswordCreate(ctx *gin.Context, userID int64, newPassword
 	return nil
 }
 
-func (t *userService) EmailSend(userEmail string, user queries.User) (bool, error) {
-	token, err := GenerateToken(user)
+func (s *userService) EmailSend(userEmail string, user queries.User) (bool, error) {
+	token, err := s.genToken(user.ID, user.Name)
 	if err != nil {
 		return false, fmt.Errorf("Failed to generate token.")
 	}
 
-	from := configs.GOOGLE_EMAIL_ADDRESS
-	response := NewEmail(user.Name, token).message
+	from := s.conf.GoogleEmailAddress
+	response := s.newEmail(user.Name, token).message
 	msg := gomail.NewMessage()
 
 	msg.SetHeader("From", from)
@@ -234,7 +238,7 @@ func (t *userService) EmailSend(userEmail string, user queries.User) (bool, erro
 	msg.SetHeader("Subject", "Password reset")
 	msg.SetBody("text/html", response)
 
-	postman := gomail.NewDialer("smtp.gmail.com", 587, from, configs.GOOGLE_EMAIL_SECRET)
+	postman := gomail.NewDialer("smtp.gmail.com", 587, from, s.conf.GoogleEmailSecret)
 
 	if err := postman.DialAndSend(msg); err != nil {
 		return false, fmt.Errorf("Failed to send email.")
