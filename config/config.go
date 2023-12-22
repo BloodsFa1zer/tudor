@@ -22,9 +22,11 @@ type Config struct {
 }
 
 func InitConfig() *Config {
-	var config *Config
-	if err := env.Parse(config); err != nil {
+	var config Config
+	if err := env.Parse(&config); err != nil {
 		log.Fatalf("env.Parse() in config failed. Error:'%v'", err)
 	}
-	return config
+
+	config.AllowedOrigins = []string{"*"}
+	return &config
 }

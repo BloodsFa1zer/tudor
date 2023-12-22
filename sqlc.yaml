@@ -1,14 +1,13 @@
 version: "2"
-cloud:
-  project: '01HJ13HZT6QBVAWDVV7BG220RF'
 sql:
-  - schema: "migrations"
-    queries: "database/queries"
+  - schema: "sql/migrations"
+    queries: "sql/queries"
+
     engine: "postgresql"
     gen:
       go:
         package: "queries"
-        out: "queries"
+        out: "database/queries"
         emit_prepared_queries: false
         emit_interface: false
         emit_exact_table_names: false
@@ -18,4 +17,9 @@ sql:
         overrides:
           - db_type: pg_catalog.timestamp
             go_type: time.Time
+
+   
+
+          
+
             

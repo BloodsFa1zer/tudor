@@ -12,8 +12,7 @@ import (
 	"net/url"
 	"os"
 
-	config "study_marketplace/config"
-	"study_marketplace/models"
+	"study_marketplace/domen/models"
 	"study_marketplace/services"
 
 	"github.com/gin-gonic/gin"
@@ -34,15 +33,17 @@ const GoogleQueryNameCode = "code"
 const oauthGoogleUrlAPI = "https://www.googleapis.com/oauth2/v2/userinfo?access_token="
 
 type authController struct {
+	redirectPage      string
 	googleOauthConfig *oauth2.Config
 	userService       services.UserService
 }
 
-func NewAuthController(us services.UserService) AuthController {
+func NewAuthController(redirectPage string, us services.UserService) AuthController {
 
 	url := ProtocolPrefix + "://" + os.Getenv("GOOGLE_CALLBACK_DOMAIN") + GoogleCallbackUrl
 
 	return &authController{
+		redirectPage: redirectPage,
 		googleOauthConfig: &oauth2.Config{
 			RedirectURL:  url,
 			ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
@@ -53,7 +54,7 @@ func NewAuthController(us services.UserService) AuthController {
 			},
 			Endpoint: google.Endpoint,
 		},
-		userService: services.NewUserService(),
+		userService: us,
 	}
 }
 
@@ -104,19 +105,19 @@ func (t *authController) LoginGoogleCallback(ctx *gin.Context) {
 	if err != nil {
 		fmt.Println("failed parse response body")
 	}
-	user, err := t.userService.GetOrCreateUser(ctx, userInfo)
+	// user, err := t.userService.GetOrCreateUser(ctx, userInfo)
 
-	if err != nil {
-		fmt.Println("Failed to get user by email.")
-	}
+	// if err != nil {
+	// 	fmt.Println("Failed to get user by email.")
+	// }
 
-	tokenJWT, err := services.GenerateToken(user)
-	if err != nil {
-		fmt.Println("Failed to generate token")
-	}
+	// tokenJWT, err := t.userService.GenToken(user.ID, user.Name)
+	// if err != nil {
+	// 	fmt.Println("Failed to generate token")
+	// }
 
 	q := url.Values{}
-	q.Set("token", string(tokenJWT))
-	location := url.URL{Path: config.GOOGLE_OAUTH_REDIRECT_PAGE, RawQuery: q.Encode()}
+	q.Set("token", "string(tokenJWT)")
+	location := url.URL{Path: t.redirectPage, RawQuery: q.Encode()}
 	ctx.Redirect(http.StatusPermanentRedirect, location.RequestURI())
 }

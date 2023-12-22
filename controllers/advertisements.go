@@ -3,8 +3,7 @@ package controllers
 import (
 	"net/http"
 	"strconv"
-
-	"study_marketplace/models"
+	"study_marketplace/domen/models"
 	"study_marketplace/services"
 
 	"github.com/gin-gonic/gin"
@@ -38,7 +37,7 @@ func NewAdvertisementsController(sa services.AdvertisementService) Advertisement
 // @Produce				json
 // @Success				200	{object}	map[string]interface{}
 // @Router					/protected/advertisement-create [post]
-func (t *advertisementsController) AdvCreate(ctx *gin.Context) {
+func (c *advertisementsController) AdvCreate(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	if userID == 0 {
 		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("user id error"))
@@ -51,7 +50,7 @@ func (t *advertisementsController) AdvCreate(ctx *gin.Context) {
 		return
 	}
 
-	advertisement, err := t.advertisementService.AdvCreate(ctx, inputModel, userID, *t.userService, *t.categoriesService)
+	advertisement, err := c.advertisementService.AdvCreate(ctx, inputModel, userID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
 		return
@@ -70,7 +69,7 @@ func (t *advertisementsController) AdvCreate(ctx *gin.Context) {
 // @Produce				json
 // @Success				200	{object}	map[string]interface{}
 // @Router					/protected/advertisement-patch [patch]
-func (t *advertisementsController) AdvPatch(ctx *gin.Context) {
+func (c *advertisementsController) AdvPatch(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	var inputModel models.AdvertisementUpdate
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
@@ -78,7 +77,7 @@ func (t *advertisementsController) AdvPatch(ctx *gin.Context) {
 		return
 	}
 
-	advertisement, err := t.advertisementService.AdvPatch(ctx, inputModel, userID, *&t.categoriesService)
+	advertisement, err := c.advertisementService.AdvPatch(ctx, inputModel, userID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
 		return
@@ -97,7 +96,7 @@ func (t *advertisementsController) AdvPatch(ctx *gin.Context) {
 // @Produce				json
 // @Success				200	{object}	map[string]interface{}
 // @Router					/protected/advertisement-delete [delete]
-func (t *advertisementsController) AdvDelete(ctx *gin.Context) {
+func (c *advertisementsController) AdvDelete(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	if userID == 0 {
 		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("user id error"))
@@ -112,7 +111,7 @@ func (t *advertisementsController) AdvDelete(ctx *gin.Context) {
 		return
 	}
 
-	err = t.advertisementService.AdvDelete(ctx, inputModel.ID, userID)
+	err = c.advertisementService.AdvDelete(ctx, inputModel.ID, userID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
 		return
@@ -146,7 +145,7 @@ func (t *advertisementsController) AdvGetAll(ctx *gin.Context) {
 // @Produce		json
 // @Success		200	{object}	map[string]interface{}
 // @Router			/open/advertisements/getbyid/{id} [get]
-func (t *advertisementsController) AdvGetByID(ctx *gin.Context) {
+func (c *advertisementsController) AdvGetByID(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := strconv.ParseInt(idParam, 10, 64)
 
@@ -154,7 +153,7 @@ func (t *advertisementsController) AdvGetByID(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("Faield to get advertisement ID"))
 		return
 	}
-	advertisement, err := t.advertisementService.AdvGetByID(ctx, id, *&t.categoriesService)
+	advertisement, err := c.advertisementService.AdvGetByID(ctx, id)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
@@ -174,7 +173,7 @@ func (t *advertisementsController) AdvGetByID(ctx *gin.Context) {
 // @Produce				json
 // @Success				200	{object}	map[string]interface{}
 // @Router					/protected/advertisement-filter [post]
-func (t *advertisementsController) AdvGetFiltered(ctx *gin.Context) {
+func (c *advertisementsController) AdvGetFiltered(ctx *gin.Context) {
 	var filter models.AdvertisementFilter
 	err := ctx.ShouldBindJSON(&filter)
 	if err != nil {
@@ -182,7 +181,7 @@ func (t *advertisementsController) AdvGetFiltered(ctx *gin.Context) {
 		return
 	}
 
-	advertisements, err := t.advertisementService.AdvGetFiltered(ctx, filter)
+	advertisements, err := c.advertisementService.AdvGetFiltered(ctx, filter)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
@@ -200,7 +199,7 @@ func (t *advertisementsController) AdvGetFiltered(ctx *gin.Context) {
 // @Produce		json
 // @Success		200	{object}	map[string]interface{}
 // @Router			/protected/advertisement-getmy [get]
-func (t *advertisementsController) AdvGetMy(ctx *gin.Context) {
+func (c *advertisementsController) AdvGetMy(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 
 	if userID <= 0 {
@@ -208,7 +207,7 @@ func (t *advertisementsController) AdvGetMy(ctx *gin.Context) {
 		return
 	}
 
-	advertisements, err := t.advertisementService.AdvGetMy(ctx, userID)
+	advertisements, err := c.advertisementService.AdvGetMy(ctx, userID)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))

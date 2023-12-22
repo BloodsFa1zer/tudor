@@ -3,7 +3,7 @@ package tests_reposotiries
 import (
 	"context"
 
-	"study_marketplace/internal/database/queries"
+	"study_marketplace/database/queries"
 )
 
 type ReturnCreateUserModel struct {

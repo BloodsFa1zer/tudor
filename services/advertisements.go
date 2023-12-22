@@ -4,19 +4,19 @@ import (
 	"fmt"
 	"time"
 
-	"study_marketplace/internal/database/queries"
-	"study_marketplace/internal/database/repositories"
-	"study_marketplace/models"
+	"study_marketplace/database/queries"
+	"study_marketplace/database/repositories"
+	"study_marketplace/domen/models"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AdvertisementService interface {
-	AdvCreate(ctx *gin.Context, inputModel models.AdvertisementInput, userID int64, u UserService, c CategoriesService) (queries.Advertisement, error)
-	AdvPatch(ctx *gin.Context, patch models.AdvertisementUpdate, userID int64, c *CategoriesService) (queries.Advertisement, error)
+	AdvCreate(ctx *gin.Context, inputModel models.AdvertisementInput, userID int64) (queries.Advertisement, error)
+	AdvPatch(ctx *gin.Context, patch models.AdvertisementUpdate, userID int64) (queries.Advertisement, error)
 	AdvDelete(ctx *gin.Context, advId int64, userId int64) error
 	AdvGetAll(ctx *gin.Context) ([]queries.Advertisement, error)
-	AdvGetByID(ctx *gin.Context, id int64, c *CategoriesService) (queries.Advertisement, error)
+	AdvGetByID(ctx *gin.Context, id int64) (queries.Advertisement, error)
 	AdvGetFiltered(ctx *gin.Context, filter models.AdvertisementFilter) ([]queries.FilterAdvertisementsRow, error)
 	AdvGetMy(ctx *gin.Context, userID int64) ([]queries.Advertisement, error)
 }
@@ -29,34 +29,28 @@ func NewAdvertisementService(db repositories.AdvertisementsRepository) Advertise
 	return &advertisementService{db}
 }
 
-func (t *advertisementService) AdvCreate(ctx *gin.Context, inputModel models.AdvertisementInput, userID int64, u UserService, c CategoriesService) (queries.Advertisement, error) {
-	user, err := u.UserInfo(ctx, userID)
-	if err != nil {
-		return queries.Advertisement{}, err
-	}
-
-	category, err := c.CatGetByName(ctx, inputModel.Category)
-
-	if err != nil || category.ParentID.Int32 == 0 {
-		return queries.Advertisement{}, fmt.Errorf("failed to get category")
-	}
+func (t *advertisementService) AdvCreate(ctx *gin.Context, inputModel models.AdvertisementInput, userID int64) (queries.Advertisement, error) {
+	// user, err := u.UserInfo(ctx, userID)
+	// if err != nil {
+	// 	return queries.Advertisement{}, err
+	// }
 
 	args := &queries.CreateAdvertisementParams{
-		Title:       inputModel.Title,
-		Provider:    user.Name,
-		ProviderID:  user.ID,
+		Title: inputModel.Title,
+		// Provider:    user.Name,
+		// ProviderID:  user.ID,
 		Attachment:  inputModel.Attachment,
 		Experience:  inputModel.Experience,
-		Category:    category.Name,
+		Name:        inputModel.Category,
 		Time:        inputModel.Time,
 		Price:       inputModel.Price,
 		Format:      inputModel.Format,
 		Language:    inputModel.Language,
 		Description: inputModel.Description,
 		MobilePhone: inputModel.MobilePhone,
-		Email:       user.Email,
-		Telegram:    inputModel.Telegram,
-		CreatedAt:   time.Now(),
+		// Email:       user.Email,
+		Telegram:  inputModel.Telegram,
+		CreatedAt: time.Now(),
 	}
 
 	advertisement, err := t.db.CreateAdvertisement(ctx, *args)
@@ -67,30 +61,13 @@ func (t *advertisementService) AdvCreate(ctx *gin.Context, inputModel models.Adv
 	return advertisement, nil
 }
 
-func (t *advertisementService) AdvPatch(ctx *gin.Context, patch models.AdvertisementUpdate, userID int64, c *CategoriesService) (queries.Advertisement, error) {
-	adv, err := t.db.GetAdvertisementByID(ctx, patch.ID)
-
-	if err != nil {
-		return queries.Advertisement{}, err
-	}
-
-	cat, err := c.CatGetByName(ctx, patch.Category)
-
-	if err != nil || cat.ParentID.Int32 == 0 {
-		return queries.Advertisement{}, fmt.Errorf("failed to get category")
-	}
-
-	if adv.ProviderID != userID {
-		return queries.Advertisement{}, fmt.Errorf("Unauthorized")
-	}
-
+func (t *advertisementService) AdvPatch(ctx *gin.Context, patch models.AdvertisementUpdate, userID int64) (queries.Advertisement, error) {
 	advertisementTmp := &queries.UpdateAdvertisementParams{
 		ID:          patch.ID,
 		Title:       patch.Title,
-		CreatedAt:   time.Now(),
 		Attachment:  patch.Attachment,
 		Experience:  patch.Experience,
-		Category:    cat.Name,
+		Name:        patch.Category,
 		Time:        patch.Time,
 		Price:       patch.Price,
 		Format:      patch.Format,
@@ -139,24 +116,32 @@ func (t *advertisementService) AdvGetAll(ctx *gin.Context) ([]queries.Advertisem
 	return advertisements, nil
 }
 
-func (t *advertisementService) AdvGetByID(ctx *gin.Context, id int64, c *CategoriesService) (queries.Advertisement, error) {
-	advertisement, err := t.db.GetAdvertisementByID(ctx, id)
+func (t *advertisementService) AdvGetByID(ctx *gin.Context, id int64) (queries.Advertisement, error) {
+	adverAndCat, err := t.db.GetAdvertisementAndCategoryByID(ctx, id)
 
 	if err != nil {
 		return queries.Advertisement{}, err
 	}
-
-	catFull, err := c.CatGetFullName(ctx, advertisement.Category)
-
-	if err != nil {
-		return queries.Advertisement{}, err
-	}
-	advertisement.Category = fmt.Sprintf("%s: %s", catFull.ParentName.String, catFull.CategoryName)
+	advertisement :=
+		queries.Advertisement{
+			ID:         adverAndCat.ID,
+			Title:      adverAndCat.Title,
+			Provider:   adverAndCat.Provider,
+			ProviderID: adverAndCat.ProviderID,
+			Attachment: adverAndCat.Attachment,
+			Experience: adverAndCat.Experience,
+			CategoryID: adverAndCat.CategoryID,
+			Time:       adverAndCat.Time,
+			Price:      adverAndCat.Price,
+			Format:     adverAndCat.Format,
+			Language:   adverAndCat.Language,
+			CreatedAt:  adverAndCat.CreatedAt,
+		}
+	// advertisement.Category = fmt.Sprintf("%s: %s", catFull.ParentName.String, catFull.CategoryName)
 	return advertisement, nil
 }
 
 func (t *advertisementService) AdvGetFiltered(ctx *gin.Context, filter models.AdvertisementFilter) ([]queries.FilterAdvertisementsRow, error) {
-
 	argFilter := queries.FilterAdvertisementsParams{
 		Orderby:      filter.Orderby,
 		Sortorder:    filter.Sortorder,
@@ -172,6 +157,7 @@ func (t *advertisementService) AdvGetFiltered(ctx *gin.Context, filter models.Ad
 		Advlanguage:  filter.Language,
 		Titlekeyword: filter.Titlekeyword,
 	}
+
 	advertisements, err := t.db.FilterAdvertisements(ctx, argFilter)
 	if err != nil {
 		return nil, err

@@ -6,9 +6,9 @@ import (
 	"time"
 
 	config "study_marketplace/config"
-	"study_marketplace/internal/database/queries"
-	"study_marketplace/internal/database/repositories"
-	"study_marketplace/models"
+	"study_marketplace/database/queries"
+	"study_marketplace/database/repositories"
+	"study_marketplace/domen/models"
 
 	"github.com/gin-gonic/gin"
 	gomail "gopkg.in/gomail.v2"

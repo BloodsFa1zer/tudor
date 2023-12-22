@@ -1,8 +1,7 @@
 -- name: CreateAdvertisement :one
-WITH category_id AS (SELECT id FROM categories WHERE name = $6)
+WITH cat_id AS (SELECT id FROM categories WHERE name = $5)
 INSERT INTO advertisements (
   title,
-  provider,
   provider_id,
   attachment,
   experience,
@@ -17,7 +16,7 @@ INSERT INTO advertisements (
   telegram,
   created_at
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
+  $1, $2, $3, $4, (SELECT cat_id), $6, $7, $8, $9, $10, $11, $12, $13, $14
 )
 RETURNING *;
 
@@ -40,10 +39,6 @@ WHERE advertisements.id = $1;
 -- name: GetAdvertisementByID :one
 SELECT * FROM advertisements
 WHERE id = $1;
-
--- name: GetAdvertisementByUsername :many
-SELECT * FROM advertisements
-WHERE provider = $1;
 
 -- name: GetAdvertisementByUserID :many
 SELECT * FROM advertisements
@@ -72,21 +67,20 @@ SELECT * FROM advertisements
 WHERE language = $1;
 
 -- name: UpdateAdvertisement :one
-WITH c_id AS (SELECT id FROM categories WHERE name = $6)
+WITH c_id AS (SELECT id FROM categories WHERE name = $5)
 UPDATE advertisements
 SET
   title = COALESCE($2, title),
-  created_at = COALESCE($3, created_at),
-  attachment = COALESCE($4, attachment),
-  experience = COALESCE($5, experience),
+  attachment = COALESCE($3, attachment),
+  experience = COALESCE($4, experience),
   category_id = COALESCE(c_id, category_id),
-  time = COALESCE($7, time),
-  price = COALESCE($8, price),
-  format = COALESCE($9, format),
-  language = COALESCE($10, language),
-  description = COALESCE($11, description),
-  mobile_phone = COALESCE($12, mobile_phone),
-  telegram = COALESCE($13, telegram)
+  time = COALESCE($6, time),
+  price = COALESCE($7, price),
+  format = COALESCE($8, format),
+  language = COALESCE($9, language),
+  description = COALESCE($10, description),
+  mobile_phone = COALESCE($11, mobile_phone),
+  telegram = COALESCE($12, telegram)
 WHERE advertisements.id = $1
 RETURNING *;
 

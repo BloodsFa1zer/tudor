@@ -3,16 +3,16 @@ package controllers
 import (
 	"net/http"
 
-	"study_marketplace/internal/database/queries"
-	"study_marketplace/models"
+	"study_marketplace/database/queries"
+	"study_marketplace/domen/models"
 	"study_marketplace/services"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserController interface {
-	UserLogin(ctx *gin.Context)
 	UserRegister(ctx *gin.Context)
+	UserLogin(ctx *gin.Context)
 	UserInfo(ctx *gin.Context)
 	UserPatch(ctx *gin.Context)
 	PasswordReset(ctx *gin.Context)
@@ -26,32 +26,6 @@ type userController struct {
 
 func NewUsersController(us services.UserService) UserController {
 	return &userController{us}
-}
-
-// @Login			godoc
-// @Summary		POST request for login
-// @Description	requires email and password
-// @Tags			login
-// @Accept			json
-// @Produce		json
-// @Param			request	body		models.InLogin	true	"request info"
-// @Success		200		{object}	map[string]interface{}
-// @Router			/api/auth/login [post]
-func (t *userController) UserLogin(ctx *gin.Context) {
-
-	var inputModel models.InLogin
-	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
-		return
-	}
-
-	token, err := t.userService.UserLogin(ctx, inputModel)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, models.NewResponseFailed(err.Error()))
-		return
-	}
-
-	ctx.JSON(http.StatusOK, models.NewResponseSuccess(token))
 }
 
 // @Registraction	godoc
@@ -79,14 +53,39 @@ func (t *userController) UserRegister(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, models.NewResponseSuccess(user))
 }
 
+// @Login			godoc
+// @Summary		POST request for login
+// @Description	requires email and password
+// @Tags			login
+// @Accept			json
+// @Produce		json
+// @Param			request	body		models.InLogin	true	"request info"
+// @Success		200		{object}	map[string]interface{}
+// @Router			/api/auth/login [post]
+func (t *userController) UserLogin(ctx *gin.Context) {
+	var inputModel models.InLogin
+	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
+		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		return
+	}
+
+	_, err := t.userService.UserLogin(ctx, inputModel)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, models.NewResponseFailed(err.Error()))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, models.NewResponseSuccess("token"))
+}
+
 // @Userinfo		godoc
-// @Summary		Get request to see user info
-// @Description	requires valid token
+// @Summary			Get request to see user info
+// @Description		requires valid token
 // @Tags			userinfo
 // @Security		JWT
 // @Param			Authorization	header	string	true	"Insert your access token"
-// @Produce		json
-// @Success		200	{object}	map[string]interface{}
+// @Produce			json
+// @Success			200	{object}	map[string]interface{}
 // @Router			/protected/userinfo [get]
 func (t *userController) UserInfo(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")

@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 
-	"study_marketplace/internal/database/queries"
+	"study_marketplace/database/queries"
 )
 
 type CategoriesRepository interface {

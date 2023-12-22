@@ -1,8 +1,8 @@
 package services
 
 import (
-	"study_marketplace/internal/database/queries"
-	"study_marketplace/internal/database/repositories"
+	"study_marketplace/database/queries"
+	"study_marketplace/database/repositories"
 
 	"github.com/gin-gonic/gin"
 )

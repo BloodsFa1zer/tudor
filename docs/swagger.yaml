@@ -107,7 +107,42 @@ definitions:
     required:
     - password
     type: object
-  queries.User:
+  study_marketplace_database_queries.Advertisement:
+    properties:
+      attachment:
+        type: string
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      experience:
+        type: integer
+      format:
+        type: string
+      id:
+        type: integer
+      language:
+        type: string
+      mobile_phone:
+        type: string
+      price:
+        type: integer
+      provider:
+        type: string
+      provider_id:
+        type: integer
+      telegram:
+        type: string
+      time:
+        type: integer
+      title:
+        type: string
+    type: object
+  study_marketplace_database_queries.User:
     properties:
       created_at:
         type: string
@@ -191,7 +226,7 @@ paths:
         name: user_info
         required: true
         schema:
-          $ref: '#/definitions/queries.User'
+          $ref: '#/definitions/study_marketplace_database_queries.Advertisement'
       produces:
       - application/json
       responses:
@@ -448,7 +483,7 @@ paths:
         name: userinfo
         required: true
         schema:
-          $ref: '#/definitions/queries.User'
+          $ref: '#/definitions/study_marketplace_database_queries.User'
       produces:
       - application/json
       responses:

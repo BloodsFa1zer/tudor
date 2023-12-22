@@ -3,13 +3,14 @@ package repositories
 import (
 	"context"
 
-	"study_marketplace/internal/database/queries"
+	"study_marketplace/database/queries"
 )
 
 type AdvertisementsRepository interface {
 	CreateAdvertisement(ctx context.Context, arg queries.CreateAdvertisementParams) (queries.Advertisement, error)
 	UpdateAdvertisement(ctx context.Context, arg queries.UpdateAdvertisementParams) (queries.Advertisement, error)
 	GetAdvertisementByID(ctx context.Context, id int64) (queries.Advertisement, error)
+	GetAdvertisementAndCategoryByID(ctx context.Context, id int64) (queries.GetAdvertisementAndCategoryByIDRow, error)
 	DeleteAdvertisementByID(ctx context.Context, id int64) error
 	GetAdvertisementAll(ctx context.Context) ([]queries.Advertisement, error)
 	FilterAdvertisements(ctx context.Context, arg queries.FilterAdvertisementsParams) ([]queries.FilterAdvertisementsRow, error)
@@ -34,6 +35,10 @@ func (t *advertisementsRepository) UpdateAdvertisement(ctx context.Context, arg 
 
 func (t *advertisementsRepository) GetAdvertisementByID(ctx context.Context, id int64) (queries.Advertisement, error) {
 	return t.q.GetAdvertisementByID(ctx, id)
+}
+
+func (t *advertisementsRepository) GetAdvertisementAndCategoryByID(ctx context.Context, id int64) (queries.GetAdvertisementAndCategoryByIDRow, error) {
+	return t.q.GetAdvertisementAndCategoryByID(ctx, id)
 }
 
 func (t *advertisementsRepository) DeleteAdvertisementByID(ctx context.Context, id int64) error {

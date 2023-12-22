@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 	config "study_marketplace/config"
-	"study_marketplace/models"
+	"study_marketplace/domen/models"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
