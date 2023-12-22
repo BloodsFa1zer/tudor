@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	config "study_marketplace/config"
 	"study_marketplace/domen/models"
+	config "study_marketplace/internal/infrastructure/config"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"

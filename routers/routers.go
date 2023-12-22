@@ -1,9 +1,9 @@
 package routers
 
 import (
-	config "study_marketplace/config"
 	"study_marketplace/controllers"
 	_ "study_marketplace/docs"
+	config "study_marketplace/internal/infrastructure/config"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"

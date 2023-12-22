@@ -5,10 +5,10 @@ import (
 	"reflect"
 	"time"
 
-	config "study_marketplace/config"
 	"study_marketplace/database/queries"
 	"study_marketplace/database/repositories"
 	"study_marketplace/domen/models"
+	config "study_marketplace/internal/infrastructure/config"
 
 	"github.com/gin-gonic/gin"
 	gomail "gopkg.in/gomail.v2"

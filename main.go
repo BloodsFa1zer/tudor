@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	config "study_marketplace/config"
+	config "study_marketplace/internal/infrastructure/config"
 	"study_marketplace/internal/infrastructure/server"
 	"study_marketplace/internal/registry"
 	"study_marketplace/routers"
