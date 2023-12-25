@@ -19,8 +19,8 @@ func SetupRouter(conf *config.Config, server *gin.Engine, a *controllers.AppCont
 		ginSwagger.URL(conf.DocsHostname+"/api/docs/doc.json")))
 	api.POST("/auth/register", a.UserRegister)
 	api.POST("/auth/login", a.UserLogin)
-	api.GET("/auth/:provider/callback", a.AuthWithProvider)
-	api.GET("/auth/:provider", a.AuthWithProviderCallback)
+	api.GET("/auth/:provider", a.AuthWithProvider)
+	api.GET("/auth/:provider/callback", a.AuthWithProviderCallback)
 	api.POST("/auth/reset-password", a.PasswordReset)
 
 	protected := server.Group("/protected")

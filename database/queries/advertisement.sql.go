@@ -32,7 +32,7 @@ INSERT INTO advertisements (
 ) VALUES (
   $1, $2, $3, $4, (SELECT cat_id), $6, $7, $8, $9, $10, $11, $12, $13, $14
 )
-RETURNING id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at
+RETURNING id, title, provider, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at
 `
 
 type CreateAdvertisementParams struct {
@@ -73,6 +73,7 @@ func (q *Queries) CreateAdvertisement(ctx context.Context, arg CreateAdvertiseme
 	err := row.Scan(
 		&i.ID,
 		&i.Title,
+		&i.Provider,
 		&i.ProviderID,
 		&i.Attachment,
 		&i.Experience,
@@ -113,7 +114,7 @@ func (q *Queries) DeleteAdvertisementByUserID(ctx context.Context, providerID in
 
 const filterAdvertisements = `-- name: FilterAdvertisements :many
 WITH filtered_ads AS (
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
   WHERE
         (NULLIF($5::text, '')::text IS NULL OR category = $5::text)
         AND (NULLIF($6::int, 0) IS NULL OR time <= $6::int)
@@ -123,7 +124,7 @@ SELECT id, title, provider_id, attachment, experience, category_id, time, price,
         AND (NULLIF($13::text, '') IS NULL OR language = $13::text)
         AND (NULLIF($14::text, '') IS NULL OR title ILIKE '%' || $14::text || '%')
 )
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at,
+SELECT id, title, provider, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at,
     COUNT(*) OVER () AS total_items
 FROM filtered_ads
 ORDER BY
@@ -159,6 +160,7 @@ type FilterAdvertisementsParams struct {
 type FilterAdvertisementsRow struct {
 	ID          int64       `json:"id"`
 	Title       string      `json:"title"`
+	Provider    string      `json:"provider"`
 	ProviderID  int64       `json:"provider_id"`
 	Attachment  string      `json:"attachment"`
 	Experience  int32       `json:"experience"`
@@ -203,6 +205,7 @@ func (q *Queries) FilterAdvertisements(ctx context.Context, arg FilterAdvertisem
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
+			&i.Provider,
 			&i.ProviderID,
 			&i.Attachment,
 			&i.Experience,
@@ -230,7 +233,7 @@ func (q *Queries) FilterAdvertisements(ctx context.Context, arg FilterAdvertisem
 }
 
 const getAdvertisementAll = `-- name: GetAdvertisementAll :many
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
 ORDER BY created_at DESC
 LIMIT 10
 `
@@ -247,6 +250,7 @@ func (q *Queries) GetAdvertisementAll(ctx context.Context) ([]Advertisement, err
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
+			&i.Provider,
 			&i.ProviderID,
 			&i.Attachment,
 			&i.Experience,
@@ -273,7 +277,7 @@ func (q *Queries) GetAdvertisementAll(ctx context.Context) ([]Advertisement, err
 }
 
 const getAdvertisementAndCategoryByID = `-- name: GetAdvertisementAndCategoryByID :one
-SELECT advertisements.id, advertisements.title, advertisements.provider_id, advertisements.attachment, advertisements.experience, advertisements.category_id, advertisements.time, advertisements.price, advertisements.format, advertisements.language, advertisements.description, advertisements.mobile_phone, advertisements.email, advertisements.telegram, advertisements.created_at, advertisements.updated_at, categories.name AS category_name, parent_cat.name AS parent_category_name
+SELECT advertisements.id, advertisements.title, advertisements.provider, advertisements.provider_id, advertisements.attachment, advertisements.experience, advertisements.category_id, advertisements.time, advertisements.price, advertisements.format, advertisements.language, advertisements.description, advertisements.mobile_phone, advertisements.email, advertisements.telegram, advertisements.created_at, advertisements.updated_at, categories.name AS category_name, parent_cat.name AS parent_category_name
 FROM advertisements
 JOIN categories ON advertisements.category_id = categories.id
 JOIN categories AS parent_cat ON categories.parent_id = parent_cat.id
@@ -283,6 +287,7 @@ WHERE advertisements.id = $1
 type GetAdvertisementAndCategoryByIDRow struct {
 	ID                 int64       `json:"id"`
 	Title              string      `json:"title"`
+	Provider           string      `json:"provider"`
 	ProviderID         int64       `json:"provider_id"`
 	Attachment         string      `json:"attachment"`
 	Experience         int32       `json:"experience"`
@@ -307,6 +312,7 @@ func (q *Queries) GetAdvertisementAndCategoryByID(ctx context.Context, id int64)
 	err := row.Scan(
 		&i.ID,
 		&i.Title,
+		&i.Provider,
 		&i.ProviderID,
 		&i.Attachment,
 		&i.Experience,
@@ -329,7 +335,7 @@ func (q *Queries) GetAdvertisementAndCategoryByID(ctx context.Context, id int64)
 
 const getAdvertisementByCategory = `-- name: GetAdvertisementByCategory :many
 WITH id AS (SELECT id FROM categories WHERE name = $1)
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
 WHERE category_id = id
 `
 
@@ -345,6 +351,7 @@ func (q *Queries) GetAdvertisementByCategory(ctx context.Context, name string) (
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
+			&i.Provider,
 			&i.ProviderID,
 			&i.Attachment,
 			&i.Experience,
@@ -371,7 +378,7 @@ func (q *Queries) GetAdvertisementByCategory(ctx context.Context, name string) (
 }
 
 const getAdvertisementByExperience = `-- name: GetAdvertisementByExperience :many
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
 WHERE experience >= $1
 AND experience <= $2
 `
@@ -393,6 +400,7 @@ func (q *Queries) GetAdvertisementByExperience(ctx context.Context, arg GetAdver
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
+			&i.Provider,
 			&i.ProviderID,
 			&i.Attachment,
 			&i.Experience,
@@ -419,7 +427,7 @@ func (q *Queries) GetAdvertisementByExperience(ctx context.Context, arg GetAdver
 }
 
 const getAdvertisementByFormat = `-- name: GetAdvertisementByFormat :many
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
 WHERE format = $1
 `
 
@@ -435,6 +443,7 @@ func (q *Queries) GetAdvertisementByFormat(ctx context.Context, format string) (
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
+			&i.Provider,
 			&i.ProviderID,
 			&i.Attachment,
 			&i.Experience,
@@ -461,7 +470,7 @@ func (q *Queries) GetAdvertisementByFormat(ctx context.Context, format string) (
 }
 
 const getAdvertisementByID = `-- name: GetAdvertisementByID :one
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
 WHERE id = $1
 `
 
@@ -471,6 +480,7 @@ func (q *Queries) GetAdvertisementByID(ctx context.Context, id int64) (Advertise
 	err := row.Scan(
 		&i.ID,
 		&i.Title,
+		&i.Provider,
 		&i.ProviderID,
 		&i.Attachment,
 		&i.Experience,
@@ -490,7 +500,7 @@ func (q *Queries) GetAdvertisementByID(ctx context.Context, id int64) (Advertise
 }
 
 const getAdvertisementByLanguage = `-- name: GetAdvertisementByLanguage :many
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
 WHERE language = $1
 `
 
@@ -506,6 +516,7 @@ func (q *Queries) GetAdvertisementByLanguage(ctx context.Context, language strin
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
+			&i.Provider,
 			&i.ProviderID,
 			&i.Attachment,
 			&i.Experience,
@@ -532,7 +543,7 @@ func (q *Queries) GetAdvertisementByLanguage(ctx context.Context, language strin
 }
 
 const getAdvertisementByTime = `-- name: GetAdvertisementByTime :many
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
 WHERE time <= $1
 `
 
@@ -548,6 +559,7 @@ func (q *Queries) GetAdvertisementByTime(ctx context.Context, argTime int32) ([]
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
+			&i.Provider,
 			&i.ProviderID,
 			&i.Attachment,
 			&i.Experience,
@@ -574,7 +586,7 @@ func (q *Queries) GetAdvertisementByTime(ctx context.Context, argTime int32) ([]
 }
 
 const getAdvertisementByUserID = `-- name: GetAdvertisementByUserID :many
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
 WHERE provider_id = $1
 `
 
@@ -590,6 +602,7 @@ func (q *Queries) GetAdvertisementByUserID(ctx context.Context, providerID int64
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
+			&i.Provider,
 			&i.ProviderID,
 			&i.Attachment,
 			&i.Experience,
@@ -616,7 +629,7 @@ func (q *Queries) GetAdvertisementByUserID(ctx context.Context, providerID int64
 }
 
 const getAdvertisementMy = `-- name: GetAdvertisementMy :many
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements 
+SELECT id, title, provider, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements 
 WHERE provider_id = $1
 `
 
@@ -632,6 +645,7 @@ func (q *Queries) GetAdvertisementMy(ctx context.Context, providerID int64) ([]A
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
+			&i.Provider,
 			&i.ProviderID,
 			&i.Attachment,
 			&i.Experience,
@@ -673,7 +687,7 @@ SET
   mobile_phone = COALESCE($11, mobile_phone),
   telegram = COALESCE($12, telegram)
 WHERE advertisements.id = $1
-RETURNING id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at
+RETURNING id, title, provider, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at
 `
 
 type UpdateAdvertisementParams struct {
@@ -710,6 +724,7 @@ func (q *Queries) UpdateAdvertisement(ctx context.Context, arg UpdateAdvertiseme
 	err := row.Scan(
 		&i.ID,
 		&i.Title,
+		&i.Provider,
 		&i.ProviderID,
 		&i.Attachment,
 		&i.Experience,

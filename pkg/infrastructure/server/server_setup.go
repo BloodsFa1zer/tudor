@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
+	"github.com/markbates/goth/providers/facebook"
 	"github.com/markbates/goth/providers/google"
 )
 
@@ -32,5 +33,6 @@ func authStore(conf *config.Config) {
 
 	goth.UseProviders(
 		google.New(conf.GoogleOauthClientId, conf.GoogleOauthClientSecret, conf.GoogleOauthRedirectPage),
+		facebook.New(conf.FacebookOauthClientId, conf.FacebookOauthClientSecret, conf.FacebookOauthRedirectPage),
 	)
 }

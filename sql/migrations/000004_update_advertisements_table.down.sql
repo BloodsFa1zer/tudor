@@ -1,6 +1,0 @@
-ALTER TABLE "advertisements"
-ALTER COLUMN "mobile_phone" SET NOT NULL,
-ALTER COLUMN "email" SET NOT NULL,
-ALTER COLUMN "telegram" SET NOT NULL,
-DROP COLUMN "updated_at",
-ADD COLUMN "provider" VARCHAR NOT NULL;

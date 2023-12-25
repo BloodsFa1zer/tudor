@@ -14,12 +14,16 @@ type Config struct {
 	GoogleOauthClientId       string   `env:"GOOGLE_OAUTH_CLIENT_ID,required"`
 	GoogleOauthClientSecret   string   `env:"GOOGLE_OAUTH_CLIENT_SECRET,required"`
 	GoogleOauthRedirectPage   string   `env:"GOOGLE_OAUTH_REDIRECT_PAGE,required"`
+	FacebookOauthClientId     string   `env:"FACEBOOK_OAUTH_CLIENT_ID,required"`
+	FacebookOauthClientSecret string   `env:"FACEBOOK_OAUTH_CLIENT_SECRET,required"`
+	FacebookOauthRedirectPage string   `env:"FACEBOOK_OAUTH_REDIRECT_PAGE,required"`
 	GoogleEmailAddress        string   `env:"GOOGLE_EMAIL_ADDRESS"`
 	GoogleEmailSecret         string   `env:"GOOGLE_EMAIL_SECRET"`
 	PasswordResetRedirectPage string   `env:"PASSWORD_RESET_REDIRECT_PAGE"`
 	AllowedOrigins            []string `env:"ALLOWED_ORIGINS,required" envSeparator:","`
 	JWTSecret                 string   `env:"JWT_SECRET,required"`
 	CookieSecret              string   `env:"COOKIE_SECRET,required"`
+	RedirectUrl               string   `env:"REDIRECT_URL,required"`
 }
 
 func SetUpConfig() *Config {

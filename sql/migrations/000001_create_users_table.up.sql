@@ -1,13 +1,13 @@
 CREATE TABLE "users" (
     "id" BIGSERIAL NOT NULL,
-    "name" VARCHAR NOT NULL,
-    "email" VARCHAR NOT NULL,
-    "photo" VARCHAR NOT NULL,
-    "verified" BOOLEAN NOT NULL,
-    "password" VARCHAR NOT NULL,
+    "name" VARCHAR,
+    "email" VARCHAR NOT NULL UNIQUE,
+    "photo" VARCHAR,
+    "verified" BOOLEAN NOT NULL DEFAULT FALSE,
+    "password" VARCHAR,
     "role" VARCHAR NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL,
+    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );

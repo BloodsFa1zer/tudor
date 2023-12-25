@@ -1,4 +1,4 @@
-package requestmodels
+package reqmodels
 
 type CreateUpdateAdvertisementRequest struct {
 	Title        string `json:"title"`

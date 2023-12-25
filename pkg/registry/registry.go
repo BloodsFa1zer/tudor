@@ -51,7 +51,7 @@ func (r *registry) categoriesRegister() controllers.CategoriesController {
 }
 
 func (r *registry) authRegister() controllers.AuthController {
-	return controllers.NewAuthController(r.config.PasswordResetRedirectPage,
+	return controllers.NewAuthController(r.config.RedirectUrl,
 		services.NewUserService(r.config, r.genTokFunc(), r.hashPasFunc(), r.comparePasFunc(),
 			repositories.NewUsersRepository(r.queries)))
 }
@@ -67,11 +67,11 @@ func (r *registry) middlewareRegister() middleware.Middleware {
 	return middleware.NewMiddleware(r.config)
 }
 
-func (r *registry) genTokFunc() func(userid int64, userName string) (string, error) {
+func (r *registry) genTokFunc() func(userid int64, email string) (string, error) {
 	return func(userid int64, userName string) (string, error) {
 		claims := &models.AuthClaims{
-			UserID:   userid,
-			Username: userName,
+			UserID: userid,
+			Email:  userName,
 			RegisteredClaims: jwt.RegisteredClaims{
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 10)), // Set token expiration time
 			},

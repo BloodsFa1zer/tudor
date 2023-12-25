@@ -11,9 +11,10 @@ CREATE TABLE "advertisements" (
     "format" VARCHAR NOT NULL,
     "language" VARCHAR NOT NULL,
     "description" TEXT NOT NULL,
-    "mobile_phone" VARCHAR NOT NULL,
-    "email" VARCHAR NOT NULL,
-    "telegram" VARCHAR NOT NULL,
+    "mobile_phone" VARCHAR,
+    "email" VARCHAR,
+    "telegram" VARCHAR,
     "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "advertisement_pkey" PRIMARY KEY ("id")
 );

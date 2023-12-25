@@ -107,7 +107,14 @@ definitions:
     required:
     - password
     type: object
-  study_marketplace_database_queries.User:
+  pgtype.Text:
+    properties:
+      string:
+        type: string
+      valid:
+        type: boolean
+    type: object
+  queries.User:
     properties:
       created_at:
         type: string
@@ -116,11 +123,11 @@ definitions:
       id:
         type: integer
       name:
-        type: string
+        $ref: '#/definitions/pgtype.Text'
       password:
-        type: string
+        $ref: '#/definitions/pgtype.Text'
       photo:
-        type: string
+        $ref: '#/definitions/pgtype.Text'
       role:
         type: string
       updated_at:
@@ -157,6 +164,28 @@ paths:
       summary: Show the status of server.
       tags:
       - root
+  /api/auth/{provider}:
+    get:
+      consumes:
+      - text/html
+      description: requires param provider, for example google, facebook or apple  (at
+        this moment apple not working) This request redirects to the provider's page
+        for authorization, which in turn transmits a token in the parameters (token)
+        and header (Authorization)
+      parameters:
+      - description: provider for auth
+        in: path
+        name: provider
+        required: true
+        type: string
+      produces:
+      - text/html
+      responses:
+        "302":
+          description: Found
+      summary: GET request for auth with provider
+      tags:
+      - auth_with_provider get request for auth with provider
   /api/auth/login:
     post:
       consumes:
@@ -191,7 +220,7 @@ paths:
         name: user_info
         required: true
         schema:
-          $ref: '#/definitions/study_marketplace_database_queries.User'
+          $ref: '#/definitions/queries.User'
       produces:
       - application/json
       responses:
@@ -448,7 +477,7 @@ paths:
         name: userinfo
         required: true
         schema:
-          $ref: '#/definitions/study_marketplace_database_queries.User'
+          $ref: '#/definitions/queries.User'
       produces:
       - application/json
       responses:

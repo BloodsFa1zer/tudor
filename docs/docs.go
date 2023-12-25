@@ -103,7 +103,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/study_marketplace_database_queries.User"
+                            "$ref": "#/definitions/queries.User"
                         }
                     }
                 ],
@@ -146,6 +146,35 @@ const docTemplate = `{
                             "type": "object",
                             "additionalProperties": true
                         }
+                    }
+                }
+            }
+        },
+        "/api/auth/{provider}": {
+            "get": {
+                "description": "requires param provider, for example google, facebook or apple  (at this moment apple not working) This request redirects to the provider's page for authorization, which in turn transmits a token in the parameters (token) and header (Authorization)",
+                "consumes": [
+                    "text/html"
+                ],
+                "produces": [
+                    "text/html"
+                ],
+                "tags": [
+                    "auth_with_provider get request for auth with provider"
+                ],
+                "summary": "GET request for auth with provider",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "provider for auth",
+                        "name": "provider",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "302": {
+                        "description": "Found"
                     }
                 }
             }
@@ -506,7 +535,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/study_marketplace_database_queries.User"
+                            "$ref": "#/definitions/queries.User"
                         }
                     }
                 ],
@@ -722,7 +751,18 @@ const docTemplate = `{
                 }
             }
         },
-        "study_marketplace_database_queries.User": {
+        "pgtype.Text": {
+            "type": "object",
+            "properties": {
+                "string": {
+                    "type": "string"
+                },
+                "valid": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "queries.User": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -735,13 +775,13 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
-                    "type": "string"
+                    "$ref": "#/definitions/pgtype.Text"
                 },
                 "password": {
-                    "type": "string"
+                    "$ref": "#/definitions/pgtype.Text"
                 },
                 "photo": {
-                    "type": "string"
+                    "$ref": "#/definitions/pgtype.Text"
                 },
                 "role": {
                     "type": "string"

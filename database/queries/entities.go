@@ -13,6 +13,7 @@ import (
 type Advertisement struct {
 	ID          int64       `json:"id"`
 	Title       string      `json:"title"`
+	Provider    string      `json:"provider"`
 	ProviderID  int64       `json:"provider_id"`
 	Attachment  string      `json:"attachment"`
 	Experience  int32       `json:"experience"`
@@ -36,13 +37,13 @@ type Category struct {
 }
 
 type User struct {
-	ID        int64     `json:"id"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	Photo     string    `json:"photo"`
-	Verified  bool      `json:"verified"`
-	Password  string    `json:"password"`
-	Role      string    `json:"role"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        int64       `json:"id"`
+	Name      pgtype.Text `json:"name"`
+	Email     string      `json:"email"`
+	Photo     pgtype.Text `json:"photo"`
+	Verified  bool        `json:"verified"`
+	Password  pgtype.Text `json:"password"`
+	Role      string      `json:"role"`
+	CreatedAt time.Time   `json:"created_at"`
+	UpdatedAt time.Time   `json:"updated_at"`
 }

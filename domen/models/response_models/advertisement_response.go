@@ -1,4 +1,4 @@
-package requestmodels
+package respmodels
 
 // AdvertisementResponse is a response model for
 // getbyid, advertisement-create, advertisement-patch
