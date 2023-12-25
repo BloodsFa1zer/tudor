@@ -24,10 +24,6 @@ func NewAuthController(redirectPage string, us services.UserService) AuthControl
 	return &authController{redirectPage: redirectPage, userService: us}
 }
 
-// b := make([]byte, 16)
-// rand.Read(b)
-// googleCookieValue := base64.URLEncoding.EncodeToString(b)
-
 func (t *authController) AuthWithProviderCallback(ctx *gin.Context) {
 	provider := ctx.Param("provider")
 	ctx.Set("provider", provider)

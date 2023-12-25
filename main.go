@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	config "study_marketplace/pkg/infrastructure/config"
@@ -25,12 +24,11 @@ import (
 // @in							header
 // @name						Authorization
 func main() {
-	conf := config.InitConfig()
+	conf := config.SetUpConfig()
 	s := server.NewServer(conf)
 
 	ac := registry.NewRegistry(conf).NewAppController()
 
 	routers.SetupRouter(conf, s, ac)
-	fmt.Println("=========================================", conf.ServerHostname)
 	log.Fatal(s.Run(conf.ServerHostname))
 }
