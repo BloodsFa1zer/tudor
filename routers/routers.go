@@ -3,7 +3,7 @@ package routers
 import (
 	"study_marketplace/controllers"
 	_ "study_marketplace/docs"
-	config "study_marketplace/internal/infrastructure/config"
+	config "study_marketplace/pkg/infrastructure/config"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -11,21 +11,16 @@ import (
 )
 
 func SetupRouter(conf *config.Config, server *gin.Engine, a *controllers.AppController) {
-
 	server.Use(a.CORS())
-
-	docs_url := ginSwagger.URL(conf.DocsHostname + "/api/docs/doc.json")
-
 	api := server.Group("/api")
 
 	api.GET("/", controllers.HealthCheck)
-
-	api.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, docs_url))
+	api.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
+		ginSwagger.URL(conf.DocsHostname+"/api/docs/doc.json")))
 	api.POST("/auth/register", a.UserRegister)
 	api.POST("/auth/login", a.UserLogin)
-	api.GET("/auth/login-google", a.LoginGoogle)
-	api.GET("/auth/login-google-callback", a.LoginGoogleCallback)
-	// api.GET("/auth/login-facebook", a.LoginFacebook)
+	api.GET("/auth/:provider/callback", a.AuthWithProvider)
+	api.GET("/auth/:provider", a.AuthWithProviderCallback)
 	api.POST("/auth/reset-password", a.PasswordReset)
 
 	protected := server.Group("/protected")

@@ -8,7 +8,7 @@ import (
 	"study_marketplace/database/queries"
 	"study_marketplace/database/repositories"
 	"study_marketplace/domen/models"
-	config "study_marketplace/internal/infrastructure/config"
+	config "study_marketplace/pkg/infrastructure/config"
 
 	"github.com/gin-gonic/gin"
 	gomail "gopkg.in/gomail.v2"

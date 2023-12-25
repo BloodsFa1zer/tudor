@@ -12,6 +12,7 @@ services:
         # Ensure that the variables in .env match the same variables in devcontainer.json
         - .env
 
+
     volumes:
       - ../..:/workspaces:cached
       

@@ -47,9 +47,9 @@ func (t *advertisementService) AdvCreate(ctx *gin.Context, inputModel models.Adv
 		Format:      inputModel.Format,
 		Language:    inputModel.Language,
 		Description: inputModel.Description,
-		MobilePhone: inputModel.MobilePhone,
+		// MobilePhone: inputModel.MobilePhone,
 		// Email:       user.Email,
-		Telegram:  inputModel.Telegram,
+		// Telegram:  inputModel.Telegram,
 		CreatedAt: time.Now(),
 	}
 
@@ -73,8 +73,8 @@ func (t *advertisementService) AdvPatch(ctx *gin.Context, patch models.Advertise
 		Format:      patch.Format,
 		Language:    patch.Language,
 		Description: patch.Description,
-		MobilePhone: patch.MobilePhone,
-		Telegram:    patch.Telegram,
+		// MobilePhone: patch.MobilePhone,
+		// Telegram:    patch.Telegram,
 	}
 
 	result, err := t.db.UpdateAdvertisement(ctx, *advertisementTmp)
@@ -124,9 +124,9 @@ func (t *advertisementService) AdvGetByID(ctx *gin.Context, id int64) (queries.A
 	}
 	advertisement :=
 		queries.Advertisement{
-			ID:         adverAndCat.ID,
-			Title:      adverAndCat.Title,
-			Provider:   adverAndCat.Provider,
+			ID:    adverAndCat.ID,
+			Title: adverAndCat.Title,
+			// Provider:   adverAndCat.Provider,
 			ProviderID: adverAndCat.ProviderID,
 			Attachment: adverAndCat.Attachment,
 			Experience: adverAndCat.Experience,
