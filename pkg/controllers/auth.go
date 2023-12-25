@@ -12,6 +12,10 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
+type contextKey string
+
+const providerKey contextKey = "provider"
+
 type AuthController interface {
 	AuthWithProvider(ctx *gin.Context)
 	AuthWithProviderCallback(ctx *gin.Context)
@@ -28,7 +32,7 @@ func NewAuthController(redirectPage string, us services.UserService) AuthControl
 
 func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
 	provider := ctx.Param("provider")
-	ctx.Request = ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), "provider", provider))
+	ctx.Request = ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), providerKey, provider))
 	fmt.Println("provider", provider)
 	user, err := gothic.CompleteUserAuth(ctx.Writer, ctx.Request)
 	if err != nil {
@@ -56,6 +60,6 @@ func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
 // @Router						/api/auth/{provider} [get]
 func (c *authController) AuthWithProvider(ctx *gin.Context) {
 	provider := ctx.Param("provider")
-	ctx.Request = ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), "provider", provider))
+	ctx.Request = ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), providerKey, provider))
 	gothic.BeginAuthHandler(ctx.Writer, ctx.Request)
 }
