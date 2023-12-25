@@ -1,6 +1,6 @@
 package controllers
 
-import middleware "study_marketplace/middlewares"
+import middleware "study_marketplace/pkg/middlewares"
 
 type AppController struct {
 	UserController

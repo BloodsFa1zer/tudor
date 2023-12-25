@@ -2,10 +2,10 @@ package registry
 
 import (
 	"study_marketplace/database/queries"
-	middleware "study_marketplace/middlewares"
 	"study_marketplace/pkg/controllers"
 	"study_marketplace/pkg/domen/models"
 	config "study_marketplace/pkg/infrastructure/config"
+	middleware "study_marketplace/pkg/middlewares"
 	"study_marketplace/pkg/repositories"
 	"study_marketplace/pkg/services"
 	"time"
