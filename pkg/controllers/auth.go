@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	reqresmappers "study_marketplace/pkg/domen/mappers/req_res_mappers"
-	"study_marketplace/services"
+	"study_marketplace/pkg/services"
 
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/goth/gothic"

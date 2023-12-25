@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 	"study_marketplace/pkg/domen/models"
-	"study_marketplace/services"
+	"study_marketplace/pkg/services"
 
 	"github.com/gin-gonic/gin"
 )

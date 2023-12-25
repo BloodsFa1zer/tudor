@@ -1,8 +1,8 @@
 package routers
 
 import (
-	"study_marketplace/controllers"
 	_ "study_marketplace/docs"
+	"study_marketplace/pkg/controllers"
 	config "study_marketplace/pkg/infrastructure/config"
 
 	"github.com/gin-gonic/gin"

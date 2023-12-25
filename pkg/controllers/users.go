@@ -6,7 +6,7 @@ import (
 	reqresmappers "study_marketplace/pkg/domen/mappers/req_res_mappers"
 	"study_marketplace/pkg/domen/models"
 	reqmodels "study_marketplace/pkg/domen/models/request_models"
-	"study_marketplace/services"
+	"study_marketplace/pkg/services"
 
 	"github.com/gin-gonic/gin"
 )
