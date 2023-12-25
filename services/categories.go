@@ -2,7 +2,7 @@ package services
 
 import (
 	"study_marketplace/database/queries"
-	"study_marketplace/database/repositories"
+	"study_marketplace/pkg/repositories"
 
 	"github.com/gin-gonic/gin"
 )
