@@ -1,7 +1,6 @@
 package configs
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/caarlos0/env/v6"
@@ -23,11 +22,10 @@ type Config struct {
 	CookieSecret              string   `env:"COOKIE_SECRET,required"`
 }
 
-func InitConfig() *Config {
+func SetUpConfig() *Config {
 	var config Config
 	if err := env.Parse(&config); err != nil {
 		log.Fatalf("env.Parse() in config failed. Error:'%v'", err)
 	}
-	fmt.Println("=========================================", config)
 	return &config
 }

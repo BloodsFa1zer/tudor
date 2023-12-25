@@ -17,11 +17,11 @@ const (
 
 func NewServer(conf *config.Config) *gin.Engine {
 	s := gin.Default()
-	AuthStore(conf)
+	authStore(conf)
 	return s
 }
 
-func AuthStore(conf *config.Config) {
+func authStore(conf *config.Config) {
 	store := sessions.NewCookieStore([]byte(conf.CookieSecret))
 	store.MaxAge(MaxAge)
 	store.Options.Path = "/"
