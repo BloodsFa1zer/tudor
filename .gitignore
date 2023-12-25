@@ -24,4 +24,4 @@ go.work
 .idea/
 
 
-.devcontainer/
+.devcontainer/devcontainer.env

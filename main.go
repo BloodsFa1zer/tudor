@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	config "study_marketplace/config"
-	"study_marketplace/internal/infrastructure/server"
-	"study_marketplace/internal/registry"
+	config "study_marketplace/pkg/infrastructure/config"
+	"study_marketplace/pkg/infrastructure/server"
+	"study_marketplace/pkg/registry"
 	"study_marketplace/routers"
 )
 
@@ -24,13 +24,11 @@ import (
 // @in							header
 // @name						Authorization
 func main() {
-	conf := config.InitConfig()
-
-	s := server.NewServer()
+	conf := config.SetUpConfig()
+	s := server.NewServer(conf)
 
 	ac := registry.NewRegistry(conf).NewAppController()
 
 	routers.SetupRouter(conf, s, ac)
-
 	log.Fatal(s.Run(conf.ServerHostname))
 }

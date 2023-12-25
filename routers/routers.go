@@ -1,58 +1,52 @@
 package routers
 
 import (
-	config "study_marketplace/config"
-	"study_marketplace/controllers"
 	_ "study_marketplace/docs"
-	middleware "study_marketplace/middlewares"
+	"study_marketplace/pkg/controllers"
+	config "study_marketplace/pkg/infrastructure/config"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func SetupRouter(conf *config.Config, server *gin.Engine, ac *controllers.AppController) {
-
-	server.Use(middleware.CORS(conf))
-
-	docs_url := ginSwagger.URL(conf.DocsHostname + "/api/docs/doc.json")
-
+func SetupRouter(conf *config.Config, server *gin.Engine, a *controllers.AppController) {
+	server.Use(a.CORS())
 	api := server.Group("/api")
 
 	api.GET("/", controllers.HealthCheck)
-
-	api.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, docs_url))
-	api.POST("/auth/register", ac.UserRegister)
-	api.POST("/auth/login", ac.UserLogin)
-	api.GET("/auth/login-google", ac.LoginGoogle)
-	api.GET("/auth/login-google-callback", ac.LoginGoogleCallback)
-	// api.GET("/auth/login-facebook", a.LoginFacebook)
-	api.POST("/auth/reset-password", ac.PasswordReset)
+	api.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
+		ginSwagger.URL(conf.DocsHostname+"/api/docs/doc.json")))
+	api.POST("/auth/register", a.UserRegister)
+	api.POST("/auth/login", a.UserLogin)
+	api.GET("/auth/:provider", a.AuthWithProvider)
+	api.GET("/auth/:provider/callback", a.AuthWithProviderCallback)
+	api.POST("/auth/reset-password", a.PasswordReset)
 
 	protected := server.Group("/protected")
 
-	protected.Use(middleware.AuthMiddleware())
-	protected.GET("/userinfo", ac.UserInfo)
-	protected.PATCH("/create-password", ac.PasswordCreate)
+	protected.Use(a.AuthMiddleware())
+	protected.GET("/userinfo", a.UserInfo)
+	protected.PATCH("/create-password", a.PasswordCreate)
 
 	// categories block
 	categories := server.Group("/open/categories")
-	categories.GET("/getall", ac.CatGetAll)
+	categories.GET("/getall", a.CatGetAll)
 
 	// advertisements block
 	// open advertisements endpoints
 	advertisements := server.Group("/open/advertisements")
-	advertisements.GET("/getall", ac.AdvGetAll)
-	advertisements.GET("/getbyid/:id", ac.AdvGetByID)
+	advertisements.GET("/getall", a.AdvGetAll)
+	advertisements.GET("/getbyid/:id", a.AdvGetByID)
 
 	// protected advertisements endpoints
-	protected.POST("/advertisement-create", ac.AdvCreate)
-	protected.PATCH("/advertisement-patch", ac.AdvPatch)
-	protected.DELETE("/advertisement-delete", ac.AdvDelete)
-	protected.POST("/advertisement-filter", ac.AdvGetFiltered)
-	protected.GET("/advertisement-getmy", ac.AdvGetMy)
+	protected.POST("/advertisement-create", a.AdvCreate)
+	protected.PATCH("/advertisement-patch", a.AdvPatch)
+	protected.DELETE("/advertisement-delete", a.AdvDelete)
+	protected.POST("/advertisement-filter", a.AdvGetFiltered)
+	protected.GET("/advertisement-getmy", a.AdvGetMy)
 
-	protected.Use(middleware.PasswordMiddleware(ac))
-	protected.PATCH("/user-patch", ac.UserPatch)
+	protected.Use(a.PasswordMiddleware())
+	protected.PATCH("/user-patch", a.UserPatch)
 
 }
