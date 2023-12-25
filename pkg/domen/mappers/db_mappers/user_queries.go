@@ -2,7 +2,7 @@ package dbmappers
 
 import (
 	"study_marketplace/database/queries"
-	entities "study_marketplace/domen/models/entities_models"
+	entities "study_marketplace/pkg/domen/models/entities_models"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )

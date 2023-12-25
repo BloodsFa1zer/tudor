@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"study_marketplace/database/queries"
-	"study_marketplace/domen/models"
+	"study_marketplace/pkg/domen/models"
 	"study_marketplace/pkg/repositories"
 
 	"github.com/gin-gonic/gin"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"study_marketplace/domen/models"
+	"study_marketplace/pkg/domen/models"
 	config "study_marketplace/pkg/infrastructure/config"
 
 	"github.com/gin-contrib/cors"

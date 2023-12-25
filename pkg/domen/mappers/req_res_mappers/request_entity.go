@@ -1,8 +1,8 @@
 package reqresmappers
 
 import (
-	entities "study_marketplace/domen/models/entities_models"
-	reqmodels "study_marketplace/domen/models/request_models"
+	entities "study_marketplace/pkg/domen/models/entities_models"
+	reqmodels "study_marketplace/pkg/domen/models/request_models"
 )
 
 func RegUserToUser(regUser *reqmodels.RegistractionUserRequest) *entities.User {

@@ -3,8 +3,8 @@ package services
 import (
 	"fmt"
 
-	dbmappers "study_marketplace/domen/mappers/db_mappers"
-	entities "study_marketplace/domen/models/entities_models"
+	dbmappers "study_marketplace/pkg/domen/mappers/db_mappers"
+	entities "study_marketplace/pkg/domen/models/entities_models"
 	config "study_marketplace/pkg/infrastructure/config"
 	"study_marketplace/pkg/repositories"
 

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	reqresmappers "study_marketplace/domen/mappers/req_res_mappers"
+	reqresmappers "study_marketplace/pkg/domen/mappers/req_res_mappers"
 	"study_marketplace/services"
 
 	"github.com/gin-gonic/gin"

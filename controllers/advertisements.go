@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 	"strconv"
-	"study_marketplace/domen/models"
+	"study_marketplace/pkg/domen/models"
 	"study_marketplace/services"
 
 	"github.com/gin-gonic/gin"
