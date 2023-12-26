@@ -1,7 +1,7 @@
-package reqresmappers
+package reqm
 
 import (
-	entities "study_marketplace/pkg/domen/models/entities_models"
+	entities "study_marketplace/pkg/domen/models/entities"
 
 	"github.com/markbates/goth"
 )

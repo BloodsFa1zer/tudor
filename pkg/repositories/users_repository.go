@@ -5,7 +5,7 @@ import (
 
 	"study_marketplace/database/queries"
 	dbmappers "study_marketplace/pkg/domen/mappers/db_mappers"
-	entities "study_marketplace/pkg/domen/models/entities_models"
+	entities "study_marketplace/pkg/domen/models/entities"
 )
 
 type UsersRepository interface {
@@ -70,9 +70,9 @@ func (t *usersRepository) UpdateUser(ctx context.Context, user *entities.User) (
 }
 
 func (t *usersRepository) CreateorUpdateUser(ctx context.Context, user *entities.User) (*entities.User, error) {
-	dbuser, err := t.q.CreateorUpdateUser(ctx, dbmappers.UserToCreateOrUpdateUser(user))
+	dbuser, err := t.q.CreateOrUpdateUser(ctx, dbmappers.UserToCreateOrUpdateUser(user))
 	if err != nil {
 		return nil, err
 	}
-	return dbmappers.QueryUserToUser(dbuser), nil
+	return dbmappers.CreateOrUpdateUserRowToUser(dbuser), nil
 }

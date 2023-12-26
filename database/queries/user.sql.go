@@ -12,6 +12,75 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const createOrUpdateUser = `-- name: CreateOrUpdateUser :one
+WITH updated_user AS (
+  UPDATE users
+  SET 
+    name = COALESCE($1, name),
+    photo = COALESCE($3, photo),
+    verified = COALESCE($4, verified),
+    password = COALESCE($5, password),
+    role = COALESCE($6, role),
+    updated_at = CURRENT_TIMESTAMP
+  WHERE users.email = $2
+  RETURNING id, name, email, photo, verified, password, role, created_at, updated_at
+),
+inserted_user AS (
+  INSERT INTO users (name, email, photo, verified, password, role)
+  SELECT $1, $2, $3, $4, $5, $6
+  WHERE NOT EXISTS (SELECT 1 FROM updated_user)
+  RETURNING id, name, email, photo, verified, password, role, created_at, updated_at
+)
+SELECT id, name, email, photo, verified, password, role, created_at, updated_at FROM updated_user
+UNION ALL
+SELECT id, name, email, photo, verified, password, role, created_at, updated_at FROM inserted_user
+`
+
+type CreateOrUpdateUserParams struct {
+	Name     pgtype.Text `json:"name"`
+	Email    string      `json:"email"`
+	Photo    pgtype.Text `json:"photo"`
+	Verified bool        `json:"verified"`
+	Password pgtype.Text `json:"password"`
+	Role     string      `json:"role"`
+}
+
+type CreateOrUpdateUserRow struct {
+	ID        int64       `json:"id"`
+	Name      pgtype.Text `json:"name"`
+	Email     string      `json:"email"`
+	Photo     pgtype.Text `json:"photo"`
+	Verified  bool        `json:"verified"`
+	Password  pgtype.Text `json:"password"`
+	Role      string      `json:"role"`
+	CreatedAt time.Time   `json:"created_at"`
+	UpdatedAt time.Time   `json:"updated_at"`
+}
+
+func (q *Queries) CreateOrUpdateUser(ctx context.Context, arg CreateOrUpdateUserParams) (CreateOrUpdateUserRow, error) {
+	row := q.db.QueryRow(ctx, createOrUpdateUser,
+		arg.Name,
+		arg.Email,
+		arg.Photo,
+		arg.Verified,
+		arg.Password,
+		arg.Role,
+	)
+	var i CreateOrUpdateUserRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Photo,
+		&i.Verified,
+		&i.Password,
+		&i.Role,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
   name,
@@ -46,72 +115,6 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Password,
 		arg.Role,
 		arg.UpdatedAt,
-	)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Email,
-		&i.Photo,
-		&i.Verified,
-		&i.Password,
-		&i.Role,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const createorUpdateUser = `-- name: CreateorUpdateUser :one
-DO $$
-  BEGIN
-     PERFORM * FROM users WHERE email = $2;
-  IF FOUND THEN
-BEGIN
-  UPDATE users SET 
-    name = COALESCE($1, name),
-    photo = COALESCE($3, photo),
-    verified = COALESCE($4, verified),
-    password = COALESCE($5, password),
-    role = COALESCE($6, role),
-    updated_at = CURRENT_TIMESTAMP
-  WHERE email = $2
-  RETURNING users.id, users.name, users.email, users.photo, users.verified, users.password, users.role, users.created_at, users.updated_at;
-ELSE
-  INSERT INTO users (
-    name,
-    email,
-    photo,
-    verified,
-    password,
-    role
-  ) VALUES (
-    $1, $2, $3, $4, $5, $6
-  )
-  RETURNING users.id, users.name, users.email, users.photo, users.verified, users.password, users.role, users.created_at, users.updated_at;
-END IF;
-END;
-$$
-`
-
-type CreateOrUpdateUserParams struct {
-	Name      pgtype.Text `json:"name"`
-	Email     string      `json:"email"`
-	Photo     pgtype.Text `json:"photo"`
-	Verified  bool        `json:"verified"`
-	Password  pgtype.Text `json:"password"`
-	Role      string      `json:"role"`
-	UpdatedAt time.Time   `json:"updated_at"`
-}
-
-func (q *Queries) CreateorUpdateUser(ctx context.Context, arg CreateOrUpdateUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, createorUpdateUser,
-		arg.Name,
-		arg.Email,
-		arg.Photo,
-		arg.Verified,
-		arg.Password,
-		arg.Role,
 	)
 	var i User
 	err := row.Scan(

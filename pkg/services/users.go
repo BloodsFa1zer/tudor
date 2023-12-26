@@ -1,25 +1,25 @@
 package services
 
 import (
+	"context"
 	"fmt"
 
 	dbmappers "study_marketplace/pkg/domen/mappers/db_mappers"
-	entities "study_marketplace/pkg/domen/models/entities_models"
+	entities "study_marketplace/pkg/domen/models/entities"
 	config "study_marketplace/pkg/infrastructure/config"
 	"study_marketplace/pkg/repositories"
 
-	"github.com/gin-gonic/gin"
 	gomail "gopkg.in/gomail.v2"
 )
 
 type UserService interface {
-	UserLogin(ctx *gin.Context, user *entities.User) (string, error)
-	UserRegister(ctx *gin.Context, user *entities.User) (string, *entities.User, error)
-	UserInfo(ctx *gin.Context, userId int64) (*entities.User, error)
-	ProviderAuth(ctx *gin.Context, userInfo *entities.User) (string, error)
-	UserPatch(ctx *gin.Context, patch *entities.User) (*entities.User, error)
-	PasswordReset(ctx *gin.Context, email string) (bool, error)
-	PasswordCreate(ctx *gin.Context, userID int64, newPassword string) error
+	UserLogin(ctx context.Context, user *entities.User) (string, error)
+	UserRegister(ctx context.Context, user *entities.User) (string, *entities.User, error)
+	UserInfo(ctx context.Context, userId int64) (*entities.User, error)
+	ProviderAuth(ctx context.Context, userInfo *entities.User) (string, error)
+	UserPatch(ctx context.Context, patch *entities.User) (*entities.User, error)
+	PasswordReset(ctx context.Context, email string) (bool, error)
+	PasswordCreate(ctx context.Context, userID int64, newPassword string) error
 }
 
 type userService struct {
@@ -39,7 +39,7 @@ func NewUserService(
 	return &userService{db, conf, gTF, hPass, cPass}
 }
 
-func (s *userService) UserLogin(ctx *gin.Context, inputuser *entities.User) (string, error) {
+func (s *userService) UserLogin(ctx context.Context, inputuser *entities.User) (string, error) {
 	user, err := s.db.GetUserByEmail(ctx, inputuser.Email)
 	if err != nil {
 		return "", err
@@ -57,7 +57,7 @@ func (s *userService) UserLogin(ctx *gin.Context, inputuser *entities.User) (str
 	return token, nil
 }
 
-func (s *userService) UserRegister(ctx *gin.Context, user *entities.User) (string, *entities.User, error) {
+func (s *userService) UserRegister(ctx context.Context, user *entities.User) (string, *entities.User, error) {
 	user, err := s.db.CreateUser(ctx, dbmappers.UserToCreateUserParams(user))
 	if err != nil {
 		return "", nil, err
@@ -69,7 +69,7 @@ func (s *userService) UserRegister(ctx *gin.Context, user *entities.User) (strin
 	return token, user, nil
 }
 
-func (s *userService) UserInfo(ctx *gin.Context, userId int64) (*entities.User, error) {
+func (s *userService) UserInfo(ctx context.Context, userId int64) (*entities.User, error) {
 	user, err := s.db.GetUserById(ctx, userId)
 	if err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func (s *userService) UserInfo(ctx *gin.Context, userId int64) (*entities.User, 
 	return user, nil
 }
 
-func (s *userService) ProviderAuth(ctx *gin.Context, userInfo *entities.User) (string, error) {
+func (s *userService) ProviderAuth(ctx context.Context, userInfo *entities.User) (string, error) {
 	user, err := s.db.CreateorUpdateUser(ctx, userInfo)
 	if err != nil {
 		return "", err
@@ -89,7 +89,7 @@ func (s *userService) ProviderAuth(ctx *gin.Context, userInfo *entities.User) (s
 	return token, nil
 }
 
-func (s *userService) UserPatch(ctx *gin.Context, patch *entities.User) (*entities.User, error) {
+func (s *userService) UserPatch(ctx context.Context, patch *entities.User) (*entities.User, error) {
 	patch, err := s.db.UpdateUser(ctx, patch)
 	if err != nil {
 		return nil, err
@@ -97,7 +97,7 @@ func (s *userService) UserPatch(ctx *gin.Context, patch *entities.User) (*entiti
 	return patch, nil
 }
 
-func (s *userService) PasswordReset(ctx *gin.Context, email string) (bool, error) {
+func (s *userService) PasswordReset(ctx context.Context, email string) (bool, error) {
 	var validEmail bool = true
 	user, err := s.db.GetUserByEmail(ctx, email)
 	if err != nil {
@@ -110,7 +110,7 @@ func (s *userService) PasswordReset(ctx *gin.Context, email string) (bool, error
 	return validEmail, nil
 }
 
-func (s *userService) PasswordCreate(ctx *gin.Context, userID int64, newPassword string) error {
+func (s *userService) PasswordCreate(ctx context.Context, userID int64, newPassword string) error {
 	pass := s.hashPass(newPassword)
 	_, err := s.db.UpdateUser(ctx, &entities.User{ID: userID, Password: pass})
 	if err != nil {

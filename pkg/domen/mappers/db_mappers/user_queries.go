@@ -2,7 +2,7 @@ package dbmappers
 
 import (
 	"study_marketplace/database/queries"
-	entities "study_marketplace/pkg/domen/models/entities_models"
+	entities "study_marketplace/pkg/domen/models/entities"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -55,9 +55,30 @@ func UserToUpdateUserParams(user *entities.User) queries.UpdateUserParams {
 	}
 }
 
+func CreateOrUpdateUserRowToUser(row queries.CreateOrUpdateUserRow) *entities.User {
+	return &entities.User{
+		ID:        row.ID,
+		Name:      row.Name.String,
+		Email:     row.Email,
+		Photo:     row.Photo.String,
+		Verified:  row.Verified,
+		Password:  row.Password.String,
+		Role:      row.Role,
+		CreatedAt: row.CreatedAt,
+		UpdatedAt: row.UpdatedAt,
+	}
+}
+
 func StrTopgText(str string) pgtype.Text {
 	if str != "" {
 		return pgtype.Text{String: str, Valid: true}
 	}
 	return pgtype.Text{String: "", Valid: false}
+}
+
+func IntTopgInt4(i int32) pgtype.Int4 {
+	if i != 0 {
+		return pgtype.Int4{Int32: int32(i), Valid: true}
+	}
+	return pgtype.Int4{Int32: 0, Valid: false}
 }

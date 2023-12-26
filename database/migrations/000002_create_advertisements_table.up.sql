@@ -1,7 +1,6 @@
 CREATE TABLE "advertisements" (
     "id" BIGSERIAL NOT NULL,
     "title" VARCHAR NOT NULL,
-    "provider" VARCHAR NOT NULL,
     "provider_id" BIGINT NOT NULL,
     "attachment" VARCHAR NOT NULL,
     "experience" INT NOT NULL, 

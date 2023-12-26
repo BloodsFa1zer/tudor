@@ -13,7 +13,6 @@ import (
 type Advertisement struct {
 	ID          int64       `json:"id"`
 	Title       string      `json:"title"`
-	Provider    string      `json:"provider"`
 	ProviderID  int64       `json:"provider_id"`
 	Attachment  string      `json:"attachment"`
 	Experience  int32       `json:"experience"`

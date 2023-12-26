@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	reqresmappers "study_marketplace/pkg/domen/mappers/req_res_mappers"
+	reqm "study_marketplace/pkg/domen/mappers/reqresp_mappers"
 	"study_marketplace/pkg/services"
 
 	"github.com/gin-gonic/gin"
@@ -39,7 +39,7 @@ func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
 		ctx.AbortWithError(http.StatusForbidden, gin.Error{Err: errors.New("something went wrong")})
 		return
 	}
-	token, err := c.ProviderAuth(ctx, reqresmappers.GothToUserToUser(user))
+	token, err := c.ProviderAuth(ctx, reqm.GothToUserToUser(user))
 	if err != nil {
 		ctx.AbortWithError(http.StatusForbidden, gin.Error{Err: errors.New("something went wrong")})
 		return

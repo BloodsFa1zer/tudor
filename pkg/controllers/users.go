@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	reqresmappers "study_marketplace/pkg/domen/mappers/req_res_mappers"
+	reqm "study_marketplace/pkg/domen/mappers/reqresp_mappers"
 	reqmodels "study_marketplace/pkg/domen/models/request_models"
 	respmodels "study_marketplace/pkg/domen/models/response_models"
 	"study_marketplace/pkg/services"
@@ -48,7 +48,7 @@ func (t *userController) UserRegister(ctx *gin.Context) {
 		return
 	}
 
-	token, user, err := t.userService.UserRegister(ctx, reqresmappers.RegUserToUser(&inputModel))
+	token, user, err := t.userService.UserRegister(ctx, reqm.RegUserToUser(&inputModel))
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed(err.Error()))
 		return
@@ -77,7 +77,7 @@ func (t *userController) UserLogin(ctx *gin.Context) {
 		return
 	}
 
-	token, err := t.userService.UserLogin(ctx, reqresmappers.LoginUserToUser(&inputModel))
+	token, err := t.userService.UserLogin(ctx, reqm.LoginUserToUser(&inputModel))
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed(err.Error()))
 		return
@@ -127,7 +127,7 @@ func (t *userController) UserPatch(ctx *gin.Context) {
 		return
 	}
 	inputModel.ID = userId
-	user, err := t.userService.UserPatch(ctx, reqresmappers.UpdateUserRequestToUser(&inputModel))
+	user, err := t.userService.UserPatch(ctx, reqm.UpdateUserRequestToUser(&inputModel))
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
