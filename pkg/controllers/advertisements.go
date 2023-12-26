@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 	"study_marketplace/pkg/domen/models"
+	respmodels "study_marketplace/pkg/domen/models/response_models"
 	"study_marketplace/pkg/services"
 
 	"github.com/gin-gonic/gin"
@@ -40,23 +41,23 @@ func NewAdvertisementsController(sa services.AdvertisementService) Advertisement
 func (c *advertisementsController) AdvCreate(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	if userID == 0 {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("user id error"))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("user id error"))
 		return
 	}
 
 	var inputModel models.AdvertisementInput
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 
 	advertisement, err := c.advertisementService.AdvCreate(ctx, inputModel, userID)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, models.NewResponseSuccess(advertisement))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(advertisement))
 }
 
 // @Advertisement-patch	godoc
@@ -73,17 +74,17 @@ func (c *advertisementsController) AdvPatch(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	var inputModel models.AdvertisementUpdate
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 
 	advertisement, err := c.advertisementService.AdvPatch(ctx, inputModel, userID)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, models.NewResponseSuccess(advertisement))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(advertisement))
 }
 
 // @Advertisement-delete	godoc
@@ -99,7 +100,7 @@ func (c *advertisementsController) AdvPatch(ctx *gin.Context) {
 func (c *advertisementsController) AdvDelete(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	if userID == 0 {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("user id error"))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("user id error"))
 		return
 	}
 
@@ -107,17 +108,17 @@ func (c *advertisementsController) AdvDelete(ctx *gin.Context) {
 
 	err := ctx.ShouldBindJSON(&inputModel)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 
 	err = c.advertisementService.AdvDelete(ctx, inputModel.ID, userID)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, models.NewResponseSuccess("advertisement deleted"))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess("advertisement deleted"))
 }
 
 // @Summary		GET request to get 10 items sorted by creation date in desc order
@@ -130,11 +131,11 @@ func (t *advertisementsController) AdvGetAll(ctx *gin.Context) {
 	advertisements, err := t.advertisementService.AdvGetAll(ctx)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, models.NewResponseSuccess(advertisements))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(advertisements))
 }
 
 // @Summary		GET request to get advertisement by id
@@ -150,17 +151,17 @@ func (c *advertisementsController) AdvGetByID(ctx *gin.Context) {
 	id, err := strconv.ParseInt(idParam, 10, 64)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("Faield to get advertisement ID"))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("Faield to get advertisement ID"))
 		return
 	}
 	advertisement, err := c.advertisementService.AdvGetByID(ctx, id)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, models.NewResponseSuccess(advertisement))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(advertisement))
 }
 
 // @Advertisement-filter	godoc
@@ -177,18 +178,18 @@ func (c *advertisementsController) AdvGetFiltered(ctx *gin.Context) {
 	var filter models.AdvertisementFilter
 	err := ctx.ShouldBindJSON(&filter)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("Filter params not provided."))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("Filter params not provided."))
 		return
 	}
 
 	advertisements, err := c.advertisementService.AdvGetFiltered(ctx, filter)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, models.NewResponseSuccess(advertisements))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(advertisements))
 }
 
 // @Summary		GET request to get user created advertisements
@@ -203,16 +204,16 @@ func (c *advertisementsController) AdvGetMy(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 
 	if userID <= 0 {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("Unauthorized."))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("Unauthorized."))
 		return
 	}
 
 	advertisements, err := c.advertisementService.AdvGetMy(ctx, userID)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, models.NewResponseSuccess(advertisements))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(advertisements))
 }

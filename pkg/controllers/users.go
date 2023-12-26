@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	reqresmappers "study_marketplace/pkg/domen/mappers/req_res_mappers"
-	"study_marketplace/pkg/domen/models"
 	reqmodels "study_marketplace/pkg/domen/models/request_models"
+	respmodels "study_marketplace/pkg/domen/models/response_models"
 	"study_marketplace/pkg/services"
 
 	"github.com/gin-gonic/gin"
@@ -40,21 +40,21 @@ func NewUsersController(us services.UserService) UserController {
 func (t *userController) UserRegister(ctx *gin.Context) {
 	var inputModel reqmodels.RegistractionUserRequest
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 	if inputModel.Password == "" || inputModel.Email == "" {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("email and password required"))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("email and password required"))
 		return
 	}
 
 	token, user, err := t.userService.UserRegister(ctx, reqresmappers.RegUserToUser(&inputModel))
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 	ctx.Request.Header.Add("Authorization", token)
-	ctx.JSON(http.StatusCreated, models.NewResponseSuccess(user))
+	ctx.JSON(http.StatusCreated, respmodels.NewResponseSuccess(user))
 }
 
 // @Login			godoc
@@ -69,21 +69,21 @@ func (t *userController) UserRegister(ctx *gin.Context) {
 func (t *userController) UserLogin(ctx *gin.Context) {
 	var inputModel reqmodels.LoginUserRequest
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 	if inputModel.Password == "" || inputModel.Email == "" {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("email and password required"))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("email and password required"))
 		return
 	}
 
 	token, err := t.userService.UserLogin(ctx, reqresmappers.LoginUserToUser(&inputModel))
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 	ctx.Request.Header.Add("Authorization", token)
-	ctx.JSON(http.StatusOK, models.NewResponseSuccess(token))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(token))
 }
 
 // @Userinfo		godoc
@@ -98,15 +98,15 @@ func (t *userController) UserLogin(ctx *gin.Context) {
 func (t *userController) UserInfo(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	if userID == 0 {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("user id error"))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("user id error"))
 		return
 	}
 	user, err := t.userService.UserInfo(ctx, userID)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusNotFound, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
-	ctx.JSON(http.StatusOK, models.NewResponseSuccess(user))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(user))
 }
 
 // @User-patch		godoc
@@ -123,17 +123,17 @@ func (t *userController) UserPatch(ctx *gin.Context) {
 	userId := ctx.GetInt64("user_id")
 	var inputModel reqmodels.UpdateUserRequest
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 	inputModel.ID = userId
 	user, err := t.userService.UserPatch(ctx, reqresmappers.UpdateUserRequestToUser(&inputModel))
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
-	ctx.JSON(http.StatusOK, models.NewResponseSuccess(user))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(user))
 }
 
 // @Reset-password	godoc
@@ -147,20 +147,20 @@ func (t *userController) UserPatch(ctx *gin.Context) {
 func (t *userController) PasswordReset(ctx *gin.Context) {
 	var userEmail reqmodels.PasswordResetRequest
 	if err := ctx.ShouldBindJSON(&userEmail); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("Can't read email."))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("Can't read email."))
 		return
 	}
 	if userEmail.Email == "" {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("Email not provided."))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("Email not provided."))
 		return
 	}
 	_, err := t.userService.PasswordReset(ctx, userEmail.Email)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, models.NewResponseFailed("Email not found."))
+		ctx.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed("Email not found."))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, models.NewResponseSuccess("Password Reset Email Has Been Sent"))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess("Password Reset Email Has Been Sent"))
 }
 
 // @Create-password		godoc
@@ -176,19 +176,19 @@ func (t *userController) PasswordCreate(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	var newPassword reqmodels.PasswordCreateRequest
 	if err := ctx.ShouldBindJSON(&newPassword); err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("New password not provided."))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("New password not provided."))
 	}
 	if newPassword.Password == "" {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("New password not provided."))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("New password not provided."))
 		return
 	}
 	err := t.userService.PasswordCreate(ctx, userID, newPassword.Password)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed("Failed to create new passowrd."))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("Failed to create new passowrd."))
 		return
 	}
-	ctx.JSON(http.StatusOK, models.NewResponseSuccess("Password updated."))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess("Password updated."))
 }
 
 // // method used for password-middleware
@@ -198,7 +198,7 @@ func (t *userController) PasswordCreate(ctx *gin.Context) {
 // 	_, err := t.userService.UserInfo(ctx, userID)
 
 // 	if err != nil {
-// 		ctx.JSON(http.StatusUnauthorized, models.NewResponseFailed("No user found."))
+// 		ctx.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed("No user found."))
 // 		return ""
 // 	}
 

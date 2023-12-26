@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"study_marketplace/pkg/domen/models"
+	respmodels "study_marketplace/pkg/domen/models/response_models"
 	config "study_marketplace/pkg/infrastructure/config"
 
 	"github.com/gin-contrib/cors"
@@ -47,26 +48,24 @@ func (m *middleware) AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authString := c.GetHeader("Authorization")
 		if authString == "" {
-			c.JSON(http.StatusUnauthorized, models.NewResponseFailed("Unauthorized"))
+			c.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed("Unauthorized"))
 			c.Abort()
 			return
 		}
 		authArray := strings.Split(authString, ":")
 		authJWT := authArray[0]
 
-		token, err := jwt.ParseWithClaims(authJWT, &models.AuthClaims{}, func(token *jwt.Token) (interface{}, error) {
-			return m.conf.JWTSecret, nil
-		})
+		token, err := jwtValidate(authJWT, m.conf.JWTSecret)
 
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, models.NewResponseFailed("Unauthorized"))
+			c.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed("Unauthorized"))
 			c.Abort()
 			return
 		}
 
 		claims, ok := token.Claims.(*models.AuthClaims)
 		if !ok {
-			c.JSON(http.StatusUnauthorized, models.NewResponseFailed("Unautorized"))
+			c.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed("Unautorized"))
 			c.Abort()
 			return
 		}
@@ -81,7 +80,7 @@ func (m *middleware) PasswordMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authString := c.GetHeader("Authorization")
 		if authString == "" {
-			c.JSON(http.StatusUnauthorized, models.NewResponseFailed("Unauthorized"))
+			c.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed("Unauthorized"))
 			c.Abort()
 			return
 		}
@@ -89,7 +88,7 @@ func (m *middleware) PasswordMiddleware() gin.HandlerFunc {
 		pswdString := strings.Split(authString, ":")
 
 		if len(pswdString) != 2 {
-			c.JSON(http.StatusUnauthorized, models.NewResponseFailed("Not all info provided for change."))
+			c.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed("Not all info provided for change."))
 			c.Abort()
 			return
 		}
