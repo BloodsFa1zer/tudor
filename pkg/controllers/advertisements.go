@@ -35,7 +35,7 @@ func NewAdvertisementsController(sa services.AdvertisementService) Advertisement
 // @Tags					advertisement-create
 // @Security				JWT
 // @Param					Authorization			header	string						true	"Insert your access token"
-// @Param					advertisement-create	body	models.AdvertisementInput	true	"advertisement information"
+// @Param					advertisement-create	body	reqmodels.CreateAdvertisementRequest	true	"advertisement information"
 // @Produce					json
 // @Success					200	{object}	map[string]interface{}
 // @Router					/protected/advertisement-create [post]
@@ -45,13 +45,13 @@ func (c *advertisementsController) AdvCreate(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("user id error"))
 		return
 	}
-	var inputModel reqmodels.CreateUpdateAdvertisementRequest
+	var inputModel reqmodels.CreateAdvertisementRequest
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 	advertisement, err := c.advertisementService.AdvCreate(ctx,
-		reqm.CreateUpdateAdvRequestToAdvertisement(&inputModel, userID))
+		reqm.CreateAdvRequestToAdvertisement(&inputModel, userID))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
@@ -66,19 +66,19 @@ func (c *advertisementsController) AdvCreate(ctx *gin.Context) {
 // @Tags					advertisement-patch
 // @Security				JWT
 // @Param					Authorization		header	string						true	"Insert your access token"
-// @Param					advertisement-patch	body	reqmodels.CreateUpdateAdvertisementRequest	true	"advertisement information"
+// @Param					advertisement-patch	body	reqmodels.UpdateAdvertisementRequest	true	"advertisement information"
 // @Produce					json
 // @Success					200	{object}	map[string]interface{}
 // @Router					/protected/advertisement-patch [patch]
 func (c *advertisementsController) AdvPatch(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
-	var inputModel reqmodels.CreateUpdateAdvertisementRequest
+	var inputModel reqmodels.UpdateAdvertisementRequest
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 	advertisement, err := c.advertisementService.AdvPatch(ctx,
-		reqm.CreateUpdateAdvRequestToAdvertisement(&inputModel, userID))
+		reqm.UpdateAdvRequestToAdvertisement(&inputModel, userID))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
@@ -167,7 +167,7 @@ func (c *advertisementsController) AdvGetByID(ctx *gin.Context) {
 // @Tags					advertisement-filter
 // @Security				JWT
 // @Param					Authorization			header	string						true	"Insert your access token"
-// @Param					advertisement-filter	body	models.AdvertisementFilter	true	"advertisement filter"
+// @Param					advertisement-filter	body	reqmodels.AdvertisementFilterRequest	true	"advertisement filter"
 // @Produce				json
 // @Success				200	{object}	map[string]interface{}
 // @Router					/protected/advertisement-filter [post]
@@ -202,7 +202,6 @@ func (c *advertisementsController) AdvGetMy(ctx *gin.Context) {
 		return
 	}
 	advertisements, err := c.advertisementService.AdvGetMy(ctx, userID)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
