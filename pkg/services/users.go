@@ -58,6 +58,7 @@ func (s *userService) UserLogin(ctx context.Context, inputuser *entities.User) (
 }
 
 func (s *userService) UserRegister(ctx context.Context, user *entities.User) (string, *entities.User, error) {
+	user.Password = s.hashPass(user.Password)
 	user, err := s.db.CreateUser(ctx, dbmappers.UserToCreateUserParams(user))
 	if err != nil {
 		return "", nil, err
