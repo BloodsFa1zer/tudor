@@ -7,8 +7,27 @@ import (
 	respmodels "study_marketplace/pkg/domen/models/response_models"
 )
 
-func CreateUpdateAdvRequestToAdvertisement(req *reqmodels.CreateUpdateAdvertisementRequest, userId int64) *entities.Advertisement {
+func CreateAdvRequestToAdvertisement(req *reqmodels.CreateAdvertisementRequest, userId int64) *entities.Advertisement {
 	return &entities.Advertisement{
+		Title:       req.Title,
+		Provider:    &entities.User{ID: userId},
+		Attachment:  req.Attachment,
+		Experience:  int(req.Experience),
+		Category:    &entities.Category{Name: req.CategoryName},
+		Time:        int(req.Time),
+		Price:       int(req.Price),
+		Format:      req.Format,
+		Language:    req.Language,
+		Description: req.Description,
+		MobilePhone: req.MobilePhone,
+		Email:       req.Email,
+		Telegram:    req.Telegram,
+	}
+}
+
+func UpdateAdvRequestToAdvertisement(req *reqmodels.UpdateAdvertisementRequest, userId int64) *entities.Advertisement {
+	return &entities.Advertisement{
+		ID:          req.ID,
 		Title:       req.Title,
 		Provider:    &entities.User{ID: userId},
 		Attachment:  req.Attachment,

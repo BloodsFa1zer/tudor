@@ -117,7 +117,7 @@ func GetFullAdvToAdvertisement(row queries.GetAdvertisementCategoryAndUserByIDRo
 }
 
 func GetAdvertisementsAllToAdvertisements(rows []queries.GetAdvertisementAllRow) []entities.Advertisement {
-	advertisements := make([]entities.Advertisement, 0, len(rows))
+	advertisements := make([]entities.Advertisement, len(rows))
 	for i := range rows {
 		advertisements[i] = entities.Advertisement{
 			ID:    rows[i].ID,
@@ -158,7 +158,7 @@ func GetAdvertisementsAllToAdvertisements(rows []queries.GetAdvertisementAllRow)
 
 func FiltAdvToAdvPagination(params *queries.FilterAdvertisementsParams, filteredAdvs []queries.FilterAdvertisementsRow,
 ) *entities.AdvertisementPagination {
-	advs := make([]entities.Advertisement, 0, len(filteredAdvs))
+	advs := make([]entities.Advertisement, len(filteredAdvs))
 	for i := range filteredAdvs {
 		advs[i] = entities.Advertisement{
 			ID:    filteredAdvs[i].ID,
@@ -225,7 +225,7 @@ func AdvertisementFiltRequestToFilterAdvertisementsParams(filter *reqmodels.Adve
 }
 
 func GetMyAdvertisementsToAdvertisements(row []queries.GetMyAdvertisementRow) []entities.Advertisement {
-	advertisements := make([]entities.Advertisement, 0, len(row))
+	advertisements := make([]entities.Advertisement, len(row))
 	for i := range row {
 		advertisements[i] = entities.Advertisement{
 			ID:    row[i].ID,
