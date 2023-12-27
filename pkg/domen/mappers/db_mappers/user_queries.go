@@ -34,13 +34,12 @@ func QueryUserToUser(user queries.User) *entities.User {
 
 func UserToCreateUserParams(user *entities.User) queries.CreateUserParams {
 	return queries.CreateUserParams{
-		Name:      StrTopgText(user.Name),
-		Email:     user.Email,
-		Password:  StrTopgText(user.Password),
-		Photo:     StrTopgText(user.Photo),
-		Verified:  user.Verified,
-		Role:      user.Role,
-		UpdatedAt: user.UpdatedAt,
+		Name:     StrTopgText(user.Name),
+		Email:    user.Email,
+		Password: StrTopgText(user.Password),
+		Photo:    StrTopgText(user.Photo),
+		Verified: user.Verified,
+		Role:     user.Role,
 	}
 }
 
