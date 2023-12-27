@@ -5,15 +5,13 @@ import (
 	"log"
 
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	_ "github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5"
 )
 
-func ConnectDataBase(dburl string) *pgxpool.Pool {
-	dbpool, err := pgxpool.New(context.Background(), dburl)
+func ConnectDataBase(dburl string) *pgx.Conn {
+	db, err := pgx.Connect(context.Background(), dburl)
 	if err != nil {
 		log.Fatal("create database conection error:" + err.Error())
 	}
-
-	return dbpool
+	return db
 }
