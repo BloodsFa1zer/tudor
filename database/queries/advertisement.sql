@@ -49,8 +49,8 @@ SET
   mobile_phone = COALESCE(sqlc.narg('mobile_phone'), mobile_phone),
   email = COALESCE(sqlc.narg('email'), email),
   telegram = COALESCE(sqlc.narg('telegram'), telegram)
-WHERE advertisements.id = $1
-RETURNING *;
+WHERE advertisements.id = $1 AND advertisements.provider_id = $2
+RETURNING advertisements.id;
 
 -- name: GetAdvertisementAll :many
 SELECT 
@@ -69,9 +69,22 @@ JOIN categories ON inserted_ad.category_id = categories.id
 LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id
 ORDER BY advertisements.created_at DESC LIMIT 10;
 
--- name: GetAdvertisementMy :many
-SELECT * FROM advertisements 
-WHERE provider_id = $1;
+-- name: GetMyAdvertisement :many
+SELECT 
+  advertisements.id AS id, advertisements.title AS title, advertisements.attachment AS attachment, 
+  advertisements.experience AS experience, advertisements.time AS time, advertisements.price AS price, 
+  advertisements.format AS format, advertisements.language AS language, advertisements.description AS description, 
+  advertisements.mobile_phone AS mobile_phone, advertisements.email AS email, advertisements.telegram AS telegram, 
+  advertisements.created_at AS created_at, advertisements.updated_at AS updated_at, users.id AS provider_id, 
+  users.name AS provider_name, users.email AS provider_email, users.photo AS provider_photo,
+  users.verified AS provider_verified, users.role AS provider_role, users.created_at AS provider_created_at,
+  users.updated_at AS provider_updated_at, categories.id AS category_id, categories.name AS category_name, 
+  parent_category.name AS parent_category_name
+FROM advertisements 
+JOIN users ON advertisements.provider_id = users.id
+JOIN categories ON inserted_ad.category_id = categories.id
+LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id
+WHERE advertisements.provider_id = $1;
 
 -- name: GetAdvertisementCategoryAndUserByID :one
 SELECT 

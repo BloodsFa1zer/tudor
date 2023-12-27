@@ -769,27 +769,66 @@ func (q *Queries) GetAdvertisementCategoryAndUserByID(ctx context.Context, id in
 	return i, err
 }
 
-const getAdvertisementMy = `-- name: GetAdvertisementMy :many
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements 
-WHERE provider_id = $1
+const getMyAdvertisement = `-- name: GetMyAdvertisement :many
+SELECT 
+  advertisements.id AS id, advertisements.title AS title, advertisements.attachment AS attachment, 
+  advertisements.experience AS experience, advertisements.time AS time, advertisements.price AS price, 
+  advertisements.format AS format, advertisements.language AS language, advertisements.description AS description, 
+  advertisements.mobile_phone AS mobile_phone, advertisements.email AS email, advertisements.telegram AS telegram, 
+  advertisements.created_at AS created_at, advertisements.updated_at AS updated_at, users.id AS provider_id, 
+  users.name AS provider_name, users.email AS provider_email, users.photo AS provider_photo,
+  users.verified AS provider_verified, users.role AS provider_role, users.created_at AS provider_created_at,
+  users.updated_at AS provider_updated_at, categories.id AS category_id, categories.name AS category_name, 
+  parent_category.name AS parent_category_name
+FROM advertisements 
+JOIN users ON advertisements.provider_id = users.id
+JOIN categories ON inserted_ad.category_id = categories.id
+LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id
+WHERE advertisements.provider_id = $1
 `
 
-func (q *Queries) GetAdvertisementMy(ctx context.Context, providerID int64) ([]Advertisement, error) {
-	rows, err := q.db.Query(ctx, getAdvertisementMy, providerID)
+type GetMyAdvertisementRow struct {
+	ID                 int64       `json:"id"`
+	Title              string      `json:"title"`
+	Attachment         string      `json:"attachment"`
+	Experience         int32       `json:"experience"`
+	Time               int32       `json:"time"`
+	Price              int32       `json:"price"`
+	Format             string      `json:"format"`
+	Language           string      `json:"language"`
+	Description        string      `json:"description"`
+	MobilePhone        pgtype.Text `json:"mobile_phone"`
+	Email              pgtype.Text `json:"email"`
+	Telegram           pgtype.Text `json:"telegram"`
+	CreatedAt          time.Time   `json:"created_at"`
+	UpdatedAt          time.Time   `json:"updated_at"`
+	ProviderID         int64       `json:"provider_id"`
+	ProviderName       pgtype.Text `json:"provider_name"`
+	ProviderEmail      string      `json:"provider_email"`
+	ProviderPhoto      pgtype.Text `json:"provider_photo"`
+	ProviderVerified   bool        `json:"provider_verified"`
+	ProviderRole       string      `json:"provider_role"`
+	ProviderCreatedAt  time.Time   `json:"provider_created_at"`
+	ProviderUpdatedAt  time.Time   `json:"provider_updated_at"`
+	CategoryID         int32       `json:"category_id"`
+	CategoryName       string      `json:"category_name"`
+	ParentCategoryName string      `json:"parent_category_name"`
+}
+
+func (q *Queries) GetMyAdvertisement(ctx context.Context, providerID int64) ([]GetMyAdvertisementRow, error) {
+	rows, err := q.db.Query(ctx, getMyAdvertisement, providerID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Advertisement
+	var items []GetMyAdvertisementRow
 	for rows.Next() {
-		var i Advertisement
+		var i GetMyAdvertisementRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
-			&i.ProviderID,
 			&i.Attachment,
 			&i.Experience,
-			&i.CategoryID,
 			&i.Time,
 			&i.Price,
 			&i.Format,
@@ -800,6 +839,17 @@ func (q *Queries) GetAdvertisementMy(ctx context.Context, providerID int64) ([]A
 			&i.Telegram,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.ProviderID,
+			&i.ProviderName,
+			&i.ProviderEmail,
+			&i.ProviderPhoto,
+			&i.ProviderVerified,
+			&i.ProviderRole,
+			&i.ProviderCreatedAt,
+			&i.ProviderUpdatedAt,
+			&i.CategoryID,
+			&i.CategoryName,
+			&i.ParentCategoryName,
 		); err != nil {
 			return nil, err
 		}
@@ -812,27 +862,28 @@ func (q *Queries) GetAdvertisementMy(ctx context.Context, providerID int64) ([]A
 }
 
 const updateAdvertisement = `-- name: UpdateAdvertisement :one
-WITH c_id AS (SELECT id FROM categories WHERE name = $13)
+WITH c_id AS (SELECT id FROM categories WHERE name = $14)
 UPDATE advertisements
 SET
-  title = COALESCE($2, title),
-  attachment = COALESCE($3, attachment),
-  experience = COALESCE($4, experience),
+  title = COALESCE($3, title),
+  attachment = COALESCE($4, attachment),
+  experience = COALESCE($5, experience),
   category_id = COALESCE(c_id, category_id),
-  time = COALESCE($5, time),
-  price = COALESCE($6, price),
-  format = COALESCE($7, format),
-  language = COALESCE($8, language),
-  description = COALESCE($9, description),
-  mobile_phone = COALESCE($10, mobile_phone),
-  email = COALESCE($11, email),
-  telegram = COALESCE($12, telegram)
-WHERE advertisements.id = $1
-RETURNING id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at
+  time = COALESCE($6, time),
+  price = COALESCE($7, price),
+  format = COALESCE($8, format),
+  language = COALESCE($9, language),
+  description = COALESCE($10, description),
+  mobile_phone = COALESCE($11, mobile_phone),
+  email = COALESCE($12, email),
+  telegram = COALESCE($13, telegram)
+WHERE advertisements.id = $1 AND advertisements.provider_id = $2
+RETURNING advertisements.id
 `
 
 type UpdateAdvertisementParams struct {
 	ID          int64       `json:"id"`
+	ProviderID  int64       `json:"provider_id"`
 	Title       pgtype.Text `json:"title"`
 	Attachment  pgtype.Text `json:"attachment"`
 	Experience  pgtype.Int4 `json:"experience"`
@@ -847,9 +898,10 @@ type UpdateAdvertisementParams struct {
 	Name        pgtype.Text `json:"name"`
 }
 
-func (q *Queries) UpdateAdvertisement(ctx context.Context, arg UpdateAdvertisementParams) (Advertisement, error) {
+func (q *Queries) UpdateAdvertisement(ctx context.Context, arg UpdateAdvertisementParams) (int64, error) {
 	row := q.db.QueryRow(ctx, updateAdvertisement,
 		arg.ID,
+		arg.ProviderID,
 		arg.Title,
 		arg.Attachment,
 		arg.Experience,
@@ -863,24 +915,7 @@ func (q *Queries) UpdateAdvertisement(ctx context.Context, arg UpdateAdvertiseme
 		arg.Telegram,
 		arg.Name,
 	)
-	var i Advertisement
-	err := row.Scan(
-		&i.ID,
-		&i.Title,
-		&i.ProviderID,
-		&i.Attachment,
-		&i.Experience,
-		&i.CategoryID,
-		&i.Time,
-		&i.Price,
-		&i.Format,
-		&i.Language,
-		&i.Description,
-		&i.MobilePhone,
-		&i.Email,
-		&i.Telegram,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
