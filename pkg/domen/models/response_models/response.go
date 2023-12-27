@@ -10,12 +10,12 @@ type response struct {
 	Status string      `json:"status"`
 }
 
-func NewResponseFailed(data interface{}) (r response) {
+func NewResponseFailed(data ...interface{}) (r response) {
 	r = response{Data: data, Status: failed}
 	return r
 }
 
-func NewResponseSuccess(data interface{}) (r response) {
+func NewResponseSuccess(data ...interface{}) (r response) {
 	r = response{Data: data, Status: success}
 	return r
 }
