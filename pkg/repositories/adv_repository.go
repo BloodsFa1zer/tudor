@@ -82,6 +82,9 @@ func (t *advertisementsRepository) FilterAdvertisements(ctx context.Context, fil
 }
 
 func (t *advertisementsRepository) GetAdvertisementMy(ctx context.Context, userID int64) ([]entities.Advertisement, error) {
-	// return t.q.GetAdvertisementMy(ctx, userID)
-	return nil, nil
+	dbadv, err := t.q.GetMyAdvertisement(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	return dbmappers.GetMyAdvertisementsToAdvertisements(dbadv), nil
 }
