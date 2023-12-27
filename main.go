@@ -6,7 +6,7 @@ import (
 	config "study_marketplace/pkg/infrastructure/config"
 	"study_marketplace/pkg/infrastructure/server"
 	"study_marketplace/pkg/registry"
-	"study_marketplace/routers"
+	"study_marketplace/pkg/routers"
 )
 
 // @title						Study marketplace API
