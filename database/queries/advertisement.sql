@@ -18,7 +18,7 @@ WITH cat_id AS (SELECT id FROM categories WHERE categories.name = $5),
             created_at
         )
         VALUES (
-            $1, $2, $3, $4, (SELECT cat_id), $6, $7, $8, $9, $10, $11, $12, $13, $14
+            $1, $2, $3, $4, (SELECT id FROM categories WHERE categories.name = $5), $6, $7, $8, $9, $10, $11, $12, $13, $14
         )
         RETURNING *
      )
@@ -34,13 +34,12 @@ JOIN categories ON inserted_ad.category_id = categories.id
 LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id;
 
 -- name: UpdateAdvertisement :one
-WITH c_id AS (SELECT id FROM categories WHERE name = sqlc.narg('name'))
 UPDATE advertisements
 SET
   title = COALESCE(sqlc.narg('title'), title),
   attachment = COALESCE(sqlc.narg('attachment'), attachment),
   experience = COALESCE(sqlc.narg('experience'), experience),
-  category_id = COALESCE(c_id, category_id),
+  category_id = COALESCE((SELECT id FROM categories WHERE name = sqlc.narg('name')), category_id),
   time = COALESCE(sqlc.narg('time'), time),
   price = COALESCE(sqlc.narg('price'), price),
   format = COALESCE(sqlc.narg('format'), format),
@@ -65,7 +64,7 @@ SELECT
   parent_category.name AS parent_category_name
 FROM advertisements
 JOIN users ON advertisements.provider_id = users.id
-JOIN categories ON inserted_ad.category_id = categories.id
+JOIN categories ON advertisements.category_id = categories.id
 LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id
 ORDER BY advertisements.created_at DESC LIMIT 10;
 
@@ -82,7 +81,7 @@ SELECT
   parent_category.name AS parent_category_name
 FROM advertisements 
 JOIN users ON advertisements.provider_id = users.id
-JOIN categories ON inserted_ad.category_id = categories.id
+JOIN categories ON advertisements.category_id = categories.id
 LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id
 WHERE advertisements.provider_id = $1;
 

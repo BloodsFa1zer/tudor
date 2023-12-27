@@ -32,7 +32,7 @@ WITH cat_id AS (SELECT id FROM categories WHERE categories.name = $5),
             created_at
         )
         VALUES (
-            $1, $2, $3, $4, (SELECT cat_id), $6, $7, $8, $9, $10, $11, $12, $13, $14
+            $1, $2, $3, $4, (SELECT id FROM categories WHERE categories.name = $5), $6, $7, $8, $9, $10, $11, $12, $13, $14
         )
         RETURNING id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at
      )
@@ -325,7 +325,7 @@ SELECT
   parent_category.name AS parent_category_name
 FROM advertisements
 JOIN users ON advertisements.provider_id = users.id
-JOIN categories ON inserted_ad.category_id = categories.id
+JOIN categories ON advertisements.category_id = categories.id
 LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id
 ORDER BY advertisements.created_at DESC LIMIT 10
 `
@@ -782,7 +782,7 @@ SELECT
   parent_category.name AS parent_category_name
 FROM advertisements 
 JOIN users ON advertisements.provider_id = users.id
-JOIN categories ON inserted_ad.category_id = categories.id
+JOIN categories ON advertisements.category_id = categories.id
 LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id
 WHERE advertisements.provider_id = $1
 `
@@ -862,21 +862,20 @@ func (q *Queries) GetMyAdvertisement(ctx context.Context, providerID int64) ([]G
 }
 
 const updateAdvertisement = `-- name: UpdateAdvertisement :one
-WITH c_id AS (SELECT id FROM categories WHERE name = $14)
 UPDATE advertisements
 SET
   title = COALESCE($3, title),
   attachment = COALESCE($4, attachment),
   experience = COALESCE($5, experience),
-  category_id = COALESCE(c_id, category_id),
-  time = COALESCE($6, time),
-  price = COALESCE($7, price),
-  format = COALESCE($8, format),
-  language = COALESCE($9, language),
-  description = COALESCE($10, description),
-  mobile_phone = COALESCE($11, mobile_phone),
-  email = COALESCE($12, email),
-  telegram = COALESCE($13, telegram)
+  category_id = COALESCE((SELECT id FROM categories WHERE name = $6), category_id),
+  time = COALESCE($7, time),
+  price = COALESCE($8, price),
+  format = COALESCE($9, format),
+  language = COALESCE($10, language),
+  description = COALESCE($11, description),
+  mobile_phone = COALESCE($12, mobile_phone),
+  email = COALESCE($13, email),
+  telegram = COALESCE($14, telegram)
 WHERE advertisements.id = $1 AND advertisements.provider_id = $2
 RETURNING advertisements.id
 `
@@ -887,6 +886,7 @@ type UpdateAdvertisementParams struct {
 	Title       pgtype.Text `json:"title"`
 	Attachment  pgtype.Text `json:"attachment"`
 	Experience  pgtype.Int4 `json:"experience"`
+	Name        pgtype.Text `json:"name"`
 	Time        pgtype.Int4 `json:"time"`
 	Price       pgtype.Int4 `json:"price"`
 	Format      pgtype.Text `json:"format"`
@@ -895,7 +895,6 @@ type UpdateAdvertisementParams struct {
 	MobilePhone pgtype.Text `json:"mobile_phone"`
 	Email       pgtype.Text `json:"email"`
 	Telegram    pgtype.Text `json:"telegram"`
-	Name        pgtype.Text `json:"name"`
 }
 
 func (q *Queries) UpdateAdvertisement(ctx context.Context, arg UpdateAdvertisementParams) (int64, error) {
@@ -905,6 +904,7 @@ func (q *Queries) UpdateAdvertisement(ctx context.Context, arg UpdateAdvertiseme
 		arg.Title,
 		arg.Attachment,
 		arg.Experience,
+		arg.Name,
 		arg.Time,
 		arg.Price,
 		arg.Format,
@@ -913,7 +913,6 @@ func (q *Queries) UpdateAdvertisement(ctx context.Context, arg UpdateAdvertiseme
 		arg.MobilePhone,
 		arg.Email,
 		arg.Telegram,
-		arg.Name,
 	)
 	var id int64
 	err := row.Scan(&id)
