@@ -54,3 +54,14 @@ func AdvertisementsToAdvertisementResponses(adv []entities.Advertisement) []resp
 	}
 	return advResp
 }
+
+func AdvertisementPaginationToAdvertisementPaginationResponse(adv *entities.AdvertisementPagination) respmodels.AdvertisementPaginationResponse {
+	return respmodels.AdvertisementPaginationResponse{
+		Advertisements: AdvertisementsToAdvertisementResponses(adv.Advertisements),
+		TotalPages:     adv.PaginationInfo.TotalPages,
+		TotalCount:     adv.PaginationInfo.TotalCount,
+		Page:           adv.PaginationInfo.Page,
+		PerPage:        adv.PaginationInfo.PerPage,
+		Offset:         adv.PaginationInfo.Offset,
+	}
+}

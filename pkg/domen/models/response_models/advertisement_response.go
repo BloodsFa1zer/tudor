@@ -20,3 +20,13 @@ type AdvertisementResponse struct {
 	CreatedAt    string `json:"created_at"`
 	UpdatedAt    string `json:"updated_at"`
 }
+
+// AdvertisementPaginationResponse godoc
+type AdvertisementPaginationResponse struct {
+	Advertisements []AdvertisementResponse `json:"advertisements"`
+	TotalPages     int                     `json:"total_pages"`
+	TotalCount     int                     `json:"total_count"`
+	Page           int                     `json:"page"`
+	PerPage        int                     `json:"per_page"`
+	Offset         int                     `json:"offset"`
+}

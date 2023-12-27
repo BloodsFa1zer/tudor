@@ -115,7 +115,7 @@ func (c *advertisementsController) AdvDelete(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
-	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess("advertisement deleted"))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess("advertisement is deleted"))
 }
 
 // @Summary			GET request to get 10 items sorted by creation date in desc order
@@ -157,7 +157,8 @@ func (c *advertisementsController) AdvGetByID(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(advertisement))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(
+		reqm.AdvertisementToCreateUpdateAdvertisementResponse(advertisement)))
 }
 
 // @Advertisement-filter	godoc
@@ -177,15 +178,13 @@ func (c *advertisementsController) AdvGetFiltered(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("Filter params not provided."))
 		return
 	}
-
 	advertisements, err := c.advertisementService.AdvGetFiltered(ctx, &filter)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
-
-	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(advertisements))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(
+		reqm.AdvertisementPaginationToAdvertisementPaginationResponse(advertisements)))
 }
 
 // @Summary		GET request to get user created advertisements
@@ -198,18 +197,16 @@ func (c *advertisementsController) AdvGetFiltered(ctx *gin.Context) {
 // @Router			/protected/advertisement-getmy [get]
 func (c *advertisementsController) AdvGetMy(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
-
 	if userID <= 0 {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed("Unauthorized."))
 		return
 	}
-
 	advertisements, err := c.advertisementService.AdvGetMy(ctx, userID)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
-
-	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(advertisements))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(
+		reqm.AdvertisementsToAdvertisementResponses(advertisements)))
 }
