@@ -41,7 +41,7 @@ func (t *advertisementsRepository) UpdateAdvertisement(ctx context.Context, arg 
 	if err != nil {
 		return nil, err
 	}
-	fullDbadv, err := t.q.GetAdvertisementCategoryAndUserByID(ctx, dbadv.ID)
+	fullDbadv, err := t.q.GetAdvertisementCategoryAndUserByID(ctx, dbadv)
 	if err != nil {
 		return nil, err
 	}

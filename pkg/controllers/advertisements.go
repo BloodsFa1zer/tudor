@@ -77,7 +77,6 @@ func (c *advertisementsController) AdvPatch(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
-
 	advertisement, err := c.advertisementService.AdvPatch(ctx,
 		reqm.CreateUpdateAdvRequestToAdvertisement(&inputModel, userID))
 	if err != nil {
@@ -127,13 +126,12 @@ func (c *advertisementsController) AdvDelete(ctx *gin.Context) {
 // @Router			/open/advertisements/getall [get]
 func (t *advertisementsController) AdvGetAll(ctx *gin.Context) {
 	advertisements, err := t.advertisementService.AdvGetAll(ctx)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
-
-	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(advertisements))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(
+		reqm.AdvertisementsToAdvertisementResponses(advertisements)))
 }
 
 // @Summary		GET request to get advertisement by id
