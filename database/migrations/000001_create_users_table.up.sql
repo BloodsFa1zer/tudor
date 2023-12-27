@@ -1,5 +1,5 @@
 CREATE TABLE "users" (
-    "id" BIGSERIAL NOT NULL,
+    "id" BIGSERIAL PRIMARY KEY,
     "name" VARCHAR,
     "email" VARCHAR NOT NULL UNIQUE,
     "photo" VARCHAR,
@@ -7,7 +7,5 @@ CREATE TABLE "users" (
     "password" VARCHAR,
     "role" VARCHAR NOT NULL,
     "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
