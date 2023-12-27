@@ -22,7 +22,7 @@
 		"install swager": "go install github.com/swaggo/swag/cmd/swag@latest",
 		"install sqlc": "go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest",
 		"install migration": "go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest",
-		"flyio": "curl -L https://fly.io/install.sh | sh && cp /home/vscode/.fly/bin/flyctl /usr/local/go/bin"
+		"flyio": "curl -L https://fly.io/install.sh | sh && sudo cp /home/vscode/.fly/bin/flyctl /usr/local/bin"
 
 	},
 	"customizations": {
