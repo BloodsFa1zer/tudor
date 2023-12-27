@@ -53,8 +53,8 @@ func (t *userController) UserRegister(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
-	ctx.Request.Header.Add("Authorization", token)
-	ctx.JSON(http.StatusCreated, respmodels.NewResponseSuccess(user))
+	ctx.Header("Authorization", token)
+	ctx.JSON(http.StatusCreated, respmodels.NewResponseSuccess(reqm.UserToUserResponse(user), map[string]interface{}{"token": token}))
 }
 
 // @Login			godoc
@@ -82,7 +82,7 @@ func (t *userController) UserLogin(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
-	ctx.Request.Header.Add("Authorization", token)
+	ctx.Header("Authorization", token)
 	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(token))
 }
 
@@ -106,7 +106,7 @@ func (t *userController) UserInfo(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
-	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(user))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(reqm.UserToUserResponse(user)))
 }
 
 // @User-patch		godoc
