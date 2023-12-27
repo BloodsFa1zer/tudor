@@ -116,8 +116,6 @@ definitions:
     properties:
       email:
         type: string
-      id:
-        type: integer
       name:
         type: string
     type: object
@@ -176,8 +174,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: requires email and password.  Returns token and in header Authorization
-        token as well
+      description: requires email and password.  Returns token and Authorization token
+        in header as well
       parameters:
       - description: request info
         in: body
@@ -201,7 +199,7 @@ paths:
       consumes:
       - application/json
       description: requires email and password for registration. Returns user info
-        and in header Authorization token
+        and Authorization token  in header
       parameters:
       - description: user info for sign in
         in: body
@@ -222,7 +220,7 @@ paths:
       - register
   /api/auth/reset-password:
     post:
-      description: requires registred email address
+      description: requires registred email address. TODO! This endpoint may not work
       parameters:
       - description: user email for update
         in: body
@@ -427,7 +425,7 @@ paths:
       - advertisement-patch
   /protected/create-password:
     patch:
-      description: requires token
+      description: requires token. TODO! This endpoint may not work
       parameters:
       - description: Insert your access token
         in: header
@@ -453,7 +451,8 @@ paths:
       - create-password
   /protected/user-patch:
     patch:
-      description: requires valid token
+      description: requires valid token and user info for update. Returns user info
+        and Authorization token in header
       parameters:
       - description: Insert your access token
         in: header

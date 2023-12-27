@@ -30,7 +30,7 @@ func NewUsersController(us services.UserService) UserController {
 
 // @Registraction	godoc
 // @Summary			POST request for registration
-// @Description		requires email and password for registration. Returns user info and in header Authorization token
+// @Description		requires email and password for registration. Returns user info and Authorization token  in header
 // @Tags			register
 // @Accept			json
 // @Produce			json
@@ -54,12 +54,12 @@ func (t *userController) UserRegister(ctx *gin.Context) {
 		return
 	}
 	ctx.Header("Authorization", token)
-	ctx.JSON(http.StatusCreated, respmodels.NewResponseSuccess(reqm.UserToUserResponse(user), map[string]interface{}{"token": token}))
+	ctx.JSON(http.StatusCreated, respmodels.NewResponseSuccess(reqm.UserToUserResponse(user)))
 }
 
 // @Login			godoc
 // @Summary			POST request for login
-// @Description		requires email and password.  Returns token and in header Authorization token as well
+// @Description		requires email and password.  Returns token and Authorization token in header as well
 // @Tags			login
 // @Accept			json
 // @Produce			json
@@ -111,7 +111,7 @@ func (t *userController) UserInfo(ctx *gin.Context) {
 
 // @User-patch		godoc
 // @Summary			PATCH request to update user
-// @Description		requires valid token
+// @Description		requires valid token and user info for update. Returns user info and Authorization token in header
 // @Tags			user-patch
 // @Security		JWT
 // @Param			Authorization	header	string			true	"Insert your access token"
@@ -126,19 +126,18 @@ func (t *userController) UserPatch(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
-	inputModel.ID = userId
-	user, err := t.userService.UserPatch(ctx, reqm.UpdateUserRequestToUser(&inputModel))
-
+	token, user, err := t.userService.UserPatch(ctx, reqm.UpdateUserRequestToUser(&inputModel, userId))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
+	ctx.Header("Authorization", token)
 	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(user))
 }
 
 // @Reset-password	godoc
 // @Summary			POST request to update password
-// @Description		requires registred email address
+// @Description		requires registred email address. TODO! This endpoint may not work
 // @Tags			reset-password
 // @Param			reset-password	body	reqmodels.PasswordResetRequest	true	"user email for update"
 // @Produce			json
@@ -165,7 +164,7 @@ func (t *userController) PasswordReset(ctx *gin.Context) {
 
 // @Create-password		godoc
 // @Summary				PATCH request to create new password
-// @Description			requires token
+// @Description			requires token. TODO! This endpoint may not work
 // @Tags				create-password
 // @Param				Authorization	header	string				true	"Insert your access token"
 // @Param				create-password	body	reqmodels.PasswordCreateRequest	true	"new user password"

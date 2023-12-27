@@ -18,11 +18,11 @@ RETURNING *;
 WITH updated_user AS (
   UPDATE users
   SET 
-    name = COALESCE($1, name),
-    photo = COALESCE($3, photo),
-    verified = COALESCE($4, verified),
-    password = COALESCE($5, password),
-    role = COALESCE($6, role),
+    name = COALESCE(NULLIF($1, ''), name),
+    photo = COALESCE(NULLIF($3, ''), photo),
+    verified = COALESCE(NULLIF($4, ''), verified),
+    password = COALESCE(NULLIF($5, ''), password),
+    role = COALESCE(NULLIF($6, ''), role),
     updated_at = CURRENT_TIMESTAMP
   WHERE users.email = $2
   RETURNING id, name, email, photo, verified, password, role, created_at, updated_at
@@ -56,12 +56,8 @@ OFFSET $2;
 
 -- name: UpdateUser :one
 UPDATE users
-set name = COALESCE($2, name),
-email = COALESCE($3, email),
-photo = COALESCE($4, photo),
-verified = COALESCE($5, verified),
-password = COALESCE($6, password),
-role = COALESCE($7, role),
+set name = COALESCE(NULLIF($2, ''), name),
+email = COALESCE(NULLIF($3, ''), email),
 updated_at = CURRENT_TIMESTAMP
 WHERE id = $1
 RETURNING *;

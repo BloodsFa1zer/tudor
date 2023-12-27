@@ -22,10 +22,12 @@ func LoginUserToUser(loginUser *reqmodels.LoginUserRequest) *entities.User {
 	}
 }
 
-func UpdateUserRequestToUser(updateUser *reqmodels.UpdateUserRequest) *entities.User {
+func UpdateUserRequestToUser(updateUser *reqmodels.UpdateUserRequest, id int64) *entities.User {
 	return &entities.User{
-		ID:    updateUser.ID,
-		Name:  updateUser.Name,
-		Email: updateUser.Email,
+		ID:       id,
+		Name:     updateUser.Name,
+		Email:    updateUser.Email,
+		Verified: true,
+		Role:     "user",
 	}
 }

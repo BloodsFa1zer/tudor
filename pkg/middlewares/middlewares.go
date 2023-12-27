@@ -85,13 +85,13 @@ func (m *middleware) PasswordMiddleware() gin.HandlerFunc {
 			return
 		}
 		// exppected token:pswd
-		pswdString := strings.Split(authString, ":")
+		// pswdString := strings.Split(authString, ":")
 
-		if len(pswdString) != 2 {
-			c.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed("Not all info provided for change."))
-			c.Abort()
-			return
-		}
+		// if len(pswdString) != 2 {
+		// 	// c.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed("Not all info provided for change."))
+		// 	// c.Abort()
+		// 	// return
+		// }
 
 		c.Next()
 	}

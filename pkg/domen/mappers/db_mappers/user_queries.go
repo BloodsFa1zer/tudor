@@ -10,11 +10,11 @@ import (
 
 func UserToCreateOrUpdateUser(user *entities.User) queries.CreateOrUpdateUserParams {
 	return queries.CreateOrUpdateUserParams{
-		Name:     StrTopgText(user.Name),
-		Email:    user.Email,
-		Photo:    StrTopgText(user.Photo),
-		Verified: user.Verified,
-		Role:     user.Role,
+		Column1: StrTopgText(user.Name),
+		Email:   user.Email,
+		Column3: StrTopgText(user.Photo),
+		Column4: user.Verified,
+		Column5: user.Role,
 	}
 }
 
@@ -45,13 +45,9 @@ func UserToCreateUserParams(user *entities.User) queries.CreateUserParams {
 
 func UserToUpdateUserParams(user *entities.User) queries.UpdateUserParams {
 	return queries.UpdateUserParams{
-		ID:       user.ID,
-		Name:     StrTopgText(user.Name),
-		Email:    user.Email,
-		Photo:    StrTopgText(user.Photo),
-		Verified: user.Verified,
-		Password: StrTopgText(user.Password),
-		Role:     user.Role,
+		ID:      user.ID,
+		Column2: user.Name,
+		Column3: user.Email,
 	}
 }
 

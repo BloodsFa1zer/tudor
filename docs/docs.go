@@ -50,7 +50,7 @@ const docTemplate = `{
         },
         "/api/auth/login": {
             "post": {
-                "description": "requires email and password.  Returns token and in header Authorization token as well",
+                "description": "requires email and password.  Returns token and Authorization token in header as well",
                 "consumes": [
                     "application/json"
                 ],
@@ -85,7 +85,7 @@ const docTemplate = `{
         },
         "/api/auth/register": {
             "post": {
-                "description": "requires email and password for registration. Returns user info and in header Authorization token",
+                "description": "requires email and password for registration. Returns user info and Authorization token  in header",
                 "consumes": [
                     "application/json"
                 ],
@@ -120,7 +120,7 @@ const docTemplate = `{
         },
         "/api/auth/reset-password": {
             "post": {
-                "description": "requires registred email address",
+                "description": "requires registred email address. TODO! This endpoint may not work",
                 "produces": [
                     "application/json"
                 ],
@@ -469,7 +469,7 @@ const docTemplate = `{
         },
         "/protected/create-password": {
             "patch": {
-                "description": "requires token",
+                "description": "requires token. TODO! This endpoint may not work",
                 "produces": [
                     "application/json"
                 ],
@@ -513,7 +513,7 @@ const docTemplate = `{
                         "JWT": []
                     }
                 ],
-                "description": "requires valid token",
+                "description": "requires valid token and user info for update. Returns user info and Authorization token in header",
                 "produces": [
                     "application/json"
                 ],
@@ -764,9 +764,6 @@ const docTemplate = `{
             "properties": {
                 "email": {
                     "type": "string"
-                },
-                "id": {
-                    "type": "integer"
                 },
                 "name": {
                     "type": "string"

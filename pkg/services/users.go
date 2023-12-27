@@ -17,7 +17,7 @@ type UserService interface {
 	UserRegister(ctx context.Context, user *entities.User) (string, *entities.User, error)
 	UserInfo(ctx context.Context, userId int64) (*entities.User, error)
 	ProviderAuth(ctx context.Context, userInfo *entities.User) (string, error)
-	UserPatch(ctx context.Context, patch *entities.User) (*entities.User, error)
+	UserPatch(ctx context.Context, patch *entities.User) (string, *entities.User, error)
 	PasswordReset(ctx context.Context, email string) (bool, error)
 	PasswordCreate(ctx context.Context, userID int64, newPassword string) error
 }
@@ -49,7 +49,7 @@ func (s *userService) UserLogin(ctx context.Context, inputuser *entities.User) (
 		return "", err
 	}
 
-	token, err := s.genToken(inputuser.ID, inputuser.Email)
+	token, err := s.genToken(user.ID, user.Email)
 	if err != nil {
 		return "", err
 	}
@@ -90,12 +90,16 @@ func (s *userService) ProviderAuth(ctx context.Context, userInfo *entities.User)
 	return token, nil
 }
 
-func (s *userService) UserPatch(ctx context.Context, patch *entities.User) (*entities.User, error) {
+func (s *userService) UserPatch(ctx context.Context, patch *entities.User) (string, *entities.User, error) {
 	patch, err := s.db.UpdateUser(ctx, patch)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
-	return patch, nil
+	token, err := s.genToken(patch.ID, patch.Email)
+	if err != nil {
+		return "", nil, err
+	}
+	return token, patch, nil
 }
 
 func (s *userService) PasswordReset(ctx context.Context, email string) (bool, error) {
