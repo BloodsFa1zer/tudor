@@ -285,7 +285,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.AdvertisementInput"
+                            "$ref": "#/definitions/reqmodels.CreateAdvertisementRequest"
                         }
                     }
                 ],
@@ -373,7 +373,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.AdvertisementFilter"
+                            "$ref": "#/definitions/reqmodels.AdvertisementFilterRequest"
                         }
                     }
                 ],
@@ -452,7 +452,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/reqmodels.CreateUpdateAdvertisementRequest"
+                            "$ref": "#/definitions/reqmodels.UpdateAdvertisementRequest"
                         }
                     }
                 ],
@@ -587,7 +587,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.AdvertisementFilter": {
+        "reqmodels.AdvertisementFilterRequest": {
             "type": "object",
             "properties": {
                 "category": {
@@ -631,45 +631,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.AdvertisementInput": {
-            "type": "object",
-            "properties": {
-                "attachment": {
-                    "type": "string"
-                },
-                "category": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "experience": {
-                    "type": "integer"
-                },
-                "format": {
-                    "type": "string"
-                },
-                "language": {
-                    "type": "string"
-                },
-                "mobile_phone": {
-                    "type": "string"
-                },
-                "price": {
-                    "type": "integer"
-                },
-                "telegram": {
-                    "type": "string"
-                },
-                "time": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "reqmodels.CreateUpdateAdvertisementRequest": {
+        "reqmodels.CreateAdvertisementRequest": {
             "type": "object",
             "properties": {
                 "attachment": {
@@ -755,6 +717,50 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "reqmodels.UpdateAdvertisementRequest": {
+            "type": "object",
+            "properties": {
+                "attachment": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "experience": {
+                    "type": "integer"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "mobile_phone": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "telegram": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "integer"
+                },
+                "title": {
                     "type": "string"
                 }
             }

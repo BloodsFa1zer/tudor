@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  models.AdvertisementFilter:
+  reqmodels.AdvertisementFilterRequest:
     properties:
       category:
         type: string
@@ -29,32 +29,7 @@ definitions:
       titlekeyword:
         type: string
     type: object
-  models.AdvertisementInput:
-    properties:
-      attachment:
-        type: string
-      category:
-        type: string
-      description:
-        type: string
-      experience:
-        type: integer
-      format:
-        type: string
-      language:
-        type: string
-      mobile_phone:
-        type: string
-      price:
-        type: integer
-      telegram:
-        type: string
-      time:
-        type: integer
-      title:
-        type: string
-    type: object
-  reqmodels.CreateUpdateAdvertisementRequest:
+  reqmodels.CreateAdvertisementRequest:
     properties:
       attachment:
         type: string
@@ -110,6 +85,35 @@ definitions:
       name:
         type: string
       password:
+        type: string
+    type: object
+  reqmodels.UpdateAdvertisementRequest:
+    properties:
+      attachment:
+        type: string
+      category:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      experience:
+        type: integer
+      format:
+        type: string
+      id:
+        type: integer
+      language:
+        type: string
+      mobile_phone:
+        type: string
+      price:
+        type: integer
+      telegram:
+        type: string
+      time:
+        type: integer
+      title:
         type: string
     type: object
   reqmodels.UpdateUserRequest:
@@ -303,7 +307,7 @@ paths:
         name: advertisement-create
         required: true
         schema:
-          $ref: '#/definitions/models.AdvertisementInput'
+          $ref: '#/definitions/reqmodels.CreateAdvertisementRequest'
       produces:
       - application/json
       responses:
@@ -359,7 +363,7 @@ paths:
         name: advertisement-filter
         required: true
         schema:
-          $ref: '#/definitions/models.AdvertisementFilter'
+          $ref: '#/definitions/reqmodels.AdvertisementFilterRequest'
       produces:
       - application/json
       responses:
@@ -409,7 +413,7 @@ paths:
         name: advertisement-patch
         required: true
         schema:
-          $ref: '#/definitions/reqmodels.CreateUpdateAdvertisementRequest'
+          $ref: '#/definitions/reqmodels.UpdateAdvertisementRequest'
       produces:
       - application/json
       responses:
