@@ -4,6 +4,7 @@ import (
 	"log"
 
 	config "study_marketplace/pkg/infrastructure/config"
+	"study_marketplace/pkg/infrastructure/database"
 	"study_marketplace/pkg/infrastructure/server"
 	"study_marketplace/pkg/registry"
 	"study_marketplace/pkg/routers"
@@ -26,8 +27,8 @@ import (
 func main() {
 	conf := config.SetUpConfig()
 	s := server.NewServer(conf)
-
-	ac := registry.NewRegistry(conf).NewAppController()
+	db := database.ConnectDataBase(conf.DatabaseUrl)
+	ac := registry.NewRegistry(conf, db).NewAppController()
 
 	routers.SetupRouter(conf, s, ac)
 	log.Fatal(s.Run(conf.ServerHostname))

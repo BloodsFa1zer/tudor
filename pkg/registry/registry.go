@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -23,8 +24,11 @@ type Registry interface {
 	NewAppController() *controllers.AppController
 }
 
-func NewRegistry(config *config.Config) Registry {
-	return &registry{repoRegistry(config.DatabseUrl), config}
+func NewRegistry(config *config.Config, db *pgxpool.Pool) Registry {
+	return &registry{
+		queries: queries.New(db),
+		config:  config,
+	}
 }
 
 func (r *registry) NewAppController() *controllers.AppController {

@@ -31,7 +31,7 @@ func migration(dburl string) {
 		log.Fatal("config database migration error:" + err.Error())
 	}
 	m, err := migrate.NewWithDatabaseInstance(
-		"file:///database/migrations",
+		"file://database/migrations",
 		"postgres", driver)
 	if err != nil {
 		log.Fatal("database migration error:" + err.Error())
