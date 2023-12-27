@@ -34,13 +34,8 @@ func (m *middleware) CORS() gin.HandlerFunc {
 			AllowWildcard: true,
 			AllowOrigins:  m.conf.AllowedOrigins,
 			AllowMethods:  []string{"GET", "POST", "PATCH", "DELETE", "HEAD", "OPTIONS"},
-			AllowHeaders: []string{
-				"Origin", "Content-Length", "Content-Type",
-				"Access-Control-Allow-Headers", "Access-Control-Request-Method",
-				"Access-Control-Request-Headers", "Access-Control-Allow-Origin",
-				"X-Requested-With", "Accept", "Authorization"},
+			AllowHeaders:  []string{"*"},
 		})
-
 	return cors
 }
 
