@@ -88,22 +88,20 @@ INSERT INTO users (
   photo,
   verified,
   password,
-  role,
-  updated_at
+  role
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7
+  $1, $2, $3, $4, $5, $6
 )
 RETURNING id, name, email, photo, verified, password, role, created_at, updated_at
 `
 
 type CreateUserParams struct {
-	Name      pgtype.Text `json:"name"`
-	Email     string      `json:"email"`
-	Photo     pgtype.Text `json:"photo"`
-	Verified  bool        `json:"verified"`
-	Password  pgtype.Text `json:"password"`
-	Role      string      `json:"role"`
-	UpdatedAt time.Time   `json:"updated_at"`
+	Name     pgtype.Text `json:"name"`
+	Email    string      `json:"email"`
+	Photo    pgtype.Text `json:"photo"`
+	Verified bool        `json:"verified"`
+	Password pgtype.Text `json:"password"`
+	Role     string      `json:"role"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -114,7 +112,6 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Verified,
 		arg.Password,
 		arg.Role,
-		arg.UpdatedAt,
 	)
 	var i User
 	err := row.Scan(

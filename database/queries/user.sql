@@ -5,10 +5,9 @@ INSERT INTO users (
   photo,
   verified,
   password,
-  role,
-  updated_at
+  role
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7
+  $1, $2, $3, $4, $5, $6
 )
 RETURNING *;
 
