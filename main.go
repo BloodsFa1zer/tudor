@@ -11,16 +11,16 @@ import (
 )
 
 // @title						Study marketplace API
-// @version					0.0.1
-// @description				Marketplace to connect students and teachers
+// @version						0.0.1
+// @description					Marketplace to connect students and teachers
 // @termsOfService				[TODO]
 // @contact.name				API Support
-// @contact.url				[TODO]
+// @contact.url					[TODO]
 // @contact.email				[TODO]
 // @license.name				[TODO]
-// @license.url				[TODO]
+// @license.url					[TODO]
 // @BasePath					/
-// @schemes					http https
+// @schemes						http https
 // @securityDefinitions.apiKey	JWT
 // @in							header
 // @name						Authorization

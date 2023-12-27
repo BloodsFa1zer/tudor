@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	DatabaseUrl               string   `env:"DATABASE_URL,required"`
+	MigrationUrl              string   `env:"MIGRATION_URL,required"`
 	ServerHostname            string   `env:"SERVER_HOSTNAME,required"`
 	DocsHostname              string   `env:"DOCS_HOSTNAME,required"`
 	GoogleCallbackDomain      string   `env:"GOOGLE_CALLBACK_DOMAIN,required"`
