@@ -63,6 +63,8 @@ func CreateAdvertisementRowToAdvertisement(row queries.CreateAdvertisementRow) *
 
 func AdvertisementToUpdateAdvertisementParams(adv *entities.Advertisement) queries.UpdateAdvertisementParams {
 	return queries.UpdateAdvertisementParams{
+		ID:          adv.ID,
+		ProviderID:  adv.Provider.ID,
 		Title:       StrTopgText(adv.Title),
 		Attachment:  StrTopgText(adv.Attachment),
 		Experience:  IntTopgInt4(int32(adv.Experience)),
@@ -220,4 +222,44 @@ func AdvertisementFiltRequestToFilterAdvertisementsParams(filter *reqmodels.Adve
 		Advlanguage:  filter.Language,
 		Titlekeyword: filter.Titlekeyword,
 	}
+}
+
+func GetMyAdvertisementsToAdvertisements(row []queries.GetMyAdvertisementRow) []entities.Advertisement {
+	advertisements := make([]entities.Advertisement, 0, len(row))
+	for i := range row {
+		advertisements[i] = entities.Advertisement{
+			ID:    row[i].ID,
+			Title: row[i].Title,
+			Provider: &entities.User{
+				ID:        row[i].ProviderID,
+				Name:      row[i].ProviderName.String,
+				Email:     row[i].ProviderEmail,
+				Photo:     row[i].ProviderPhoto.String,
+				Verified:  row[i].ProviderVerified,
+				Role:      row[i].ProviderRole,
+				CreatedAt: row[i].ProviderCreatedAt,
+				UpdatedAt: row[i].ProviderUpdatedAt,
+			},
+			Attachment: row[i].Attachment,
+			Experience: int(row[i].Experience),
+			Category: &entities.Category{
+				ID:   row[i].CategoryID,
+				Name: row[i].CategoryName,
+				ParentCategory: &entities.ParentCategory{
+					Name: row[i].ParentCategoryName,
+				},
+			},
+			Time:        int(row[i].Time),
+			Price:       int(row[i].Price),
+			Format:      row[i].Format,
+			Language:    row[i].Language,
+			Description: row[i].Description,
+			MobilePhone: row[i].MobilePhone.String,
+			Email:       row[i].Email.String,
+			Telegram:    row[i].Telegram.String,
+			CreatedAt:   row[i].CreatedAt,
+			UpdatedAt:   row[i].UpdatedAt,
+		}
+	}
+	return advertisements
 }

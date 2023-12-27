@@ -29,3 +29,8 @@ type PasswordResetRequest struct {
 type PasswordCreateRequest struct {
 	Password string `json:"password"`
 }
+
+type UsersListRequest struct {
+	Offset int `json:"offset"`
+	Limit  int `json:"limit"`
+}

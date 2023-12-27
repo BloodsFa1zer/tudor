@@ -46,3 +46,11 @@ func AdvertisementToCreateUpdateAdvertisementResponse(adv *entities.Advertisemen
 		UpdatedAt:    adv.UpdatedAt.GoString(),
 	}
 }
+
+func AdvertisementsToAdvertisementResponses(adv []entities.Advertisement) []respmodels.AdvertisementResponse {
+	advResp := make([]respmodels.AdvertisementResponse, len(adv))
+	for i := range adv {
+		advResp[i] = AdvertisementToCreateUpdateAdvertisementResponse(&adv[i])
+	}
+	return advResp
+}

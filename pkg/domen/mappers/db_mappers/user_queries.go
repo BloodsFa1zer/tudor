@@ -3,6 +3,7 @@ package dbmappers
 import (
 	"study_marketplace/database/queries"
 	entities "study_marketplace/pkg/domen/models/entities"
+	reqmodels "study_marketplace/pkg/domen/models/request_models"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -81,4 +82,11 @@ func IntTopgInt4(i int32) pgtype.Int4 {
 		return pgtype.Int4{Int32: int32(i), Valid: true}
 	}
 	return pgtype.Int4{Int32: 0, Valid: false}
+}
+
+func ParamListUsersToDbParam(param reqmodels.UsersListRequest) queries.ListUsersParams {
+	return queries.ListUsersParams{
+		Offset: int32(param.Offset),
+		Limit:  int32(param.Limit),
+	}
 }
