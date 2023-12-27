@@ -1,7 +1,6 @@
 CREATE TABLE "advertisements" (
-    "id" BIGSERIAL NOT NULL,
+    "id" BIGSERIAL PRIMARY KEY,
     "title" VARCHAR NOT NULL,
-    "provider" VARCHAR NOT NULL,
     "provider_id" BIGINT NOT NULL,
     "attachment" VARCHAR NOT NULL,
     "experience" INT NOT NULL, 
@@ -15,6 +14,5 @@ CREATE TABLE "advertisements" (
     "email" VARCHAR,
     "telegram" VARCHAR,
     "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "advertisement_pkey" PRIMARY KEY ("id")
+    "updated_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

@@ -1,7 +1,7 @@
 CREATE TABLE categories (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR NOT NULL,
-    parent_id INT,
+    "id" BIGSERIAL PRIMARY KEY,
+    "name" VARCHAR NOT NULL,
+    "parent_id" BIGINT,
     FOREIGN KEY (parent_id) REFERENCES categories(id)
 );
 

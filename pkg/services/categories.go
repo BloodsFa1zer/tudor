@@ -1,18 +1,17 @@
 package services
 
 import (
+	"context"
 	"study_marketplace/database/queries"
 	"study_marketplace/pkg/repositories"
-
-	"github.com/gin-gonic/gin"
 )
 
 type CategoriesService interface {
-	CatGetAll(ctx *gin.Context) ([]queries.GetCategoriesWithChildrenRow, error)
-	CatGetByID(ctx *gin.Context, id int32) (queries.Category, error)
-	CatGetByName(ctx *gin.Context, name string) (queries.Category, error)
-	CatGetFullName(ctx *gin.Context, name string) (queries.GetCategoryAndParentRow, error)
-	CatGetParets(ctx *gin.Context) ([]queries.Category, error)
+	CatGetAll(ctx context.Context) ([]queries.GetCategoriesWithChildrenRow, error)
+	CatGetByID(ctx context.Context, id int) (queries.Category, error)
+	CatGetByName(ctx context.Context, name string) (queries.Category, error)
+	CatGetFullName(ctx context.Context, name string) (queries.GetCategoryAndParentRow, error)
+	CatGetParets(ctx context.Context) ([]queries.Category, error)
 }
 
 type categoriesService struct {
@@ -23,7 +22,7 @@ func NewCategoriesService(db repositories.CategoriesRepository) *categoriesServi
 	return &categoriesService{db}
 }
 
-func (t *categoriesService) CatGetAll(ctx *gin.Context) ([]queries.GetCategoriesWithChildrenRow, error) {
+func (t *categoriesService) CatGetAll(ctx context.Context) ([]queries.GetCategoriesWithChildrenRow, error) {
 	categories, err := t.db.GetCategoriesWithChildren(ctx)
 
 	if err != nil {
@@ -33,7 +32,7 @@ func (t *categoriesService) CatGetAll(ctx *gin.Context) ([]queries.GetCategories
 	return categories, nil
 }
 
-func (t *categoriesService) CatGetByID(ctx *gin.Context, id int32) (queries.Category, error) {
+func (t *categoriesService) CatGetByID(ctx context.Context, id int) (queries.Category, error) {
 	category, err := t.db.GetCategoryByID(ctx, id)
 
 	if err != nil {
@@ -43,7 +42,7 @@ func (t *categoriesService) CatGetByID(ctx *gin.Context, id int32) (queries.Cate
 	return category, nil
 }
 
-func (t *categoriesService) CatGetByName(ctx *gin.Context, name string) (queries.Category, error) {
+func (t *categoriesService) CatGetByName(ctx context.Context, name string) (queries.Category, error) {
 	category, err := t.db.GetCategoryByName(ctx, name)
 
 	if err != nil {
@@ -53,7 +52,7 @@ func (t *categoriesService) CatGetByName(ctx *gin.Context, name string) (queries
 	return category, nil
 }
 
-func (t *categoriesService) CatGetFullName(ctx *gin.Context, name string) (queries.GetCategoryAndParentRow, error) {
+func (t *categoriesService) CatGetFullName(ctx context.Context, name string) (queries.GetCategoryAndParentRow, error) {
 	categoryName, err := t.db.GetCategoryAndParent(ctx, name)
 
 	if err != nil {
@@ -63,7 +62,7 @@ func (t *categoriesService) CatGetFullName(ctx *gin.Context, name string) (queri
 	return categoryName, nil
 }
 
-func (t *categoriesService) CatGetParets(ctx *gin.Context) ([]queries.Category, error) {
+func (t *categoriesService) CatGetParets(ctx context.Context) ([]queries.Category, error) {
 	parents, err := t.db.GetCategoryParents(ctx)
 
 	if err != nil {

@@ -50,7 +50,7 @@ const docTemplate = `{
         },
         "/api/auth/login": {
             "post": {
-                "description": "requires email and password",
+                "description": "requires email and password.  Returns token and Authorization token in header as well",
                 "consumes": [
                     "application/json"
                 ],
@@ -68,7 +68,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.InLogin"
+                            "$ref": "#/definitions/reqmodels.LoginUserRequest"
                         }
                     }
                 ],
@@ -85,7 +85,7 @@ const docTemplate = `{
         },
         "/api/auth/register": {
             "post": {
-                "description": "requires username and password for registration",
+                "description": "requires email and password for registration. Returns user info and Authorization token  in header",
                 "consumes": [
                     "application/json"
                 ],
@@ -103,7 +103,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/queries.User"
+                            "$ref": "#/definitions/reqmodels.RegistractionUserRequest"
                         }
                     }
                 ],
@@ -120,7 +120,7 @@ const docTemplate = `{
         },
         "/api/auth/reset-password": {
             "post": {
-                "description": "requires registred email address",
+                "description": "requires registred email address. TODO! This endpoint may not work",
                 "produces": [
                     "application/json"
                 ],
@@ -135,7 +135,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.EmailRequest"
+                            "$ref": "#/definitions/reqmodels.PasswordResetRequest"
                         }
                     }
                 ],
@@ -285,7 +285,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.AdvertisementInput"
+                            "$ref": "#/definitions/reqmodels.CreateAdvertisementRequest"
                         }
                     }
                 ],
@@ -314,7 +314,7 @@ const docTemplate = `{
                 "tags": [
                     "advertisement-delete"
                 ],
-                "summary": "PATCH request to delete advertisement",
+                "summary": "DELETE request to delete advertisement",
                 "parameters": [
                     {
                         "type": "string",
@@ -329,7 +329,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Id"
+                            "$ref": "#/definitions/reqmodels.DeleteAdvertisementRequest"
                         }
                     }
                 ],
@@ -373,7 +373,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.AdvertisementFilter"
+                            "$ref": "#/definitions/reqmodels.AdvertisementFilterRequest"
                         }
                     }
                 ],
@@ -452,7 +452,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.AdvertisementUpdate"
+                            "$ref": "#/definitions/reqmodels.UpdateAdvertisementRequest"
                         }
                     }
                 ],
@@ -469,7 +469,7 @@ const docTemplate = `{
         },
         "/protected/create-password": {
             "patch": {
-                "description": "requires token",
+                "description": "requires token. TODO! This endpoint may not work",
                 "produces": [
                     "application/json"
                 ],
@@ -491,7 +491,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UserPassword"
+                            "$ref": "#/definitions/reqmodels.PasswordCreateRequest"
                         }
                     }
                 ],
@@ -513,7 +513,7 @@ const docTemplate = `{
                         "JWT": []
                     }
                 ],
-                "description": "requires valid token",
+                "description": "requires valid token and user info for update. Returns user info and Authorization token in header",
                 "produces": [
                     "application/json"
                 ],
@@ -535,7 +535,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/queries.User"
+                            "$ref": "#/definitions/reqmodels.UpdateUserRequest"
                         }
                     }
                 ],
@@ -587,7 +587,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.AdvertisementFilter": {
+        "reqmodels.AdvertisementFilterRequest": {
             "type": "object",
             "properties": {
                 "category": {
@@ -631,7 +631,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.AdvertisementInput": {
+        "reqmodels.CreateAdvertisementRequest": {
             "type": "object",
             "properties": {
                 "attachment": {
@@ -641,6 +641,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "email": {
                     "type": "string"
                 },
                 "experience": {
@@ -669,67 +672,15 @@ const docTemplate = `{
                 }
             }
         },
-        "models.AdvertisementUpdate": {
+        "reqmodels.DeleteAdvertisementRequest": {
             "type": "object",
-            "properties": {
-                "attachment": {
-                    "type": "string"
-                },
-                "category": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "experience": {
-                    "type": "integer"
-                },
-                "format": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "language": {
-                    "type": "string"
-                },
-                "mobile_phone": {
-                    "type": "string"
-                },
-                "price": {
-                    "type": "integer"
-                },
-                "telegram": {
-                    "type": "string"
-                },
-                "time": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.EmailRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.Id": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
             "properties": {
                 "id": {
                     "type": "integer"
                 }
             }
         },
-        "models.InLogin": {
+        "reqmodels.LoginUserRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -740,57 +691,88 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UserPassword": {
+        "reqmodels.PasswordCreateRequest": {
             "type": "object",
-            "required": [
-                "password"
-            ],
             "properties": {
                 "password": {
                     "type": "string"
                 }
             }
         },
-        "pgtype.Text": {
+        "reqmodels.PasswordResetRequest": {
             "type": "object",
             "properties": {
-                "string": {
+                "email": {
                     "type": "string"
-                },
-                "valid": {
-                    "type": "boolean"
                 }
             }
         },
-        "queries.User": {
+        "reqmodels.RegistractionUserRequest": {
             "type": "object",
             "properties": {
-                "created_at": {
-                    "type": "string"
-                },
                 "email": {
                     "type": "string"
-                },
-                "id": {
-                    "type": "integer"
                 },
                 "name": {
-                    "$ref": "#/definitions/pgtype.Text"
+                    "type": "string"
                 },
                 "password": {
-                    "$ref": "#/definitions/pgtype.Text"
-                },
-                "photo": {
-                    "$ref": "#/definitions/pgtype.Text"
-                },
-                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "reqmodels.UpdateAdvertisementRequest": {
+            "type": "object",
+            "properties": {
+                "attachment": {
                     "type": "string"
                 },
-                "updated_at": {
+                "category": {
                     "type": "string"
                 },
-                "verified": {
-                    "type": "boolean"
+                "description": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "experience": {
+                    "type": "integer"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "mobile_phone": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "telegram": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "reqmodels.UpdateUserRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         }

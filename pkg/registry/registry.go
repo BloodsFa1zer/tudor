@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -23,8 +24,11 @@ type Registry interface {
 	NewAppController() *controllers.AppController
 }
 
-func NewRegistry(config *config.Config) Registry {
-	return &registry{repoRegistry(config.DatabseUrl), config}
+func NewRegistry(config *config.Config, db *pgx.Conn) Registry {
+	return &registry{
+		queries: queries.New(db),
+		config:  config,
+	}
 }
 
 func (r *registry) NewAppController() *controllers.AppController {
@@ -77,7 +81,7 @@ func (r *registry) genTokFunc() func(userid int64, email string) (string, error)
 			},
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		tokenString, err := token.SignedString(r.config.JWTSecret)
+		tokenString, err := token.SignedString([]byte(r.config.JWTSecret))
 		if err != nil {
 			return "", err
 		}

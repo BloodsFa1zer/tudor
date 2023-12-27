@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  models.AdvertisementFilter:
+  reqmodels.AdvertisementFilterRequest:
     properties:
       category:
         type: string
@@ -29,13 +29,15 @@ definitions:
       titlekeyword:
         type: string
     type: object
-  models.AdvertisementInput:
+  reqmodels.CreateAdvertisementRequest:
     properties:
       attachment:
         type: string
       category:
         type: string
       description:
+        type: string
+      email:
         type: string
       experience:
         type: integer
@@ -54,86 +56,72 @@ definitions:
       title:
         type: string
     type: object
-  models.AdvertisementUpdate:
-    properties:
-      attachment:
-        type: string
-      category:
-        type: string
-      description:
-        type: string
-      experience:
-        type: integer
-      format:
-        type: string
-      id:
-        type: integer
-      language:
-        type: string
-      mobile_phone:
-        type: string
-      price:
-        type: integer
-      telegram:
-        type: string
-      time:
-        type: integer
-      title:
-        type: string
-    type: object
-  models.EmailRequest:
-    properties:
-      email:
-        type: string
-    type: object
-  models.Id:
+  reqmodels.DeleteAdvertisementRequest:
     properties:
       id:
         type: integer
-    required:
-    - id
     type: object
-  models.InLogin:
+  reqmodels.LoginUserRequest:
     properties:
       email:
         type: string
       password:
         type: string
     type: object
-  models.UserPassword:
+  reqmodels.PasswordCreateRequest:
     properties:
       password:
         type: string
-    required:
-    - password
     type: object
-  pgtype.Text:
+  reqmodels.PasswordResetRequest:
     properties:
-      string:
-        type: string
-      valid:
-        type: boolean
-    type: object
-  queries.User:
-    properties:
-      created_at:
-        type: string
       email:
         type: string
-      id:
-        type: integer
+    type: object
+  reqmodels.RegistractionUserRequest:
+    properties:
+      email:
+        type: string
       name:
-        $ref: '#/definitions/pgtype.Text'
+        type: string
       password:
-        $ref: '#/definitions/pgtype.Text'
-      photo:
-        $ref: '#/definitions/pgtype.Text'
-      role:
         type: string
-      updated_at:
+    type: object
+  reqmodels.UpdateAdvertisementRequest:
+    properties:
+      attachment:
         type: string
-      verified:
-        type: boolean
+      category:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      experience:
+        type: integer
+      format:
+        type: string
+      id:
+        type: integer
+      language:
+        type: string
+      mobile_phone:
+        type: string
+      price:
+        type: integer
+      telegram:
+        type: string
+      time:
+        type: integer
+      title:
+        type: string
+    type: object
+  reqmodels.UpdateUserRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
     type: object
 info:
   contact:
@@ -190,14 +178,15 @@ paths:
     post:
       consumes:
       - application/json
-      description: requires email and password
+      description: requires email and password.  Returns token and Authorization token
+        in header as well
       parameters:
       - description: request info
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.InLogin'
+          $ref: '#/definitions/reqmodels.LoginUserRequest'
       produces:
       - application/json
       responses:
@@ -213,14 +202,15 @@ paths:
     post:
       consumes:
       - application/json
-      description: requires username and password for registration
+      description: requires email and password for registration. Returns user info
+        and Authorization token  in header
       parameters:
       - description: user info for sign in
         in: body
         name: user_info
         required: true
         schema:
-          $ref: '#/definitions/queries.User'
+          $ref: '#/definitions/reqmodels.RegistractionUserRequest'
       produces:
       - application/json
       responses:
@@ -234,14 +224,14 @@ paths:
       - register
   /api/auth/reset-password:
     post:
-      description: requires registred email address
+      description: requires registred email address. TODO! This endpoint may not work
       parameters:
       - description: user email for update
         in: body
         name: reset-password
         required: true
         schema:
-          $ref: '#/definitions/models.EmailRequest'
+          $ref: '#/definitions/reqmodels.PasswordResetRequest'
       produces:
       - application/json
       responses:
@@ -317,7 +307,7 @@ paths:
         name: advertisement-create
         required: true
         schema:
-          $ref: '#/definitions/models.AdvertisementInput'
+          $ref: '#/definitions/reqmodels.CreateAdvertisementRequest'
       produces:
       - application/json
       responses:
@@ -345,7 +335,7 @@ paths:
         name: advertisement-delete
         required: true
         schema:
-          $ref: '#/definitions/models.Id'
+          $ref: '#/definitions/reqmodels.DeleteAdvertisementRequest'
       produces:
       - application/json
       responses:
@@ -356,7 +346,7 @@ paths:
             type: object
       security:
       - JWT: []
-      summary: PATCH request to delete advertisement
+      summary: DELETE request to delete advertisement
       tags:
       - advertisement-delete
   /protected/advertisement-filter:
@@ -373,7 +363,7 @@ paths:
         name: advertisement-filter
         required: true
         schema:
-          $ref: '#/definitions/models.AdvertisementFilter'
+          $ref: '#/definitions/reqmodels.AdvertisementFilterRequest'
       produces:
       - application/json
       responses:
@@ -423,7 +413,7 @@ paths:
         name: advertisement-patch
         required: true
         schema:
-          $ref: '#/definitions/models.AdvertisementUpdate'
+          $ref: '#/definitions/reqmodels.UpdateAdvertisementRequest'
       produces:
       - application/json
       responses:
@@ -439,7 +429,7 @@ paths:
       - advertisement-patch
   /protected/create-password:
     patch:
-      description: requires token
+      description: requires token. TODO! This endpoint may not work
       parameters:
       - description: Insert your access token
         in: header
@@ -451,7 +441,7 @@ paths:
         name: create-password
         required: true
         schema:
-          $ref: '#/definitions/models.UserPassword'
+          $ref: '#/definitions/reqmodels.PasswordCreateRequest'
       produces:
       - application/json
       responses:
@@ -465,7 +455,8 @@ paths:
       - create-password
   /protected/user-patch:
     patch:
-      description: requires valid token
+      description: requires valid token and user info for update. Returns user info
+        and Authorization token in header
       parameters:
       - description: Insert your access token
         in: header
@@ -477,7 +468,7 @@ paths:
         name: userinfo
         required: true
         schema:
-          $ref: '#/definitions/queries.User'
+          $ref: '#/definitions/reqmodels.UpdateUserRequest'
       produces:
       - application/json
       responses:

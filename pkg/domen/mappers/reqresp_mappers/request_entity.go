@@ -1,7 +1,7 @@
-package reqresmappers
+package reqm
 
 import (
-	entities "study_marketplace/pkg/domen/models/entities_models"
+	entities "study_marketplace/pkg/domen/models/entities"
 	reqmodels "study_marketplace/pkg/domen/models/request_models"
 )
 
@@ -22,10 +22,12 @@ func LoginUserToUser(loginUser *reqmodels.LoginUserRequest) *entities.User {
 	}
 }
 
-func UpdateUserRequestToUser(updateUser *reqmodels.UpdateUserRequest) *entities.User {
+func UpdateUserRequestToUser(updateUser *reqmodels.UpdateUserRequest, id int64) *entities.User {
 	return &entities.User{
-		ID:    updateUser.ID,
-		Name:  updateUser.Name,
-		Email: updateUser.Email,
+		ID:       id,
+		Name:     updateUser.Name,
+		Email:    updateUser.Email,
+		Verified: true,
+		Role:     "user",
 	}
 }

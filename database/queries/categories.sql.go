@@ -38,7 +38,7 @@ GROUP BY p.id, p.name
 `
 
 type GetCategoriesWithChildrenRow struct {
-	ParentID   int32       `json:"parent_id"`
+	ParentID   int64       `json:"parent_id"`
 	ParentName string      `json:"parent_name"`
 	Children   interface{} `json:"children"`
 }
@@ -92,7 +92,7 @@ SELECT id, name, parent_id FROM categories
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetCategoryByID(ctx context.Context, id int32) (Category, error) {
+func (q *Queries) GetCategoryByID(ctx context.Context, id int64) (Category, error) {
 	row := q.db.QueryRow(ctx, getCategoryByID, id)
 	var i Category
 	err := row.Scan(&i.ID, &i.Name, &i.ParentID)

@@ -15,7 +15,6 @@ type LoginUserRequest struct {
 
 // UpdateUserRequest godoc
 type UpdateUserRequest struct {
-	ID    int64  `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
 }
@@ -28,4 +27,9 @@ type PasswordResetRequest struct {
 // PasswordCreateRequest godoc
 type PasswordCreateRequest struct {
 	Password string `json:"password"`
+}
+
+type UsersListRequest struct {
+	Offset int `json:"offset"`
+	Limit  int `json:"limit"`
 }

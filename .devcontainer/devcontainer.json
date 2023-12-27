@@ -21,8 +21,8 @@
 	"postCreateCommand": {
 		"install swager": "go install github.com/swaggo/swag/cmd/swag@latest",
 		"install sqlc": "go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest",
-		// "go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.16.2"
-		"install migration": "go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest"
+		"install migration": "go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest",
+		"flyio": "curl -L https://fly.io/install.sh | sh && cp /home/vscode/.fly/bin/flyctl /usr/local/go/bin"
 
 	},
 	"customizations": {

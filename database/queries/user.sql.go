@@ -12,42 +12,61 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createUser = `-- name: CreateUser :one
-INSERT INTO users (
-  name,
-  email,
-  photo,
-  verified,
-  password,
-  role,
-  updated_at
-) VALUES (
-  $1, $2, $3, $4, $5, $6, $7
+const createOrUpdateUser = `-- name: CreateOrUpdateUser :one
+WITH updated_user AS (
+  UPDATE users
+  SET 
+    name = COALESCE(NULLIF($1, ''), name),
+    photo = COALESCE(NULLIF($3, ''), photo),
+    verified = COALESCE(NULLIF($4, ''), verified),
+    password = COALESCE(NULLIF($5, ''), password),
+    role = COALESCE(NULLIF($6, ''), role),
+    updated_at = CURRENT_TIMESTAMP
+  WHERE users.email = $2
+  RETURNING id, name, email, photo, verified, password, role, created_at, updated_at
+),
+inserted_user AS (
+  INSERT INTO users (name, email, photo, verified, password, role)
+  SELECT $1, $2, $3, $4, $5, $6
+  WHERE NOT EXISTS (SELECT 1 FROM updated_user)
+  RETURNING id, name, email, photo, verified, password, role, created_at, updated_at
 )
-RETURNING id, name, email, photo, verified, password, role, created_at, updated_at
+SELECT id, name, email, photo, verified, password, role, created_at, updated_at FROM updated_user
+UNION ALL
+SELECT id, name, email, photo, verified, password, role, created_at, updated_at FROM inserted_user
 `
 
-type CreateUserParams struct {
+type CreateOrUpdateUserParams struct {
+	Column1 interface{} `json:"column_1"`
+	Email   string      `json:"email"`
+	Column3 interface{} `json:"column_3"`
+	Column4 interface{} `json:"column_4"`
+	Column5 interface{} `json:"column_5"`
+	Column6 interface{} `json:"column_6"`
+}
+
+type CreateOrUpdateUserRow struct {
+	ID        int64       `json:"id"`
 	Name      pgtype.Text `json:"name"`
 	Email     string      `json:"email"`
 	Photo     pgtype.Text `json:"photo"`
 	Verified  bool        `json:"verified"`
 	Password  pgtype.Text `json:"password"`
 	Role      string      `json:"role"`
+	CreatedAt time.Time   `json:"created_at"`
 	UpdatedAt time.Time   `json:"updated_at"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, createUser,
-		arg.Name,
+func (q *Queries) CreateOrUpdateUser(ctx context.Context, arg CreateOrUpdateUserParams) (CreateOrUpdateUserRow, error) {
+	row := q.db.QueryRow(ctx, createOrUpdateUser,
+		arg.Column1,
 		arg.Email,
-		arg.Photo,
-		arg.Verified,
-		arg.Password,
-		arg.Role,
-		arg.UpdatedAt,
+		arg.Column3,
+		arg.Column4,
+		arg.Column5,
+		arg.Column6,
 	)
-	var i User
+	var i CreateOrUpdateUserRow
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
@@ -62,50 +81,31 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	return i, err
 }
 
-const createorUpdateUser = `-- name: CreateorUpdateUser :one
-DO $$
-  BEGIN
-     PERFORM * FROM users WHERE email = $2;
-  IF FOUND THEN
-BEGIN
-  UPDATE users SET 
-    name = COALESCE($1, name),
-    photo = COALESCE($3, photo),
-    verified = COALESCE($4, verified),
-    password = COALESCE($5, password),
-    role = COALESCE($6, role),
-    updated_at = CURRENT_TIMESTAMP
-  WHERE email = $2
-  RETURNING users.id, users.name, users.email, users.photo, users.verified, users.password, users.role, users.created_at, users.updated_at;
-ELSE
-  INSERT INTO users (
-    name,
-    email,
-    photo,
-    verified,
-    password,
-    role
-  ) VALUES (
-    $1, $2, $3, $4, $5, $6
-  )
-  RETURNING users.id, users.name, users.email, users.photo, users.verified, users.password, users.role, users.created_at, users.updated_at;
-END IF;
-END;
-$$
+const createUser = `-- name: CreateUser :one
+INSERT INTO users (
+  name,
+  email,
+  photo,
+  verified,
+  password,
+  role
+) VALUES (
+  $1, $2, $3, $4, $5, $6
+)
+RETURNING id, name, email, photo, verified, password, role, created_at, updated_at
 `
 
-type CreateOrUpdateUserParams struct {
-	Name      pgtype.Text `json:"name"`
-	Email     string      `json:"email"`
-	Photo     pgtype.Text `json:"photo"`
-	Verified  bool        `json:"verified"`
-	Password  pgtype.Text `json:"password"`
-	Role      string      `json:"role"`
-	UpdatedAt time.Time   `json:"updated_at"`
+type CreateUserParams struct {
+	Name     pgtype.Text `json:"name"`
+	Email    string      `json:"email"`
+	Photo    pgtype.Text `json:"photo"`
+	Verified bool        `json:"verified"`
+	Password pgtype.Text `json:"password"`
+	Role     string      `json:"role"`
 }
 
-func (q *Queries) CreateorUpdateUser(ctx context.Context, arg CreateOrUpdateUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, createorUpdateUser,
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
+	row := q.db.QueryRow(ctx, createUser,
 		arg.Name,
 		arg.Email,
 		arg.Photo,
@@ -237,37 +237,21 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 
 const updateUser = `-- name: UpdateUser :one
 UPDATE users
-set name = COALESCE($2, name),
-email = COALESCE($3, email),
-photo = COALESCE($4, photo),
-verified = COALESCE($5, verified),
-password = COALESCE($6, password),
-role = COALESCE($7, role),
+set name = COALESCE(NULLIF($2, ''), name),
+email = COALESCE(NULLIF($3, ''), email),
 updated_at = CURRENT_TIMESTAMP
 WHERE id = $1
 RETURNING id, name, email, photo, verified, password, role, created_at, updated_at
 `
 
 type UpdateUserParams struct {
-	ID       int64       `json:"id"`
-	Name     pgtype.Text `json:"name"`
-	Email    string      `json:"email"`
-	Photo    pgtype.Text `json:"photo"`
-	Verified bool        `json:"verified"`
-	Password pgtype.Text `json:"password"`
-	Role     string      `json:"role"`
+	ID      int64       `json:"id"`
+	Column2 interface{} `json:"column_2"`
+	Column3 interface{} `json:"column_3"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, updateUser,
-		arg.ID,
-		arg.Name,
-		arg.Email,
-		arg.Photo,
-		arg.Verified,
-		arg.Password,
-		arg.Role,
-	)
+	row := q.db.QueryRow(ctx, updateUser, arg.ID, arg.Column2, arg.Column3)
 	var i User
 	err := row.Scan(
 		&i.ID,

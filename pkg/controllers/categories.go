@@ -3,7 +3,7 @@ package controllers
 import (
 	"net/http"
 
-	"study_marketplace/pkg/domen/models"
+	respmodels "study_marketplace/pkg/domen/models/response_models"
 	"study_marketplace/pkg/services"
 
 	"github.com/gin-gonic/gin"
@@ -31,9 +31,9 @@ func (t *categoriesController) CatGetAll(ctx *gin.Context) {
 	categories, err := t.categoriesService.CatGetAll(ctx)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, models.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, models.NewResponseSuccess(categories))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(categories))
 }

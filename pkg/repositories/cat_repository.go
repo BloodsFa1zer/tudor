@@ -9,7 +9,7 @@ import (
 type CategoriesRepository interface {
 	GetCategoriesWithChildren(ctx context.Context) ([]queries.GetCategoriesWithChildrenRow, error)
 	GetCategoryAndParent(ctx context.Context, name string) (queries.GetCategoryAndParentRow, error)
-	GetCategoryByID(ctx context.Context, id int32) (queries.Category, error)
+	GetCategoryByID(ctx context.Context, id int) (queries.Category, error)
 	GetCategoryByName(ctx context.Context, name string) (queries.Category, error)
 	GetCategoryParents(ctx context.Context) ([]queries.Category, error)
 }
@@ -30,8 +30,8 @@ func (t *categoriesRepository) GetCategoryAndParent(ctx context.Context, name st
 	return t.q.GetCategoryAndParent(ctx, name)
 }
 
-func (t *categoriesRepository) GetCategoryByID(ctx context.Context, id int32) (queries.Category, error) {
-	return t.q.GetCategoryByID(ctx, id)
+func (t *categoriesRepository) GetCategoryByID(ctx context.Context, id int) (queries.Category, error) {
+	return t.q.GetCategoryByID(ctx, int64(id))
 }
 
 func (t *categoriesRepository) GetCategoryByName(ctx context.Context, name string) (queries.Category, error) {
