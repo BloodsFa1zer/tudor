@@ -54,7 +54,7 @@ definitions:
       title:
         type: string
     type: object
-  models.AdvertisementUpdate:
+  reqmodels.CreateUpdateAdvertisementRequest:
     properties:
       attachment:
         type: string
@@ -62,12 +62,12 @@ definitions:
         type: string
       description:
         type: string
+      email:
+        type: string
       experience:
         type: integer
       format:
         type: string
-      id:
-        type: integer
       language:
         type: string
       mobile_phone:
@@ -81,59 +81,45 @@ definitions:
       title:
         type: string
     type: object
-  models.EmailRequest:
-    properties:
-      email:
-        type: string
-    type: object
-  models.Id:
+  reqmodels.DeleteAdvertisementRequest:
     properties:
       id:
         type: integer
-    required:
-    - id
     type: object
-  models.InLogin:
+  reqmodels.LoginUserRequest:
     properties:
       email:
         type: string
       password:
         type: string
     type: object
-  models.UserPassword:
+  reqmodels.PasswordCreateRequest:
     properties:
       password:
         type: string
-    required:
-    - password
     type: object
-  pgtype.Text:
+  reqmodels.PasswordResetRequest:
     properties:
-      string:
+      email:
         type: string
-      valid:
-        type: boolean
     type: object
-  queries.User:
+  reqmodels.RegistractionUserRequest:
     properties:
-      created_at:
+      email:
         type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  reqmodels.UpdateUserRequest:
+    properties:
       email:
         type: string
       id:
         type: integer
       name:
-        $ref: '#/definitions/pgtype.Text'
-      password:
-        $ref: '#/definitions/pgtype.Text'
-      photo:
-        $ref: '#/definitions/pgtype.Text'
-      role:
         type: string
-      updated_at:
-        type: string
-      verified:
-        type: boolean
     type: object
 info:
   contact:
@@ -190,14 +176,15 @@ paths:
     post:
       consumes:
       - application/json
-      description: requires email and password
+      description: requires email and password.  Returns token and in header Authorization
+        token as well
       parameters:
       - description: request info
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/models.InLogin'
+          $ref: '#/definitions/reqmodels.LoginUserRequest'
       produces:
       - application/json
       responses:
@@ -213,14 +200,15 @@ paths:
     post:
       consumes:
       - application/json
-      description: requires username and password for registration
+      description: requires email and password for registration. Returns user info
+        and in header Authorization token
       parameters:
       - description: user info for sign in
         in: body
         name: user_info
         required: true
         schema:
-          $ref: '#/definitions/queries.User'
+          $ref: '#/definitions/reqmodels.RegistractionUserRequest'
       produces:
       - application/json
       responses:
@@ -241,7 +229,7 @@ paths:
         name: reset-password
         required: true
         schema:
-          $ref: '#/definitions/models.EmailRequest'
+          $ref: '#/definitions/reqmodels.PasswordResetRequest'
       produces:
       - application/json
       responses:
@@ -345,7 +333,7 @@ paths:
         name: advertisement-delete
         required: true
         schema:
-          $ref: '#/definitions/models.Id'
+          $ref: '#/definitions/reqmodels.DeleteAdvertisementRequest'
       produces:
       - application/json
       responses:
@@ -356,7 +344,7 @@ paths:
             type: object
       security:
       - JWT: []
-      summary: PATCH request to delete advertisement
+      summary: DELETE request to delete advertisement
       tags:
       - advertisement-delete
   /protected/advertisement-filter:
@@ -423,7 +411,7 @@ paths:
         name: advertisement-patch
         required: true
         schema:
-          $ref: '#/definitions/models.AdvertisementUpdate'
+          $ref: '#/definitions/reqmodels.CreateUpdateAdvertisementRequest'
       produces:
       - application/json
       responses:
@@ -451,7 +439,7 @@ paths:
         name: create-password
         required: true
         schema:
-          $ref: '#/definitions/models.UserPassword'
+          $ref: '#/definitions/reqmodels.PasswordCreateRequest'
       produces:
       - application/json
       responses:
@@ -477,7 +465,7 @@ paths:
         name: userinfo
         required: true
         schema:
-          $ref: '#/definitions/queries.User'
+          $ref: '#/definitions/reqmodels.UpdateUserRequest'
       produces:
       - application/json
       responses:
