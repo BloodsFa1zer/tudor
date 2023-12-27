@@ -8,7 +8,7 @@ import (
 
 type CategoriesService interface {
 	CatGetAll(ctx context.Context) ([]queries.GetCategoriesWithChildrenRow, error)
-	CatGetByID(ctx context.Context, id int32) (queries.Category, error)
+	CatGetByID(ctx context.Context, id int) (queries.Category, error)
 	CatGetByName(ctx context.Context, name string) (queries.Category, error)
 	CatGetFullName(ctx context.Context, name string) (queries.GetCategoryAndParentRow, error)
 	CatGetParets(ctx context.Context) ([]queries.Category, error)
@@ -32,7 +32,7 @@ func (t *categoriesService) CatGetAll(ctx context.Context) ([]queries.GetCategor
 	return categories, nil
 }
 
-func (t *categoriesService) CatGetByID(ctx context.Context, id int32) (queries.Category, error) {
+func (t *categoriesService) CatGetByID(ctx context.Context, id int) (queries.Category, error) {
 	category, err := t.db.GetCategoryByID(ctx, id)
 
 	if err != nil {

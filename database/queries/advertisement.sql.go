@@ -88,7 +88,7 @@ type CreateAdvertisementRow struct {
 	ProviderRole       string      `json:"provider_role"`
 	ProviderCreatedAt  time.Time   `json:"provider_created_at"`
 	ProviderUpdatedAt  time.Time   `json:"provider_updated_at"`
-	CategoryID         int32       `json:"category_id"`
+	CategoryID         int64       `json:"category_id"`
 	CategoryName       string      `json:"category_name"`
 	ParentCategoryName string      `json:"parent_category_name"`
 }
@@ -244,7 +244,7 @@ type FilterAdvertisementsRow struct {
 	ProviderRole       string      `json:"provider_role"`
 	ProviderCreatedAt  time.Time   `json:"provider_created_at"`
 	ProviderUpdatedAt  time.Time   `json:"provider_updated_at"`
-	CategoryID         int32       `json:"category_id"`
+	CategoryID         int64       `json:"category_id"`
 	CategoryName       string      `json:"category_name"`
 	ParentCategoryName string      `json:"parent_category_name"`
 	TotalItems         int64       `json:"total_items"`
@@ -353,7 +353,7 @@ type GetAdvertisementAllRow struct {
 	ProviderRole       string      `json:"provider_role"`
 	ProviderCreatedAt  time.Time   `json:"provider_created_at"`
 	ProviderUpdatedAt  time.Time   `json:"provider_updated_at"`
-	CategoryID         int32       `json:"category_id"`
+	CategoryID         int64       `json:"category_id"`
 	CategoryName       string      `json:"category_name"`
 	ParentCategoryName string      `json:"parent_category_name"`
 }
@@ -731,7 +731,7 @@ type GetAdvertisementCategoryAndUserByIDRow struct {
 	ProviderRole       string      `json:"provider_role"`
 	ProviderCreatedAt  time.Time   `json:"provider_created_at"`
 	ProviderUpdatedAt  time.Time   `json:"provider_updated_at"`
-	CategoryID         int32       `json:"category_id"`
+	CategoryID         int64       `json:"category_id"`
 	CategoryName       string      `json:"category_name"`
 	ParentCategoryName string      `json:"parent_category_name"`
 }
@@ -810,7 +810,7 @@ type GetMyAdvertisementRow struct {
 	ProviderRole       string      `json:"provider_role"`
 	ProviderCreatedAt  time.Time   `json:"provider_created_at"`
 	ProviderUpdatedAt  time.Time   `json:"provider_updated_at"`
-	CategoryID         int32       `json:"category_id"`
+	CategoryID         int64       `json:"category_id"`
 	CategoryName       string      `json:"category_name"`
 	ParentCategoryName string      `json:"parent_category_name"`
 }

@@ -30,9 +30,9 @@ type Advertisement struct {
 }
 
 type Category struct {
-	ID       int32       `json:"id"`
+	ID       int64       `json:"id"`
 	Name     string      `json:"name"`
-	ParentID pgtype.Int4 `json:"parent_id"`
+	ParentID pgtype.Int8 `json:"parent_id"`
 }
 
 type User struct {
