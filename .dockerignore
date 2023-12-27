@@ -1,28 +1,29 @@
-dev_local/.env
-.env
+# flyctl launch added from .gitignore
+**/dev_local/.env
+**/.env
 # Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
+**/*.exe
+**/*.exe~
+**/*.dll
+**/*.so
+**/*.dylib
 
 # Test binary, built with `go test -c`
-*.test
+**/*.test
 
 # Output of the go coverage tool, specifically when used with LiteIDE
-*.out
+**/*.out
 
 # Dependency directories (remove the comment below to include it)
-vendor/
+**/vendor
 
 # Go workspace file
-go.work
-/bin/sqlc
+**/go.work
+bin/sqlc
 
 # IntelliJ
-.idea/
-bin/
+**/.idea
+**/bin
 
-.devcontainer/devcontainer.env
+**/.devcontainer/devcontainer.env
 fly.toml
