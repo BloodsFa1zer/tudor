@@ -5,10 +5,10 @@ sql:
 	sqlc generate 
 
 migrate:
-	migrate -verbose -path ./database/migrations -database $MIGRATION_URL  up
+	migrate -verbose -path ./database/migrations -database $(MIGRATION_URL) up
 
 migrate-down:
-	migrate -verbose -path ./database/migrations -database $MIGRATION_URL  down
+	migrate -verbose -path ./database/migrations -database $(MIGRATION_URL) down
 
 migrate-create:
 	migrate create -ext sql -dir ./database/migrations -seq $(name)
@@ -16,7 +16,7 @@ migrate-create:
 build: 
 	go build -o ./bin/run ./main.go
 
-run: migrate
+run: migrate build
 	./bin/run
 
 .PHONY: swag sql migrate migrate-down migrate-create build run
