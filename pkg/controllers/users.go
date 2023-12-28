@@ -132,7 +132,8 @@ func (t *userController) UserPatch(ctx *gin.Context) {
 		return
 	}
 	ctx.Header("Authorization", token)
-	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(user))
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(
+		reqm.UserToUserResponse(user)))
 }
 
 // @Reset-password	godoc

@@ -3,7 +3,6 @@ package controllers
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	reqm "study_marketplace/pkg/domen/mappers/reqresp_mappers"
 	"study_marketplace/pkg/services"
@@ -11,10 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/markbates/goth/gothic"
 )
-
-type contextKey string
-
-const providerKey contextKey = "provider"
 
 type AuthController interface {
 	AuthWithProvider(ctx *gin.Context)
@@ -32,8 +27,7 @@ func NewAuthController(redirectPage string, us services.UserService) AuthControl
 
 func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
 	provider := ctx.Param("provider")
-	ctx.Request = ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), providerKey, provider))
-	fmt.Println("provider", provider)
+	ctx.Request = ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), "provider", provider))
 	user, err := gothic.CompleteUserAuth(ctx.Writer, ctx.Request)
 	if err != nil {
 		ctx.AbortWithError(http.StatusForbidden, gin.Error{Err: errors.New("something went wrong")})
@@ -44,9 +38,9 @@ func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
 		ctx.AbortWithError(http.StatusForbidden, gin.Error{Err: errors.New("something went wrong")})
 		return
 	}
-	ctx.Request.Header.Add("Authorization", token)
+	// ctx.Header("Authorization", token)
 	ctx.AddParam("token", token) //TODO: get away token from params
-	ctx.Redirect(http.StatusPermanentRedirect, c.redirectPage+"/:token")
+	ctx.Redirect(http.StatusPermanentRedirect, c.redirectPage+"/"+token)
 }
 
 // @Auth-with-provider			godoc
@@ -60,6 +54,7 @@ func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
 // @Router						/api/auth/{provider} [get]
 func (c *authController) AuthWithProvider(ctx *gin.Context) {
 	provider := ctx.Param("provider")
-	ctx.Request = ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), providerKey, provider))
+
+	ctx.Request = ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), "provider", provider))
 	gothic.BeginAuthHandler(ctx.Writer, ctx.Request)
 }

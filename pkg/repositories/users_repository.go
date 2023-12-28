@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"fmt"
 
 	"study_marketplace/database/queries"
 	dbmappers "study_marketplace/pkg/domen/mappers/db_mappers"
@@ -72,6 +73,7 @@ func (t *usersRepository) UpdateUser(ctx context.Context, user *entities.User) (
 func (t *usersRepository) CreateorUpdateUser(ctx context.Context, user *entities.User) (*entities.User, error) {
 	dbuser, err := t.q.CreateOrUpdateUser(ctx, dbmappers.UserToCreateOrUpdateUser(user))
 	if err != nil {
+		fmt.Printf("err: %v\n", err)
 		return nil, err
 	}
 	return dbmappers.CreateOrUpdateUserRowToUser(dbuser), nil
