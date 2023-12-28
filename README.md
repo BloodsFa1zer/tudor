@@ -1,87 +1,45 @@
 # Backend for teamchallange project
 
-Backend can be available at:
+Backend can be available at: <https://tudor-match.fly.dev>
 
-- https://dev-backend-b4vo.onrender.com/
+Swagger: <https://tudor-match.fly.dev/api/docs/index.html>
 
-## Local run in Docker
+## Local run in .devcontainer 
 
-First of all, install "Doker" and "Docker compose".
-These URLs have instructions for installing "Doker" on any operating system like Linux, Windows, and Mac.
+Install extension for VS Code named Dev Conteiners
 
-- https://docs.docker.com/engine/install/
-- https://docs.docker.com/compose/install/
+Instructions on how to use Dev Containers:
+<https://code.visualstudio.com/docs/devcontainers/tutorial>
 
-### docker-compose
 
-Download the git repository with the code and switch to the branch named "dev".
-
-Create a new network inside docker and named it as tch_network:
+Before building project requires the presence of a .env file in .devcontainer folder (example can be found in .env.example)
 
 ```bash
-docker network create tch_network
+DB_URL= # db connection string
+MIGRATIONS_URL= # db connection string for migrations in most cases it is the same as DB_URL
+PORT= # port to run the server on
+GOOGLE_OAUTH_CLIENT_ID= # google oauth client id
+GOOGLE_OAUTH_CLIENT_SECRET= # google oauth client secret
+GOOGLE_OAUTH_REDIRECT_PAGE= # google oauth redirect page domen +.../api/auth/google/callback                                   
+FACEBOOK_OAUTH_CLIENT_ID= # facebook oauth client id
+FACEBOOK_OAUTH_CLIENT_SECRET= # facebook oauth client secret
+FACEBOOK_OAUTH_REDIRECT_PAGE= # facebook oauth redirect page domen +.../api/auth/facebook/callback
+GOOGLE_EMAIL_ADDRESS= # email address to send emails from
+GOOGLE_EMAIL_SECRET= # email password
+PASSWORD_RESET_REDIRECT_PAGE=   # password reset redirect page domen +.../api/auth/password-reset/callback
+JWT_SECRET= # jwt secret key
+SQLC_AUTH_TOKEN= # sqlc auth token
+COOKIE_SECRET= # cookie secret key
+ALLOWED_ORIGINS= # allowed origins for cors (comma separated) for example: http://localhost:3000,http://localhost:3001
+REDIRECT_URL= # redirect url for oauth (for example: http://localhost:3000)
 ```
-
-Check whether the docker network has been created using the command:
-
-```bash
-docker network ls
-```
-
-Create a permanent volume inside docker and named it as tch_postgres_pg_data:
-
-```bash
-docker volume create tch_postgres_pg_data
-```
-
-Check whether the docker volume has been created using the command:
-
-```bash
-docker volume ls
-```
-
-Change the directory to dev_local, this directory should contain the docker-compose.yml file, then you can run local containers with the command:
-
-```bash
-docker-compose up -d
-```
-
-Check whether the docker containers have been created using the command:
-
-```bash
-docker-compose ps
-```
-
-If the containers are running, you need to enter inside the container using the command:
-
-```bash
-docker exec -it tch_backend bash
-```
-
-Before building project requires the presence of a .env file (example can be found in .env.example)
-
-```bash
-DATABASE_URL=postgresql://postgres:postgres@tch_postgres:5432/store
-SERVER_HOSTNAME=":8000"
-DOCS_HOSTNAME=":8000"
-GOOGLE_CALLBACK_DOMAIN='your-own'
-GOOGLE_OAUTH_CLIENT_ID='your-own'
-GOOGLE_OAUTH_CLIENT_SECRET='your-own'
-GOOGLE_OAUTH_REDIRECT_PAGE='your-own'
-GOOGLE_EMAIL_ADDRESS='your-own'
-GOOGLE_EMAIL_SECRET='your-own'
-PASSWORD_RESET_REDIRECT_PAGE='your-own'
-```
-
 Run the application inside the container.
 
 ```bash
-go mod download
-go mod vendor
-go run main.go
+make run
 ```
 
-If everything is OK, you can use the application with any browser by this URL: http://localhost:8000
+If everything is OK, you can use the application with any browser by this URL: http://localhost:_your_port_
 
 ## Documentation
 
@@ -89,106 +47,64 @@ Swagger requires env variable **SERVER_HOSTNAME** defined in .env file
 
 Documentation is available at:
 
-- http://localhost:8000/api/docs/index.html
-- https://dev-backend-b4vo.onrender.com/api/docs/index.html  
+- http://localhost:__your_port__/api/docs/index.html
+-  https://tudor-match.fly.dev/api/docs/index.html
 
-To updated swagger after changing the code run from the repo root:
-
-1. Install swaggo:
-
+ 
+**Dev Containers is set up to install Swagger on its own.**
+But if you want to install it yourself, or you haven't installed Devcontainer run this code:
 ```bash
 go install github.com/swaggo/swag/cmd/swag@latest`
 ```
 
-2. Generate docs:
-
+- Generate docs (path to docs used in main.go: `./docs`): 
 ```bash
 swag init --parseDependency --parseInternal --parseDepth 1 -md ./documentation -o ./docs
-   !! path to docs used in main.go: `_ "study_marketplace/app/docs"` !!
 ```
-
 ## DB code generation
 
-For code generation from SQL to golang we use **sqlc**. Documentation https://docs.sqlc.dev/en/v1.23.0/
+For code generation from SQL to golang we use ***sqlc***. Documentation https://docs.sqlc.dev/en/v1.23.0/
 
-Install sqlc
-
+***Dev Containers is configured to install sqlc itself*** as well.
+If you want do it by yourself:
 ```bash
-go install github.com/sqlc-dev/sqlc/cmd/sqlc@v1.23.0
+go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 ```
 
-Create SQL queries in:
+Create SQL queries in: `./database/queries/{entity_name}.sql`
 
+In root folder with present `./sqlc.yaml` file run:
 ```bash
-./queries/{entity_name}.sql
+make db
 ```
-
-In root folder with present `sqlc.yaml` file run:
-
+or
 ```bash
 sqlc generate
 ```
 
-Generated code will be in `./queries/`
+Generated code will be in `./database/queries/`
 
 ## Migrations
 
-Database migrations written in Go. https://github.com/golang-migrate/migrate
+Database migrations written in Go. https://github.com/golang-migrate/migrate/v4
 
-Use it as CLI:
+MigrationCLI instaled in DevContainer, but if you watn do it by yourself:
 
 ```bash
-go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.16.2
+go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 ```
 
 For migration file creation use:
-
 ```bash
-migrate create -ext sql -dir migrations -seq {action_name}
+make migrate-create name={action_name}
 ```
 
-Run migrations:
-
+Migration is started when you run the program with the command `make run`, howewer if you want do it by yourself:
 ```bash
-migrate -path migrations -database "postgresql://postgres:postgres@tch_postgres:5432/store?sslmode=disable" -verbose up
+make migration
 ```
 
-Migration using files from:
-
-```bash
-/app/db/migrations/000001_init_schema.{up/down}.sql -- up used for upstream migration
-                                                    -- down for downstream migration
-```
-
-In case of failure and 'dirty database' connect to db with psql and run:
-
-```bash
-update schema_migrations set dirty=false;
-```
-
-## Database examination
-
-From host machine, not from docker container, run:
-
-```bash
-docker exec -it tch_postgres bash
-```
-
-Inside of the docker container named tch_postgres, run:
-
-```bash
-psql -U postgres store
-```
-
-```bash
-\dt
-```
-
-If table 'users' not present run migrations, else:
-
-```bash
-SELECT * FROM users;
-```
+Migration using files from: ``./database/migration``
 
 ## Request examples
 
@@ -229,7 +145,7 @@ Response body:
 
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWZkNTU1MTUtZjYxMS00MTgyLTgwOGUtZjgwY2E1MjNkM2MzIiwidXNlcm5hbWUiOiJ3b3JsZCIsImV4cCI6MTY5NTcxNjk0MCwiaWF0IjoxNjk1NjMwNTQwfQ.JEJkT1vQs_WWFZ_fAPe2i1ScZavD0LgQOGzVJH-coXo"
+  "token": "some_token"
 }
 ```
 
