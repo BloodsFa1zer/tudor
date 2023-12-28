@@ -8,9 +8,7 @@ import (
 
 type Config struct {
 	DatabaseUrl               string   `env:"DB_URL,required"`
-	ServerHostname            string   `env:"SERVER_HOSTNAME,required"`
-	DocsHostname              string   `env:"DOCS_HOSTNAME,required"`
-	GoogleCallbackDomain      string   `env:"GOOGLE_CALLBACK_DOMAIN"`
+	ServerHostname            string   `env:"PORT,required"`
 	GoogleOauthClientId       string   `env:"GOOGLE_OAUTH_CLIENT_ID,required"`
 	GoogleOauthClientSecret   string   `env:"GOOGLE_OAUTH_CLIENT_SECRET,required"`
 	GoogleOauthRedirectPage   string   `env:"GOOGLE_OAUTH_REDIRECT_PAGE,required"`
