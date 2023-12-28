@@ -39,7 +39,7 @@ Run the application inside the container.
 make run
 ```
 
-If everything is OK, you can use the application with any browser by this URL: http://localhost:_your_port_
+If everything is OK, you can use the application with any browser by this URL: `http://localhost:your_port`
 
 ## Documentation
 
@@ -47,8 +47,8 @@ Swagger requires env variable **SERVER_HOSTNAME** defined in .env file
 
 Documentation is available at:
 
-- http://localhost:__your_port__/api/docs/index.html
--  https://tudor-match.fly.dev/api/docs/index.html
+- http://localhost:**your_port**/api/docs/index.html
+- https://tudor-match.fly.dev/api/docs/index.html
 
  
 **Dev Containers is set up to install Swagger on its own.**
