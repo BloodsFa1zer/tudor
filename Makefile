@@ -1,7 +1,7 @@
 swag:
 	swag init --parseDependency --parseInternal --parseDepth 1 -md ./documentation -o ./docs
 
-sql:
+db:
 	sqlc generate 
 
 migrate:
@@ -19,4 +19,10 @@ build:
 run: migrate build
 	./bin/run
 
-.PHONY: swag sql migrate migrate-down migrate-create build run
+fly:
+	flyctl auth login
+
+deploy:
+	flyctl deploy
+
+.PHONY: swag sql migrate migrate-down migrate-create build run fly deploy
