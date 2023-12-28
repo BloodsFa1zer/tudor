@@ -18,11 +18,11 @@ RETURNING *;
 WITH updated_user AS (
   UPDATE users
   SET 
-    name = COALESCE(NULLIF($1, ''), name),
-    photo = COALESCE(NULLIF($3, ''), photo),
-    verified = COALESCE(NULLIF($4, ''), verified),
-    password = COALESCE(NULLIF($5, ''), password),
-    role = COALESCE(NULLIF($6, ''), role),
+    name = COALESCE(sqlc.narg('name')::text, name),
+    photo = COALESCE(sqlc.narg('photo')::text, photo),
+    verified = COALESCE(sqlc.narg('verified')::bool, verified),
+    password = COALESCE(sqlc.narg('password')::text, password),
+    role = COALESCE(sqlc.narg('role')::text, role),
     updated_at = CURRENT_TIMESTAMP
   WHERE users.email = $2
   RETURNING id, name, email, photo, verified, password, role, created_at, updated_at

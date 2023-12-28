@@ -16,11 +16,11 @@ const createOrUpdateUser = `-- name: CreateOrUpdateUser :one
 WITH updated_user AS (
   UPDATE users
   SET 
-    name = COALESCE(NULLIF($1, ''), name),
-    photo = COALESCE(NULLIF($3, ''), photo),
-    verified = COALESCE(NULLIF($4, ''), verified),
-    password = COALESCE(NULLIF($5, ''), password),
-    role = COALESCE(NULLIF($6, ''), role),
+    name = COALESCE($7::text, name),
+    photo = COALESCE($8::text, photo),
+    verified = COALESCE($9::bool, verified),
+    password = COALESCE($10::text, password),
+    role = COALESCE($11::text, role),
     updated_at = CURRENT_TIMESTAMP
   WHERE users.email = $2
   RETURNING id, name, email, photo, verified, password, role, created_at, updated_at
@@ -37,12 +37,17 @@ SELECT id, name, email, photo, verified, password, role, created_at, updated_at 
 `
 
 type CreateOrUpdateUserParams struct {
-	Column1 interface{} `json:"column_1"`
-	Email   string      `json:"email"`
-	Column3 interface{} `json:"column_3"`
-	Column4 interface{} `json:"column_4"`
-	Column5 interface{} `json:"column_5"`
-	Column6 interface{} `json:"column_6"`
+	Name       pgtype.Text `json:"name"`
+	Email      string      `json:"email"`
+	Photo      pgtype.Text `json:"photo"`
+	Verified   bool        `json:"verified"`
+	Password   pgtype.Text `json:"password"`
+	Role       string      `json:"role"`
+	Name_2     pgtype.Text `json:"name_2"`
+	Photo_2    pgtype.Text `json:"photo_2"`
+	Verified_2 pgtype.Bool `json:"verified_2"`
+	Password_2 pgtype.Text `json:"password_2"`
+	Role_2     pgtype.Text `json:"role_2"`
 }
 
 type CreateOrUpdateUserRow struct {
@@ -59,12 +64,17 @@ type CreateOrUpdateUserRow struct {
 
 func (q *Queries) CreateOrUpdateUser(ctx context.Context, arg CreateOrUpdateUserParams) (CreateOrUpdateUserRow, error) {
 	row := q.db.QueryRow(ctx, createOrUpdateUser,
-		arg.Column1,
+		arg.Name,
 		arg.Email,
-		arg.Column3,
-		arg.Column4,
-		arg.Column5,
-		arg.Column6,
+		arg.Photo,
+		arg.Verified,
+		arg.Password,
+		arg.Role,
+		arg.Name_2,
+		arg.Photo_2,
+		arg.Verified_2,
+		arg.Password_2,
+		arg.Role_2,
 	)
 	var i CreateOrUpdateUserRow
 	err := row.Scan(

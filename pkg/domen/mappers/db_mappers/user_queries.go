@@ -10,11 +10,17 @@ import (
 
 func UserToCreateOrUpdateUser(user *entities.User) queries.CreateOrUpdateUserParams {
 	return queries.CreateOrUpdateUserParams{
-		Column1: StrTopgText(user.Name),
-		Email:   user.Email,
-		Column3: StrTopgText(user.Photo),
-		Column4: user.Verified,
-		Column5: user.Role,
+		Name:       StrTopgText(user.Name),
+		Email:      user.Email,
+		Photo:      StrTopgText(user.Photo),
+		Verified:   user.Verified,
+		Password:   StrTopgText(user.Password),
+		Role:       user.Role,
+		Name_2:     StrTopgText(user.Name),
+		Photo_2:    StrTopgText(user.Photo),
+		Verified_2: BoolTopgBool(user.Verified),
+		Password_2: StrTopgText(user.Password),
+		Role_2:     StrTopgText(user.Role),
 	}
 }
 
@@ -77,6 +83,13 @@ func IntTopgInt4(i int32) pgtype.Int4 {
 		return pgtype.Int4{Int32: int32(i), Valid: true}
 	}
 	return pgtype.Int4{Int32: 0, Valid: false}
+}
+
+func BoolTopgBool(b bool) pgtype.Bool {
+	if b {
+		return pgtype.Bool{Bool: b, Valid: true}
+	}
+	return pgtype.Bool{Bool: false, Valid: false}
 }
 
 func ParamListUsersToDbParam(param reqmodels.UsersListRequest) queries.ListUsersParams {
