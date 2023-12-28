@@ -14,7 +14,7 @@ Instructions on how to use Dev Containers:
 
 Before building project requires the presence of a .env file in .devcontainer folder (example can be found in .env.example)
 
-```bash
+```env
 DB_URL= # db connection string
 MIGRATIONS_URL= # db connection string for migrations in most cases it is the same as DB_URL
 PORT= # port to run the server on
@@ -39,7 +39,7 @@ Run the application inside the container.
 make run
 ```
 
-If everything is OK, you can use the application with any browser by this URL: `http://localhost:your_port`
+If everything is OK, you can use the application with any browser by this URL: http://localhost:_your_port_
 
 ## Documentation
 
@@ -47,8 +47,8 @@ Swagger requires env variable **SERVER_HOSTNAME** defined in .env file
 
 Documentation is available at:
 
-- http://localhost:**your_port**/api/docs/index.html
-- https://tudor-match.fly.dev/api/docs/index.html
+- <http://localhost:your_port/api/docs/index.html>
+-  <https://tudor-match.fly.dev/api/docs/index.html>
 
  
 **Dev Containers is set up to install Swagger on its own.**
@@ -59,7 +59,7 @@ go install github.com/swaggo/swag/cmd/swag@latest`
 
 - Generate docs (path to docs used in main.go: `./docs`): 
 ```bash
-swag init --parseDependency --parseInternal --parseDepth 1 -md ./documentation -o ./docs
+make swag
 ```
 ## DB code generation
 
@@ -77,11 +77,6 @@ In root folder with present `./sqlc.yaml` file run:
 ```bash
 make db
 ```
-or
-```bash
-sqlc generate
-```
-
 Generated code will be in `./database/queries/`
 
 ## Migrations
