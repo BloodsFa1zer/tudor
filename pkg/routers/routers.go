@@ -16,7 +16,7 @@ func SetupRouter(conf *config.Config, server *gin.Engine, a *controllers.AppCont
 
 	api.GET("/", controllers.HealthCheck)
 	api.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler,
-		ginSwagger.URL(conf.DocsHostname+"/api/docs/doc.json")))
+		ginSwagger.URL(conf.ServerHostname+"/api/docs/doc.json")))
 	api.POST("/auth/register", a.UserRegister)
 	api.POST("/auth/login", a.UserLogin)
 	api.GET("/auth/:provider", a.AuthWithProvider)

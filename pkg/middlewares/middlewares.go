@@ -31,10 +31,10 @@ func NewMiddleware(conf *config.Config) Middleware {
 func (m *middleware) CORS() gin.HandlerFunc {
 	cors := cors.New(
 		cors.Config{
-			AllowWildcard: true,
-			AllowOrigins:  m.conf.AllowedOrigins,
-			AllowMethods:  []string{"GET", "POST", "PATCH", "DELETE", "HEAD", "OPTIONS"},
-			AllowHeaders:  []string{"*"},
+			// AllowWildcard: true,
+			AllowOrigins: m.conf.AllowedOrigins,
+			AllowMethods: []string{"GET", "POST", "PATCH", "DELETE", "HEAD", "OPTIONS"},
+			AllowHeaders: []string{"*"},
 		})
 	return cors
 }
