@@ -48,8 +48,13 @@ func (m *middleware) AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 		authArray := strings.Split(authString, ":")
-		authJWT := authArray[0]
-
+		bearerAndJwt := strings.Split(authArray[0], " ")
+		if len(bearerAndJwt) != 2 && bearerAndJwt[0] != "Bearer" {
+			c.JSON(http.StatusUnauthorized, respmodels.NewResponseFailed("Unauthorized"))
+			c.Abort()
+			return
+		}
+		authJWT := bearerAndJwt[1]
 		token, err := jwtValidate(authJWT, m.conf.JWTSecret)
 
 		if err != nil || !token.Valid {
@@ -67,6 +72,7 @@ func (m *middleware) AuthMiddleware() gin.HandlerFunc {
 
 		// You can access claims data here
 		c.Set("user_id", claims.UserID)
+		c.Set("email", claims.Email)
 		c.Next()
 	}
 }

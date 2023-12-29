@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	reqm "study_marketplace/pkg/domen/mappers/reqresp_mappers"
+	respmodels "study_marketplace/pkg/domen/models/response_models"
 	"study_marketplace/pkg/services"
 
 	"github.com/gin-gonic/gin"
@@ -38,9 +39,8 @@ func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
 		ctx.AbortWithError(http.StatusForbidden, gin.Error{Err: errors.New("something went wrong")})
 		return
 	}
-	// ctx.Header("Authorization", token)
-	ctx.AddParam("token", token) //TODO: get away token from params
-	ctx.Redirect(http.StatusPermanentRedirect, c.redirectPage+"/"+token)
+	ctx.Header("Authorization", token)
+	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(token))
 }
 
 // @Auth-with-provider			godoc
@@ -54,7 +54,6 @@ func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
 // @Router						/api/auth/{provider} [get]
 func (c *authController) AuthWithProvider(ctx *gin.Context) {
 	provider := ctx.Param("provider")
-
 	ctx.Request = ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), "provider", provider))
 	gothic.BeginAuthHandler(ctx.Writer, ctx.Request)
 }

@@ -1,4 +1,4 @@
-# Backend for teamchallange project
+# Backend for start-up project
 
 Backend can be available at: <https://tudor-match.fly.dev>
 
