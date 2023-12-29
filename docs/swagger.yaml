@@ -1,5 +1,26 @@
 basePath: /
 definitions:
+  entities.PaginationInfo:
+    properties:
+      offset:
+        type: integer
+      page:
+        type: integer
+      per_page:
+        type: integer
+      total_count:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  queries.GetCategoriesWithChildrenRow:
+    properties:
+      children: {}
+      parent_id:
+        type: integer
+      parent_name:
+        type: string
+    type: object
   reqmodels.AdvertisementFilterRequest:
     properties:
       category:
@@ -123,6 +144,115 @@ definitions:
       name:
         type: string
     type: object
+  respmodels.AdvertisementPaginationResponse:
+    properties:
+      data:
+        $ref: '#/definitions/respmodels.ResponseAdvertismetPagin'
+      status:
+        type: string
+    type: object
+  respmodels.AdvertisementResponse:
+    properties:
+      data:
+        $ref: '#/definitions/respmodels.ResponseAdvertismet'
+      status:
+        type: string
+    type: object
+  respmodels.AdvertisementsResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/respmodels.ResponseAdvertismet'
+        type: array
+      status:
+        type: string
+    type: object
+  respmodels.FaieldResponse:
+    properties:
+      data:
+        type: string
+      status:
+        type: string
+    type: object
+  respmodels.ResponseAdvertismet:
+    properties:
+      attachment:
+        type: string
+      category_name:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      experience:
+        type: integer
+      format:
+        type: string
+      id:
+        type: integer
+      language:
+        type: string
+      mobile_phone:
+        type: string
+      price:
+        type: integer
+      provider_id:
+        type: integer
+      provider_name:
+        type: string
+      telegram:
+        type: string
+      time:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  respmodels.ResponseAdvertismetPagin:
+    properties:
+      advertisements:
+        items:
+          $ref: '#/definitions/respmodels.ResponseAdvertismet'
+        type: array
+      pagination_info:
+        $ref: '#/definitions/entities.PaginationInfo'
+    type: object
+  respmodels.ResponseUser:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      photo:
+        type: string
+      role:
+        type: string
+      updated_at:
+        type: string
+      verified:
+        type: boolean
+    type: object
+  respmodels.StringResponse:
+    properties:
+      data:
+        type: string
+      status:
+        type: string
+    type: object
+  respmodels.UserInfoResponse:
+    properties:
+      data:
+        $ref: '#/definitions/respmodels.ResponseUser'
+      status:
+        type: string
+    type: object
 info:
   contact:
     email: '[TODO]'
@@ -178,8 +308,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: requires email and password.  Returns token and Authorization token
-        in header as well
+      description: requires email and password. Returns Authorization token in header
+        as well
       parameters:
       - description: request info
         in: body
@@ -190,11 +320,14 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "202":
+          description: Accepted
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/respmodels.UserInfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FaieldResponse'
       summary: POST request for login
       tags:
       - login
@@ -214,11 +347,14 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/respmodels.UserInfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FaieldResponse'
       summary: POST request for registration
       tags:
       - register
@@ -238,8 +374,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/respmodels.StringResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FaieldResponse'
       summary: POST request to update password
       tags:
       - reset-password
@@ -252,8 +391,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/respmodels.AdvertisementsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FaieldResponse'
       summary: GET request to get 10 items sorted by creation date in desc order
       tags:
       - advertisements-getall
@@ -272,8 +414,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/respmodels.AdvertisementResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FaieldResponse'
       security:
       - JWT: []
       summary: GET request to get advertisement by id
@@ -288,8 +433,9 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            items:
+              $ref: '#/definitions/queries.GetCategoriesWithChildrenRow'
+            type: array
       summary: GET all categories parents with children in array
       tags:
       - categories/getall
@@ -314,8 +460,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/respmodels.AdvertisementResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FaieldResponse'
       security:
       - JWT: []
       summary: POST request to create advertisement
@@ -342,8 +491,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/respmodels.StringResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FaieldResponse'
       security:
       - JWT: []
       summary: DELETE request to delete advertisement
@@ -370,8 +522,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/respmodels.AdvertisementPaginationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FaieldResponse'
       security:
       - JWT: []
       summary: POST request to get advertisement based on params in filter
@@ -392,8 +547,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/respmodels.AdvertisementsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FaieldResponse'
       security:
       - JWT: []
       summary: GET request to get user created advertisements
@@ -420,8 +578,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/respmodels.AdvertisementResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FaieldResponse'
       security:
       - JWT: []
       summary: PATCH request to update advertisement
@@ -448,8 +609,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/respmodels.StringResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FaieldResponse'
       summary: PATCH request to create new password
       tags:
       - create-password
@@ -475,8 +639,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/respmodels.UserInfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FaieldResponse'
       security:
       - JWT: []
       summary: PATCH request to update user
@@ -497,8 +664,11 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/respmodels.UserInfoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FaieldResponse'
       security:
       - JWT: []
       summary: Get request to see user info

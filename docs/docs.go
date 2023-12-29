@@ -50,7 +50,7 @@ const docTemplate = `{
         },
         "/api/auth/login": {
             "post": {
-                "description": "requires email and password.  Returns token and Authorization token in header as well",
+                "description": "requires email and password. Returns Authorization token in header as well",
                 "consumes": [
                     "application/json"
                 ],
@@ -73,11 +73,16 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "202": {
+                        "description": "Accepted",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/respmodels.UserInfoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FaieldResponse"
                         }
                     }
                 }
@@ -108,11 +113,16 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/respmodels.UserInfoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FaieldResponse"
                         }
                     }
                 }
@@ -143,8 +153,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/respmodels.StringResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FaieldResponse"
                         }
                     }
                 }
@@ -193,8 +208,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/respmodels.AdvertisementsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FaieldResponse"
                         }
                     }
                 }
@@ -228,8 +248,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/respmodels.AdvertisementResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FaieldResponse"
                         }
                     }
                 }
@@ -249,8 +274,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/queries.GetCategoriesWithChildrenRow"
+                            }
                         }
                     }
                 }
@@ -293,8 +320,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/respmodels.AdvertisementResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FaieldResponse"
                         }
                     }
                 }
@@ -337,8 +369,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/respmodels.StringResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FaieldResponse"
                         }
                     }
                 }
@@ -381,8 +418,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/respmodels.AdvertisementPaginationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FaieldResponse"
                         }
                     }
                 }
@@ -416,8 +458,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/respmodels.AdvertisementsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FaieldResponse"
                         }
                     }
                 }
@@ -460,8 +507,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/respmodels.AdvertisementResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FaieldResponse"
                         }
                     }
                 }
@@ -499,8 +551,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/respmodels.StringResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FaieldResponse"
                         }
                     }
                 }
@@ -543,8 +600,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/respmodels.UserInfoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FaieldResponse"
                         }
                     }
                 }
@@ -578,8 +640,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/respmodels.UserInfoResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FaieldResponse"
                         }
                     }
                 }
@@ -587,6 +654,38 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "entities.PaginationInfo": {
+            "type": "object",
+            "properties": {
+                "offset": {
+                    "type": "integer"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "per_page": {
+                    "type": "integer"
+                },
+                "total_count": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
+                }
+            }
+        },
+        "queries.GetCategoriesWithChildrenRow": {
+            "type": "object",
+            "properties": {
+                "children": {},
+                "parent_id": {
+                    "type": "integer"
+                },
+                "parent_name": {
+                    "type": "string"
+                }
+            }
+        },
         "reqmodels.AdvertisementFilterRequest": {
             "type": "object",
             "properties": {
@@ -772,6 +871,174 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "respmodels.AdvertisementPaginationResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/respmodels.ResponseAdvertismetPagin"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "respmodels.AdvertisementResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/respmodels.ResponseAdvertismet"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "respmodels.AdvertisementsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/respmodels.ResponseAdvertismet"
+                    }
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "respmodels.FaieldResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "respmodels.ResponseAdvertismet": {
+            "type": "object",
+            "properties": {
+                "attachment": {
+                    "type": "string"
+                },
+                "category_name": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "experience": {
+                    "type": "integer"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "mobile_phone": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "provider_id": {
+                    "type": "integer"
+                },
+                "provider_name": {
+                    "type": "string"
+                },
+                "telegram": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "respmodels.ResponseAdvertismetPagin": {
+            "type": "object",
+            "properties": {
+                "advertisements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/respmodels.ResponseAdvertismet"
+                    }
+                },
+                "pagination_info": {
+                    "$ref": "#/definitions/entities.PaginationInfo"
+                }
+            }
+        },
+        "respmodels.ResponseUser": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "photo": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "verified": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "respmodels.StringResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "respmodels.UserInfoResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/respmodels.ResponseUser"
+                },
+                "status": {
                     "type": "string"
                 }
             }
