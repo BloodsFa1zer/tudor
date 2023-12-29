@@ -40,7 +40,7 @@ func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
 		return
 	}
 	ctx.Header("Authorization", token)
-	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(token))
+	ctx.JSON(http.StatusOK, respmodels.StringResponse{Data: token, Status: "success"})
 }
 
 // @Auth-with-provider			godoc

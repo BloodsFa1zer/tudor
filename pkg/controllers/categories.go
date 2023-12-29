@@ -25,15 +25,15 @@ func NewCatController(sc services.CategoriesService) *categoriesController {
 // @Description	endpoint for getting all categories
 // @Tags			categories/getall
 // @Produce		json
-// @Success		200	{object}	map[string]interface{}
+// @Success		200	{object}	[]queries.GetCategoriesWithChildrenRow
 // @Router			/open/categories/getall [get]
 func (t *categoriesController) CatGetAll(ctx *gin.Context) {
 	categories, err := t.categoriesService.CatGetAll(ctx)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, respmodels.NewResponseFailed(err.Error()))
+		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: err.Error(), Status: "failed"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, respmodels.NewResponseSuccess(categories))
+	ctx.JSON(http.StatusOK, categories)
 }
