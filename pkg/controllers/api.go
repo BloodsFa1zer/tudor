@@ -16,5 +16,5 @@ import (
 // @Success		200	{object}	map[string]interface{}
 // @Router			/api/ [get]
 func HealthCheck(c *gin.Context) {
-	c.JSON(http.StatusOK, respmodels.NewResponseSuccess("Server up and running."))
+	c.JSON(http.StatusOK, respmodels.StringResponse{Data: "Server up and running.", Status: "success"})
 }
