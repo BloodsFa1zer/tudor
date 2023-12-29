@@ -1,12 +1,15 @@
 package respmodels
 
-import "time"
+import (
+	"time"
+)
 
 type SignUpINresponse struct {
-	AccessToken string `json:"access_token"`
+	AccessToken string `json:"data"`
+	Status      string `json:"status"`
 }
 
-type UserInfoResponse struct {
+type ResponseUser struct {
 	ID        int64     `json:"id"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
@@ -15,4 +18,10 @@ type UserInfoResponse struct {
 	Role      string    `json:"role"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// UserInfoResponse godoc
+type UserInfoResponse struct {
+	ResponseUser ResponseUser `json:"data"`
+	Status       string       `json:"status"`
 }

@@ -46,41 +46,64 @@ func UpdateAdvRequestToAdvertisement(req *reqmodels.UpdateAdvertisementRequest, 
 
 func AdvertisementToCreateUpdateAdvertisementResponse(adv *entities.Advertisement) respmodels.AdvertisementResponse {
 	return respmodels.AdvertisementResponse{
-		ID:           adv.ID,
-		Title:        adv.Title,
-		ProviderID:   adv.Provider.ID,
-		ProviderName: adv.Provider.Name,
-		Description:  adv.Description,
-		Attachment:   adv.Attachment,
-		Experience:   int32(adv.Experience),
-		CategoryName: fmt.Sprintf("%s: %s", adv.Category.ParentCategory.Name, adv.Category.Name),
-		Time:         int32(adv.Time),
-		Price:        int32(adv.Price),
-		Format:       adv.Format,
-		Language:     adv.Language,
-		MobilePhone:  adv.MobilePhone,
-		Email:        adv.Email,
-		Telegram:     adv.Telegram,
-		CreatedAt:    adv.CreatedAt.GoString(),
-		UpdatedAt:    adv.UpdatedAt.GoString(),
+		Advertisement: respmodels.ResponseAdvertismet{
+			ID:           adv.ID,
+			Title:        adv.Title,
+			ProviderID:   adv.Provider.ID,
+			ProviderName: adv.Provider.Name,
+			Description:  adv.Description,
+			Attachment:   adv.Attachment,
+			Experience:   int32(adv.Experience),
+			CategoryName: fmt.Sprintf("%s: %s", adv.Category.ParentCategory.Name, adv.Category.Name),
+			Time:         int32(adv.Time),
+			Price:        int32(adv.Price),
+			Format:       adv.Format,
+			Language:     adv.Language,
+			MobilePhone:  adv.MobilePhone,
+			Email:        adv.Email,
+			Telegram:     adv.Telegram,
+			CreatedAt:    adv.CreatedAt.GoString(),
+			UpdatedAt:    adv.UpdatedAt.GoString(),
+		},
+		Status: "success",
 	}
 }
 
-func AdvertisementsToAdvertisementResponses(adv []entities.Advertisement) []respmodels.AdvertisementResponse {
-	advResp := make([]respmodels.AdvertisementResponse, len(adv))
+func AdvertisementsToAdvertisementsResponses(adv []entities.Advertisement) *respmodels.AdvertisementsResponse {
+	advResp := make([]respmodels.ResponseAdvertismet, len(adv))
 	for i := range adv {
-		advResp[i] = AdvertisementToCreateUpdateAdvertisementResponse(&adv[i])
+		advResp[i] = respmodels.ResponseAdvertismet{
+			ID:           adv[i].ID,
+			Title:        adv[i].Title,
+			ProviderID:   adv[i].Provider.ID,
+			ProviderName: adv[i].Provider.Name,
+			Description:  adv[i].Description,
+			Attachment:   adv[i].Attachment,
+			Experience:   int32(adv[i].Experience),
+			CategoryName: fmt.Sprintf("%s: %s", adv[i].Category.ParentCategory.Name, adv[i].Category.Name),
+			Time:         int32(adv[i].Time),
+			Price:        int32(adv[i].Price),
+			Format:       adv[i].Format,
+			Language:     adv[i].Language,
+			MobilePhone:  adv[i].MobilePhone,
+			Email:        adv[i].Email,
+			Telegram:     adv[i].Telegram,
+			CreatedAt:    adv[i].CreatedAt.GoString(),
+			UpdatedAt:    adv[i].UpdatedAt.GoString(),
+		}
 	}
-	return advResp
+	return &respmodels.AdvertisementsResponse{
+		Advertisements: advResp,
+		Status:         "success",
+	}
 }
 
-func AdvertisementPaginationToAdvertisementPaginationResponse(adv *entities.AdvertisementPagination) respmodels.AdvertisementPaginationResponse {
-	return respmodels.AdvertisementPaginationResponse{
-		Advertisements: AdvertisementsToAdvertisementResponses(adv.Advertisements),
-		TotalPages:     adv.PaginationInfo.TotalPages,
-		TotalCount:     adv.PaginationInfo.TotalCount,
-		Page:           adv.PaginationInfo.Page,
-		PerPage:        adv.PaginationInfo.PerPage,
-		Offset:         adv.PaginationInfo.Offset,
+func AdvertisementPaginationToAdvertisementPaginationResponse(adv *entities.AdvertisementPagination) *respmodels.AdvertisementPaginationResponse {
+	return &respmodels.AdvertisementPaginationResponse{
+		ResponseAdvertismetPagin: respmodels.ResponseAdvertismetPagin{
+			Advertisements: AdvertisementsToAdvertisementsResponses(adv.Advertisements).Advertisements,
+			PaginationInfo: adv.PaginationInfo,
+		},
+		Status: "success",
 	}
 }

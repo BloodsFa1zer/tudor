@@ -13,7 +13,7 @@ import (
 )
 
 type UserService interface {
-	UserLogin(ctx context.Context, user *entities.User) (string, error)
+	UserLogin(ctx context.Context, inputuser *entities.User) (string, *entities.User, error)
 	UserRegister(ctx context.Context, user *entities.User) (string, *entities.User, error)
 	UserInfo(ctx context.Context, userId int64) (*entities.User, error)
 	ProviderAuth(ctx context.Context, userInfo *entities.User) (string, error)
@@ -39,22 +39,20 @@ func NewUserService(
 	return &userService{db, conf, gTF, hPass, cPass}
 }
 
-func (s *userService) UserLogin(ctx context.Context, inputuser *entities.User) (string, error) {
+func (s *userService) UserLogin(ctx context.Context, inputuser *entities.User) (string, *entities.User, error) {
 	user, err := s.db.GetUserByEmail(ctx, inputuser.Email)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 	if err = s.comparePass(user.Password, inputuser.Password); err != nil {
 		err := fmt.Errorf("invalid email or password")
-		return "", err
+		return "", nil, err
 	}
-
 	token, err := s.genToken(user.ID, user.Email)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
-
-	return token, nil
+	return token, user, nil
 }
 
 func (s *userService) UserRegister(ctx context.Context, user *entities.User) (string, *entities.User, error) {

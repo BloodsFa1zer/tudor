@@ -1,7 +1,9 @@
 package respmodels
 
-// AdvertisementResponse godoc
-type AdvertisementResponse struct {
+import "study_marketplace/pkg/domen/models/entities"
+
+// ResponseAdvertismet godoc
+type ResponseAdvertismet struct {
 	ID           int64  `json:"id"`
 	Title        string `json:"title"`
 	ProviderID   int64  `json:"provider_id"`
@@ -21,12 +23,26 @@ type AdvertisementResponse struct {
 	UpdatedAt    string `json:"updated_at"`
 }
 
+// AdvertisementResponse godoc
+type AdvertisementResponse struct {
+	Advertisement ResponseAdvertismet `json:"data"`
+	Status        string              `json:"status"`
+}
+
+// AdvertisementsResponse godoc
+type AdvertisementsResponse struct {
+	Advertisements []ResponseAdvertismet `json:"data"`
+	Status         string                `json:"status"`
+}
+
 // AdvertisementPaginationResponse godoc
 type AdvertisementPaginationResponse struct {
-	Advertisements []AdvertisementResponse `json:"advertisements"`
-	TotalPages     int                     `json:"total_pages"`
-	TotalCount     int                     `json:"total_count"`
-	Page           int                     `json:"page"`
-	PerPage        int                     `json:"per_page"`
-	Offset         int                     `json:"offset"`
+	ResponseAdvertismetPagin ResponseAdvertismetPagin `json:"data"`
+	Status                   string                   `json:"status"`
+}
+
+// ResponseAdvertismetPagin godoc
+type ResponseAdvertismetPagin struct {
+	Advertisements []ResponseAdvertismet   `json:"advertisements"`
+	PaginationInfo entities.PaginationInfo `json:"pagination_info"`
 }
