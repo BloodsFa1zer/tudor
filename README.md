@@ -33,8 +33,8 @@ COOKIE_SECRET= # cookie secret key
 ALLOWED_ORIGINS= # allowed origins for cors (comma separated) for example: http://localhost:3000,http://localhost:3001
 REDIRECT_URL= # redirect url for oauth (for example: http://localhost:3000)
 ```
-Run the application inside the container.
 
+Run the application locally:
 ```bash
 make run
 ```
