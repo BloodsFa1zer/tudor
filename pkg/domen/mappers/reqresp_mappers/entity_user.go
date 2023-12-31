@@ -20,3 +20,14 @@ func UserToUserResponse(user *entities.User) *respmodels.UserInfoResponse {
 		Status: "success",
 	}
 }
+
+func TokenToSignUpINresponse(token string) *respmodels.SignUpINresponse {
+	return &respmodels.SignUpINresponse{
+		AccessToken: struct {
+			Token string `json:"token"`
+		}{
+			Token: token,
+		},
+		Status: "success",
+	}
+}

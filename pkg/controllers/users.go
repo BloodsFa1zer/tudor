@@ -34,8 +34,8 @@ func NewUsersController(us services.UserService) UserController {
 // @Tags			register
 // @Accept			json
 // @Produce			json
-// @Param			user_info	body		reqmodels.RegistractionUserRequest	true	"user info for sign in"
-// @Success			201			{object}	respmodels.UserInfoResponse
+// @Param			user_info	body		reqmodels.RegistractionUserRequest	true	"user info for sign up"
+// @Success			201			{object}	respmodels.SignUpINresponse
 // @Failure			400			{object}	respmodels.FaieldResponse
 // @Router			/api/auth/register [post]
 func (t *userController) UserRegister(ctx *gin.Context) {
@@ -49,13 +49,12 @@ func (t *userController) UserRegister(ctx *gin.Context) {
 		return
 	}
 
-	token, user, err := t.userService.UserRegister(ctx, reqm.RegUserToUser(&inputModel))
+	token, _, err := t.userService.UserRegister(ctx, reqm.RegUserToUser(&inputModel))
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, respmodels.FaieldResponse{Data: err.Error(), Status: "failed"})
 		return
 	}
-	ctx.Header("Authorization", token)
-	ctx.JSON(http.StatusCreated, reqm.UserToUserResponse(user))
+	ctx.JSON(http.StatusCreated, reqm.TokenToSignUpINresponse(token))
 }
 
 // @Login			godoc
@@ -65,7 +64,7 @@ func (t *userController) UserRegister(ctx *gin.Context) {
 // @Accept			json
 // @Produce			json
 // @Param			request	body		reqmodels.LoginUserRequest	true	"request info"
-// @Success			202		{object}	respmodels.UserInfoResponse
+// @Success			200		{object}	respmodels.SignUpINresponse
 // @Failure			400		{object}	respmodels.FaieldResponse
 // @Router			/api/auth/login [post]
 func (t *userController) UserLogin(ctx *gin.Context) {
@@ -79,13 +78,12 @@ func (t *userController) UserLogin(ctx *gin.Context) {
 		return
 	}
 
-	token, user, err := t.userService.UserLogin(ctx, reqm.LoginUserToUser(&inputModel))
+	token, _, err := t.userService.UserLogin(ctx, reqm.LoginUserToUser(&inputModel))
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, respmodels.FaieldResponse{Data: err.Error(), Status: "failed"})
 		return
 	}
-	ctx.Header("Authorization", token)
-	ctx.JSON(http.StatusAccepted, reqm.UserToUserResponse(user))
+	ctx.JSON(http.StatusOK, reqm.TokenToSignUpINresponse(token))
 }
 
 // @Userinfo		godoc
@@ -120,7 +118,7 @@ func (t *userController) UserInfo(ctx *gin.Context) {
 // @Param			Authorization	header	string			true	"Insert your access token"
 // @Param			userinfo		body	reqmodels.UpdateUserRequest		true	"user info for update"
 // @Produce			json
-// @Success			200	{object}	respmodels.UserInfoResponse
+// @Success			200	{object}	respmodels.SignUpINresponse
 // @Failure			400	{object}	respmodels.FaieldResponse
 // @Router			/protected/user-patch [patch]
 func (t *userController) UserPatch(ctx *gin.Context) {
@@ -130,13 +128,12 @@ func (t *userController) UserPatch(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: err.Error(), Status: "failed"})
 		return
 	}
-	token, user, err := t.userService.UserPatch(ctx, reqm.UpdateUserRequestToUser(&inputModel, userId))
+	token, _, err := t.userService.UserPatch(ctx, reqm.UpdateUserRequestToUser(&inputModel, userId))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: err.Error(), Status: "failed"})
 		return
 	}
-	ctx.Header("Authorization", token)
-	ctx.JSON(http.StatusOK, reqm.UserToUserResponse(user))
+	ctx.JSON(http.StatusOK, reqm.TokenToSignUpINresponse(token))
 }
 
 // @Reset-password	godoc

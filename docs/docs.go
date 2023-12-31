@@ -41,8 +41,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/respmodels.StringResponse"
                         }
                     }
                 }
@@ -73,10 +72,10 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "202": {
-                        "description": "Accepted",
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.UserInfoResponse"
+                            "$ref": "#/definitions/respmodels.SignUpINresponse"
                         }
                     },
                     "400": {
@@ -103,7 +102,7 @@ const docTemplate = `{
                 "summary": "POST request for registration",
                 "parameters": [
                     {
-                        "description": "user info for sign in",
+                        "description": "user info for sign up",
                         "name": "user_info",
                         "in": "body",
                         "required": true,
@@ -116,7 +115,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.UserInfoResponse"
+                            "$ref": "#/definitions/respmodels.SignUpINresponse"
                         }
                     },
                     "400": {
@@ -600,7 +599,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.UserInfoResponse"
+                            "$ref": "#/definitions/respmodels.SignUpINresponse"
                         }
                     },
                     "400": {
@@ -1018,6 +1017,22 @@ const docTemplate = `{
                 },
                 "verified": {
                     "type": "boolean"
+                }
+            }
+        },
+        "respmodels.SignUpINresponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "token": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "status": {
+                    "type": "string"
                 }
             }
         },

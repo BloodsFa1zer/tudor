@@ -239,6 +239,16 @@ definitions:
       verified:
         type: boolean
     type: object
+  respmodels.SignUpINresponse:
+    properties:
+      data:
+        properties:
+          token:
+            type: string
+        type: object
+      status:
+        type: string
+    type: object
   respmodels.StringResponse:
     properties:
       data:
@@ -277,8 +287,7 @@ paths:
         "200":
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/respmodels.StringResponse'
       summary: Show the status of server.
       tags:
       - root
@@ -320,10 +329,10 @@ paths:
       produces:
       - application/json
       responses:
-        "202":
-          description: Accepted
+        "200":
+          description: OK
           schema:
-            $ref: '#/definitions/respmodels.UserInfoResponse'
+            $ref: '#/definitions/respmodels.SignUpINresponse'
         "400":
           description: Bad Request
           schema:
@@ -338,7 +347,7 @@ paths:
       description: requires email and password for registration. Returns user info
         and Authorization token  in header
       parameters:
-      - description: user info for sign in
+      - description: user info for sign up
         in: body
         name: user_info
         required: true
@@ -350,7 +359,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/respmodels.UserInfoResponse'
+            $ref: '#/definitions/respmodels.SignUpINresponse'
         "400":
           description: Bad Request
           schema:
@@ -639,7 +648,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/respmodels.UserInfoResponse'
+            $ref: '#/definitions/respmodels.SignUpINresponse'
         "400":
           description: Bad Request
           schema:

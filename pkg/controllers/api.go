@@ -13,7 +13,7 @@ import (
 // @Tags			root
 // @Accept			*/*
 // @Produce		json
-// @Success		200	{object}	map[string]interface{}
+// @Success		200	{object}	respmodels.StringResponse
 // @Router			/api/ [get]
 func HealthCheck(c *gin.Context) {
 	c.JSON(http.StatusOK, respmodels.StringResponse{Data: "Server up and running.", Status: "success"})

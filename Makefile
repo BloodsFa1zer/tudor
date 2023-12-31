@@ -22,7 +22,7 @@ run: migrate build
 fly:
 	flyctl auth login
 
-deploy:
+dpl:
 	flyctl deploy
 
-.PHONY: swag sql migrate migrate-down migrate-create build run fly deploy
+.PHONY: swag sql migrate migrate-down migrate-create build run fly dpl

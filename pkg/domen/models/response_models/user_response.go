@@ -5,8 +5,10 @@ import (
 )
 
 type SignUpINresponse struct {
-	AccessToken string `json:"data"`
-	Status      string `json:"status"`
+	AccessToken struct {
+		Token string `json:"token"`
+	} `json:"data"`
+	Status string `json:"status"`
 }
 
 type ResponseUser struct {
