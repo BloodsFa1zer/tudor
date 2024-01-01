@@ -8,17 +8,14 @@ import (
 	entities "study_marketplace/pkg/domen/models/entities"
 	config "study_marketplace/pkg/infrastructure/config"
 	"study_marketplace/pkg/repositories"
-
-	gomail "gopkg.in/gomail.v2"
 )
 
 type UserService interface {
 	UserLogin(ctx context.Context, inputuser *entities.User) (string, *entities.User, error)
 	UserRegister(ctx context.Context, user *entities.User) (string, *entities.User, error)
 	UserInfo(ctx context.Context, userId int64) (*entities.User, error)
-	ProviderAuth(ctx context.Context, userInfo *entities.User) (string, error)
 	UserPatch(ctx context.Context, patch *entities.User) (string, *entities.User, error)
-	PasswordReset(ctx context.Context, email string) (bool, error)
+	PasswordReset(ctx context.Context, email string) error
 	PasswordCreate(ctx context.Context, userID int64, newPassword string) error
 }
 
@@ -28,6 +25,7 @@ type userService struct {
 	genToken    func(userid int64, userName string) (string, error)
 	hashPass    func(password string) string
 	comparePass func(hashedPassword string, password string) error
+	sendEmail   func(token string, to string) error
 }
 
 func NewUserService(
@@ -35,8 +33,9 @@ func NewUserService(
 	gTF func(userid int64, userName string) (string, error),
 	hPass func(password string) string,
 	cPass func(hashedPassword string, password string) error,
+	sendEmail func(token string, to string) error,
 	db repositories.UsersRepository) UserService {
-	return &userService{db, conf, gTF, hPass, cPass}
+	return &userService{db, conf, gTF, hPass, cPass, sendEmail}
 }
 
 func (s *userService) UserLogin(ctx context.Context, inputuser *entities.User) (string, *entities.User, error) {
@@ -100,17 +99,21 @@ func (s *userService) UserPatch(ctx context.Context, patch *entities.User) (stri
 	return token, patch, nil
 }
 
-func (s *userService) PasswordReset(ctx context.Context, email string) (bool, error) {
-	var validEmail bool = true
+func (s *userService) PasswordReset(ctx context.Context, email string) error {
 	user, err := s.db.GetUserByEmail(ctx, email)
 	if err != nil {
-		return !validEmail, fmt.Errorf("failed request to DB")
+		return fmt.Errorf("failed request to DB")
 	}
-	_, err = s.emailSend(email, *user)
+
+	token, err := s.genToken(user.ID, user.Email)
 	if err != nil {
-		return false, err
+		return fmt.Errorf("failed to generate token")
 	}
-	return validEmail, nil
+
+	if err := s.sendEmail(token, user.Email); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *userService) PasswordCreate(ctx context.Context, userID int64, newPassword string) error {
@@ -122,26 +125,20 @@ func (s *userService) PasswordCreate(ctx context.Context, userID int64, newPassw
 	return nil
 }
 
-func (s *userService) emailSend(userEmail string, user entities.User) (bool, error) {
-	token, err := s.genToken(user.ID, "user.Name")
-	if err != nil {
-		return false, fmt.Errorf("failed to generate token")
-	}
+// func (s *userService) emailSend(userEmail string, user entities.User) (bool, error) {
 
-	from := s.conf.GoogleEmailAddress
-	response := s.newEmail("user.Name", token).message
-	msg := gomail.NewMessage()
+// 	response := s.newEmail(user.Email, token).message
+// 	msg := gomail.NewMessage()
 
-	msg.SetHeader("From", from)
-	msg.SetHeader("To", userEmail)
-	msg.SetHeader("Subject", "Password reset")
-	msg.SetBody("text/html", response)
+// 	msg.SetHeader("From", fmt.Sprintf("%s <%s>", s.conf.GoogleEmailSenderName, s.conf.GoogleEmailAddress))
+// 	msg.SetHeader("To", userEmail)
+// 	msg.SetHeader("Subject", "Password reset")
+// 	msg.SetBody("text/html", response)
+// 	postman := gomail.NewDialer("smtp.gmail.com", 587, s.conf.GoogleEmailAddress, s.conf.GoogleEmailSecret)
 
-	postman := gomail.NewDialer("smtp.gmail.com", 587, from, s.conf.GoogleEmailSecret)
+// 	if err := postman.DialAndSend(msg); err != nil {
+// 		return false, fmt.Errorf("failed to send email")
+// 	}
 
-	if err := postman.DialAndSend(msg); err != nil {
-		return false, fmt.Errorf("failed to send email")
-	}
-
-	return true, nil
-}
+// 	return true, nil
+// }
