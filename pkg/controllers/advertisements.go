@@ -135,14 +135,14 @@ func (t *advertisementsController) AdvGetAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, reqm.AdvertisementsToAdvertisementsResponses(advertisements))
 }
 
-// @Summary		GET request to get advertisement by id
-// @Description	endpoint to get advertisement based on it's id
+// @Summary			GET request to get advertisement by id
+// @Description		endpoint to get advertisement based on it's id
 // @Tags			open/advertisements/getbyid/{id}
 // @Security		JWT
 // @Param			id	path	int	true	"advertisement ID"
-// @Produce		json
-// @Success		200	{object}	respmodels.AdvertisementResponse
-// @Failure		400	{object}	respmodels.FaieldResponse
+// @Produce			json
+// @Success			200	{object}	respmodels.AdvertisementResponse
+// @Failure			400	{object}	respmodels.FaieldResponse
 // @Router			/open/advertisements/getbyid/{id} [get]
 func (c *advertisementsController) AdvGetByID(ctx *gin.Context) {
 	idParam := ctx.Param("id")
@@ -161,15 +161,15 @@ func (c *advertisementsController) AdvGetByID(ctx *gin.Context) {
 }
 
 // @Advertisement-filter	godoc
-// @Summary				POST request to get advertisement based on params in filter
-// @Description			endpoint for getting specific advertisements
+// @Summary					POST request to get advertisement based on params in filter
+// @Description				endpoint for getting specific advertisements
 // @Tags					advertisement-filter
 // @Security				JWT
 // @Param					Authorization			header	string						true	"Insert your access token"
 // @Param					advertisement-filter	body	reqmodels.AdvertisementFilterRequest	true	"advertisement filter"
-// @Produce				json
-// @Success				200	{object}	respmodels.AdvertisementPaginationResponse
-// @Failure				400	{object}	respmodels.FaieldResponse
+// @Produce					json
+// @Success					200	{object}	respmodels.AdvertisementPaginationResponse
+// @Failure					400	{object}	respmodels.FaieldResponse
 // @Router					/protected/advertisement-filter [post]
 func (c *advertisementsController) AdvGetFiltered(ctx *gin.Context) {
 	var filter reqmodels.AdvertisementFilterRequest
@@ -186,14 +186,14 @@ func (c *advertisementsController) AdvGetFiltered(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, reqm.AdvertisementPaginationToAdvertisementPaginationResponse(advertisements))
 }
 
-// @Summary		GET request to get user created advertisements
-// @Description	endpoint for getting user advertisements
+// @Summary			GET request to get user created advertisements
+// @Description		endpoint for getting user advertisements
 // @Security		JWT
 // @Param			Authorization	header	string	true	"Insert your access token"
 // @Tags			advertisements-getmy
-// @Produce		json
-// @Success		200	{object}	respmodels.AdvertisementsResponse
-// @Failure		400	{object}	respmodels.FaieldResponse
+// @Produce			json
+// @Success			200	{object}	respmodels.AdvertisementsResponse
+// @Failure			400	{object}	respmodels.FaieldResponse
 // @Router			/protected/advertisement-getmy [get]
 func (c *advertisementsController) AdvGetMy(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
