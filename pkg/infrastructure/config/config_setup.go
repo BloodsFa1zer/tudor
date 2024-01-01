@@ -7,21 +7,27 @@ import (
 )
 
 type Config struct {
-	DatabaseUrl               string   `env:"DB_URL,required"`
-	ServerHostname            string   `env:"B_PORT,required"`
-	GoogleOauthClientId       string   `env:"GOOGLE_OAUTH_CLIENT_ID,required"`
-	GoogleOauthClientSecret   string   `env:"GOOGLE_OAUTH_CLIENT_SECRET,required"`
-	GoogleOauthRedirectPage   string   `env:"GOOGLE_OAUTH_REDIRECT_PAGE,required"`
-	FacebookOauthClientId     string   `env:"FACEBOOK_OAUTH_CLIENT_ID,required"`
-	FacebookOauthClientSecret string   `env:"FACEBOOK_OAUTH_CLIENT_SECRET,required"`
-	FacebookOauthRedirectPage string   `env:"FACEBOOK_OAUTH_REDIRECT_PAGE,required"`
-	GoogleEmailAddress        string   `env:"GOOGLE_EMAIL_ADDRESS"`
-	GoogleEmailSecret         string   `env:"GOOGLE_EMAIL_SECRET"`
-	PasswordResetRedirectPage string   `env:"PASSWORD_RESET_REDIRECT_PAGE"`
-	AllowedOrigins            []string `env:"ALLOWED_ORIGINS,required" envSeparator:","`
-	JWTSecret                 string   `env:"JWT_SECRET,required"`
-	CookieSecret              string   `env:"COOKIE_SECRET,required"`
-	RedirectUrl               string   `env:"REDIRECT_URL,required"`
+	DatabaseUrl    string `env:"DB_URL,required"`
+	ServerHostname string `env:"B_PORT,required"`
+	// Google Oauth Configs
+	GoogleOauthClientId     string `env:"GOOGLE_OAUTH_CLIENT_ID,required"`
+	GoogleOauthClientSecret string `env:"GOOGLE_OAUTH_CLIENT_SECRET,required"`
+	GoogleOauthRedirectPage string `env:"GOOGLE_OAUTH_REDIRECT_PAGE,required"`
+	// Facebook Oauth Configs
+	FacebookOauthClientId     string `env:"FACEBOOK_OAUTH_CLIENT_ID,required"`
+	FacebookOauthClientSecret string `env:"FACEBOOK_OAUTH_CLIENT_SECRET,required"`
+	FacebookOauthRedirectPage string `env:"FACEBOOK_OAUTH_REDIRECT_PAGE,required"`
+	// Email Configs
+	GoogleEmailAddress        string `env:"GOOGLE_EMAIL_ADDRESS"`
+	GoogleEmailSecret         string `env:"GOOGLE_EMAIL_SECRET"`
+	GoogleEmailSenderName     string `env:"GOOGLE_EMAIL_SENDER_NAME"`
+	PasswordResetRedirectPage string `env:"PASSWORD_RESET_REDIRECT_PAGE"`
+	// CORS Configs
+	AllowedOrigins []string `env:"ALLOWED_ORIGINS,required" envSeparator:","`
+	// JWT Configs
+	JWTSecret    string `env:"JWT_SECRET,required"`
+	CookieSecret string `env:"COOKIE_SECRET,required"`
+	RedirectUrl  string `env:"REDIRECT_URL,required"`
 }
 
 func SetUpConfig() *Config {

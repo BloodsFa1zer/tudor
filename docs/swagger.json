@@ -163,7 +163,7 @@
         },
         "/api/auth/{provider}": {
             "get": {
-                "description": "requires param provider, for example google, facebook or apple  (at this moment apple not working) This request redirects to the provider's page for authorization, which in turn transmits a token in the parameters (token) and header (Authorization)",
+                "description": "requires param provider, for example google, facebook or apple  (at this moment apple not working) This request redirects to the provider's page for authorization, which in turn transmits a token in the parameters (token)",
                 "consumes": [
                     "text/html"
                 ],

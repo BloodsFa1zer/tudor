@@ -155,12 +155,10 @@ func (t *userController) PasswordReset(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: "Email not provided.", Status: "failed"})
 		return
 	}
-	_, err := t.userService.PasswordReset(ctx, userEmail.Email)
-	if err != nil {
+	if err := t.userService.PasswordReset(ctx, userEmail.Email); err != nil {
 		ctx.JSON(http.StatusUnauthorized, respmodels.FaieldResponse{Data: "Email not found.", Status: "failed"})
 		return
 	}
-
 	ctx.JSON(http.StatusOK, respmodels.StringResponse{Data: "Password Reset Email Has Been Sent", Status: "success"})
 }
 

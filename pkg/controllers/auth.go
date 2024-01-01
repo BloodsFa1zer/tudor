@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"net/url"
 	reqm "study_marketplace/pkg/domen/mappers/reqresp_mappers"
-	respmodels "study_marketplace/pkg/domen/models/response_models"
 	"study_marketplace/pkg/services"
 
 	"github.com/gin-gonic/gin"
@@ -19,11 +19,11 @@ type AuthController interface {
 
 type authController struct {
 	redirectPage string
-	services.UserService
+	services.AuthService
 }
 
-func NewAuthController(redirectPage string, us services.UserService) AuthController {
-	return &authController{redirectPage: redirectPage, UserService: us}
+func NewAuthController(redirectPage string, us services.AuthService) AuthController {
+	return &authController{redirectPage: redirectPage, AuthService: us}
 }
 
 func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
@@ -39,13 +39,16 @@ func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
 		ctx.AbortWithError(http.StatusForbidden, gin.Error{Err: errors.New("something went wrong")})
 		return
 	}
-	ctx.Header("Authorization", token)
-	ctx.JSON(http.StatusOK, respmodels.StringResponse{Data: token, Status: "success"})
+	fragment := url.Values{}
+	fragment.Set("token", token)
+	fragmentString := fragment.Encode()
+	redirectURL := c.redirectPage + "redirect#" + fragmentString
+	ctx.Redirect(http.StatusFound, redirectURL)
 }
 
 // @Auth-with-provider			godoc
 // @Summary						GET request for auth with provider
-// @Description					requires param provider, for example google, facebook or apple  (at this moment apple not working) This request redirects to the provider's page for authorization, which in turn transmits a token in the parameters (token) and header (Authorization)
+// @Description					requires param provider, for example google, facebook or apple  (at this moment apple not working) This request redirects to the provider's page for authorization, which in turn transmits a token in the parameters (token)
 // @Tags						auth_with_provider get request for auth with provider
 // @Accept						html
 // @Produce						html
