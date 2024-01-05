@@ -25,4 +25,7 @@ fly:
 dpl:
 	flyctl deploy
 
-.PHONY: swag sql migrate migrate-down migrate-create build run fly dpl
+env:
+	flyctl secrets set $(env)
+
+.PHONY: swag sql migrate migrate-down migrate-create build run fly dpl env
