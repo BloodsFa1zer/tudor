@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	reqm "study_marketplace/pkg/domen/mappers/reqresp_mappers"
@@ -43,6 +44,7 @@ func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
 	fragment.Set("token", token)
 	fragmentString := fragment.Encode()
 	redirectURL := c.redirectPage + "redirect#" + fragmentString
+	fmt.Printf("redirectURL: %s\n", redirectURL)
 	ctx.Redirect(http.StatusFound, redirectURL)
 }
 

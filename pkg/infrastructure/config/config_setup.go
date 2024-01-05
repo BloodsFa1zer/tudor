@@ -18,10 +18,9 @@ type Config struct {
 	FacebookOauthClientSecret string `env:"FACEBOOK_OAUTH_CLIENT_SECRET,required"`
 	FacebookOauthRedirectPage string `env:"FACEBOOK_OAUTH_REDIRECT_PAGE,required"`
 	// Email Configs
-	GoogleEmailAddress        string `env:"GOOGLE_EMAIL_ADDRESS"`
-	GoogleEmailSecret         string `env:"GOOGLE_EMAIL_SECRET"`
-	GoogleEmailSenderName     string `env:"GOOGLE_EMAIL_SENDER_NAME"`
-	PasswordResetRedirectPage string `env:"PASSWORD_RESET_REDIRECT_PAGE"`
+	GoogleEmailAddress    string `env:"GOOGLE_EMAIL_ADDRESS"`
+	GoogleEmailSecret     string `env:"GOOGLE_EMAIL_SECRET"`
+	GoogleEmailSenderName string `env:"GOOGLE_EMAIL_SENDER_NAME"`
 	// CORS Configs
 	AllowedOrigins []string `env:"ALLOWED_ORIGINS,required" envSeparator:","`
 	// JWT Configs
