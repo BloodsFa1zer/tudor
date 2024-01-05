@@ -13,7 +13,7 @@ func userRegister(r *registry) controllers.UserController {
 			genTokFunc(r.config.JWTSecret),
 			hashPasFunc(),
 			comparePasFunc(),
-			emailSenderFunc(r.config.PasswordResetRedirectPage, r.config.GoogleEmailSenderName, r.config.GoogleEmailAddress, r.config.GoogleEmailSecret),
+			emailSenderFunc(r.config.RedirectUrl, r.config.GoogleEmailSenderName, r.config.GoogleEmailAddress, r.config.GoogleEmailSecret),
 			repositories.NewUsersRepository(r.queries)))
 }
 
