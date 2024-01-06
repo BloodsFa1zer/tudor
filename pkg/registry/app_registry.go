@@ -9,7 +9,7 @@ import (
 
 func userRegister(r *registry) controllers.UserController {
 	return controllers.NewUsersController(
-		services.NewUserService(r.config,
+		services.NewUserService(
 			genTokFunc(r.config.JWTSecret),
 			hashPasFunc(),
 			comparePasFunc(),
