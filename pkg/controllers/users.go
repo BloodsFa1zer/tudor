@@ -104,7 +104,7 @@ func (t *userController) UserInfo(ctx *gin.Context) {
 	}
 	user, err := t.userService.UserInfo(ctx, userID)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, respmodels.FaieldResponse{Data: err.Error(), Status: "failed"})
+		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: err.Error(), Status: "failed"})
 		return
 	}
 	ctx.JSON(http.StatusOK, reqm.UserToUserResponse(user))

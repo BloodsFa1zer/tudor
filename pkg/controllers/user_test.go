@@ -168,3 +168,60 @@ func TestUserLogin(t *testing.T) {
 		})
 	}
 }
+
+func TestUserInfo(t *testing.T) {
+	now := time.Now().Truncate(time.Second)
+	testTable := []struct {
+		scenario string
+		// request            string
+		inputDBId          int64
+		expectedDBUser     *entities.User
+		expectedResponse   string
+		expectedStatusCode int
+		expectedError      error
+	}{
+		{"success",
+			1,
+			&entities.User{1, "John Doe", "john@example.com", "", true, "123456", "user", now, now},
+			`{"data":{"id":1,"name":"John Doe","email":"john@example.com","photo":"","verified":true,"role":"user","created_at":"` + now.Format(time.RFC3339) + `","updated_at":"` + now.Format(time.RFC3339) + `"},"status":"success"}`,
+			200,
+			nil},
+		// {"failed_invalid_request",
+		// 	0,
+		// 	nil,
+		// 	`{"data":"user id error","status":"failed"}`,
+		// 	400,
+		// 	nil},
+		{"failed_invalid_id",
+			0,
+			nil,
+			`{"data":"user id error","status":"failed"}`,
+			400,
+			nil},
+		{"failed_can_not_fetch_user",
+			1,
+			nil,
+			`{"data":"can not fetch user","status":"failed"}`,
+			400,
+			errors.New("can not fetch user")},
+	}
+	for _, tc := range testTable {
+		t.Run(tc.scenario, func(t *testing.T) {
+			repo := newMockUsersRepository(t)
+			controller := newTestUserCtrller(repo)
+			ctx, w := newTestContext("GET", "/api/userinfo", "")
+			ctx.Set("user_id", tc.inputDBId)
+
+			repo.EXPECT().GetUserById(gomock.Any(), tc.inputDBId).Return(tc.expectedDBUser, tc.expectedError).AnyTimes()
+			controller.UserInfo(ctx)
+
+			if w.Code != tc.expectedStatusCode {
+				t.Errorf("expected status code %d, got %d", tc.expectedStatusCode, w.Code)
+			}
+			if strings.TrimSpace(w.Body.String()) != tc.expectedResponse {
+				t.Errorf("expected response %s, got %s", tc.expectedResponse, w.Body.String())
+			}
+
+		})
+	}
+}
