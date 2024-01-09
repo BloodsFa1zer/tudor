@@ -259,14 +259,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/open/categories/getall": {
+        "/open/allcategories": {
             "get": {
                 "description": "endpoint for getting all categories",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "categories/getall"
+                    "open/allcategories"
                 ],
                 "summary": "GET all categories parents with children in array",
                 "responses": {

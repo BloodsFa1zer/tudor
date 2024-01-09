@@ -30,8 +30,7 @@ func SetupRouter(conf *config.Config, server *gin.Engine, a *controllers.AppCont
 	protected.PATCH("/create-password", a.PasswordCreate)
 
 	// categories block
-	categories := server.Group("/open/categories")
-	categories.GET("/getall", a.CatGetAll)
+	server.GET("open/allcategories", a.CatGetAll)
 
 	// advertisements block
 	// open advertisements endpoints

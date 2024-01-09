@@ -432,7 +432,7 @@ paths:
       summary: GET request to get advertisement by id
       tags:
       - open/advertisements/getbyid/{id}
-  /open/categories/getall:
+  /open/allcategories:
     get:
       description: endpoint for getting all categories
       produces:
@@ -446,7 +446,7 @@ paths:
             type: array
       summary: GET all categories parents with children in array
       tags:
-      - categories/getall
+      - open/allcategories
   /protected/advertisement-create:
     post:
       description: endpoint for advertisement creation

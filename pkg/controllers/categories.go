@@ -23,10 +23,10 @@ func NewCatController(sc services.CategoriesService) *categoriesController {
 
 // @Summary			GET all categories parents with children in array
 // @Description		endpoint for getting all categories
-// @Tags			categories/getall
+// @Tags			open/allcategories
 // @Produce			json
 // @Success			200	{object}	[]queries.GetCategoriesWithChildrenRow
-// @Router			/open/categories/getall [get]
+// @Router			/open/allcategories [get]
 func (t *categoriesController) CatGetAll(ctx *gin.Context) {
 	categories, err := t.categoriesService.CatGetAll(ctx)
 	if err != nil {
