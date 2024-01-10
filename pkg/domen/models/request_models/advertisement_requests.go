@@ -52,5 +52,5 @@ type AdvertisementFilterRequest struct {
 	Minprice     int32  `json:"min_price"`
 	Maxprice     int32  `json:"max_price"`
 	Language     string `json:"language"`
-	Titlekeyword string `json:"titlekeyword"`
+	Titlekeyword string `json:"title_keyword"`
 }

@@ -644,16 +644,16 @@
                 "offset": {
                     "type": "integer"
                 },
-                "orderby": {
-                    "type": "string"
-                },
                 "page": {
                     "type": "integer"
                 },
                 "per_page": {
                     "type": "integer"
                 },
-                "sortorder": {
+                "sort_by": {
+                    "type": "string"
+                },
+                "sort_order": {
                     "type": "string"
                 },
                 "total_count": {
@@ -688,34 +688,34 @@
                 "language": {
                     "type": "string"
                 },
-                "limit": {
+                "max_exp": {
                     "type": "integer"
                 },
-                "maxexp": {
+                "max_price": {
                     "type": "integer"
                 },
-                "maxprice": {
+                "min_exp": {
                     "type": "integer"
                 },
-                "minexp": {
+                "min_price": {
                     "type": "integer"
-                },
-                "minprice": {
-                    "type": "integer"
-                },
-                "orderby": {
-                    "type": "string"
                 },
                 "page": {
                     "type": "integer"
                 },
-                "sortorder": {
-                    "type": "string"
-                },
-                "timelength": {
+                "per_page": {
                     "type": "integer"
                 },
-                "titlekeyword": {
+                "sort_by": {
+                    "type": "string"
+                },
+                "sort_order": {
+                    "type": "string"
+                },
+                "time_length": {
+                    "type": "integer"
+                },
+                "title_keyword": {
                     "type": "string"
                 }
             }
