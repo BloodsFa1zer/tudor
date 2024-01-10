@@ -199,18 +199,39 @@ func FiltAdvToAdvPagination(params *queries.FilterAdvertisementsParams, filtered
 		PaginationInfo: entities.PaginationInfo{
 			TotalPages: int(math.Ceil(float64(filteredAdvs[0].TotalItems) / float64(params.Limitadv))),
 			TotalCount: int(filteredAdvs[0].TotalItems),
-			Page:       int((params.Offsetadv + params.Limitadv) / params.Limitadv),
+			Page:       int((params.Offsetadv / params.Limitadv) + 1),
 			PerPage:    int(params.Limitadv),
 			Offset:     int(params.Offsetadv),
+			Orderby: func() string {
+				if params.Orderby == "" {
+					return "date"
+				}
+				return params.Orderby
+			}(),
+			Sortorder: func() string {
+				if params.Sortorder == "" {
+					return "asc"
+				}
+				return params.Sortorder
+			}(),
 		},
 	}
 }
 
 func AdvertisementFiltRequestToFilterAdvertisementsParams(filter *reqmodels.AdvertisementFilterRequest) queries.FilterAdvertisementsParams {
+	if filter.Limitadv == 0 {
+		filter.Limitadv = 10
+	}
+
 	return queries.FilterAdvertisementsParams{
-		Orderby:      filter.Orderby,
-		Sortorder:    filter.Sortorder,
-		Offsetadv:    filter.Offsetadv,
+		Orderby:   filter.Orderby,
+		Sortorder: filter.Sortorder,
+		Offsetadv: func() int32 {
+			if filter.Page == 0 {
+				return 0
+			}
+			return (filter.Page - 1) * filter.Limitadv
+		}(),
 		Limitadv:     filter.Limitadv,
 		Advcategory:  filter.Category,
 		Timelength:   filter.Timelength,

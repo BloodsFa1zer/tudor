@@ -29,9 +29,11 @@ type AdvertisementPagination struct {
 }
 
 type PaginationInfo struct {
-	TotalPages int `json:"total_pages"`
-	TotalCount int `json:"total_count"`
-	Page       int `json:"page"`
-	PerPage    int `json:"per_page"`
-	Offset     int `json:"offset"`
+	TotalPages int    `json:"total_pages"`
+	TotalCount int    `json:"total_count"`
+	Page       int    `json:"page"`
+	PerPage    int    `json:"per_page"`
+	Offset     int    `json:"offset"`
+	Orderby    string `json:"orderby"`
+	Sortorder  string `json:"sortorder"`
 }

@@ -42,8 +42,8 @@ type DeleteAdvertisementRequest struct {
 type AdvertisementFilterRequest struct {
 	Orderby      string `json:"orderby"`
 	Sortorder    string `json:"sortorder"`
-	Offsetadv    int32  `json:"offsetadv"`
-	Limitadv     int32  `json:"limitadv"`
+	Page         int32  `json:"page"`
+	Limitadv     int32  `json:"limit"`
 	Category     string `json:"category"`
 	Timelength   int32  `json:"timelength"`
 	Format       string `json:"format"`
