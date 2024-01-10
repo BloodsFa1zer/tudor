@@ -40,17 +40,17 @@ type DeleteAdvertisementRequest struct {
 
 // AdvGetFiltered godoc
 type AdvertisementFilterRequest struct {
-	Orderby      string `json:"orderby"`
-	Sortorder    string `json:"sortorder"`
+	Orderby      string `json:"sort_by"`
+	Sortorder    string `json:"sort_order"`
 	Page         int32  `json:"page"`
-	Limitadv     int32  `json:"limit"`
+	Limitadv     int32  `json:"per_page"`
 	Category     string `json:"category"`
-	Timelength   int32  `json:"timelength"`
+	Timelength   int32  `json:"time_length"`
 	Format       string `json:"format"`
-	Minexp       int32  `json:"minexp"`
-	Maxexp       int32  `json:"maxexp"`
-	Minprice     int32  `json:"minprice"`
-	Maxprice     int32  `json:"maxprice"`
+	Minexp       int32  `json:"min_exp"`
+	Maxexp       int32  `json:"max_exp"`
+	Minprice     int32  `json:"min_price"`
+	Maxprice     int32  `json:"max_price"`
 	Language     string `json:"language"`
 	Titlekeyword string `json:"titlekeyword"`
 }

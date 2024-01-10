@@ -34,6 +34,6 @@ type PaginationInfo struct {
 	Page       int    `json:"page"`
 	PerPage    int    `json:"per_page"`
 	Offset     int    `json:"offset"`
-	Orderby    string `json:"orderby"`
-	Sortorder  string `json:"sortorder"`
+	Orderby    string `json:"sort_by"`
+	Sortorder  string `json:"sort_order"`
 }
