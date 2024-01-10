@@ -197,7 +197,7 @@ func FiltAdvToAdvPagination(params *queries.FilterAdvertisementsParams, filtered
 	return &entities.AdvertisementPagination{
 		Advertisements: advs,
 		PaginationInfo: entities.PaginationInfo{
-			TotalPages: int(math.Ceil(float64(filteredAdvs[0].TotalItems-int64(params.Limitadv)) / float64(params.Limitadv))),
+			TotalPages: int(math.Ceil(float64(filteredAdvs[0].TotalItems) / float64(params.Limitadv))),
 			TotalCount: int(filteredAdvs[0].TotalItems),
 			Page:       int((params.Offsetadv + params.Limitadv) / params.Limitadv),
 			PerPage:    int(params.Limitadv),
