@@ -8,6 +8,10 @@ definitions:
         type: integer
       per_page:
         type: integer
+      sort_by:
+        type: string
+      sort_order:
+        type: string
       total_count:
         type: integer
       total_pages:
@@ -29,25 +33,25 @@ definitions:
         type: string
       language:
         type: string
-      limitadv:
+      max_exp:
         type: integer
-      maxexp:
+      max_price:
         type: integer
-      maxprice:
+      min_exp:
         type: integer
-      minexp:
+      min_price:
         type: integer
-      minprice:
+      page:
         type: integer
-      offsetadv:
+      per_page:
         type: integer
-      orderby:
+      sort_by:
         type: string
-      sortorder:
+      sort_order:
         type: string
-      timelength:
+      time_length:
         type: integer
-      titlekeyword:
+      title_keyword:
         type: string
     type: object
   reqmodels.CreateAdvertisementRequest:
@@ -390,6 +394,30 @@ paths:
       summary: POST request to update password
       tags:
       - reset-password
+  /open/advertisements/adv-filter:
+    post:
+      description: endpoint for getting specific advertisements
+      parameters:
+      - description: advertisement filter
+        in: body
+        name: advertisement-filter
+        required: true
+        schema:
+          $ref: '#/definitions/reqmodels.AdvertisementFilterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/respmodels.AdvertisementPaginationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FaieldResponse'
+      summary: POST request to get advertisement based on params in filter
+      tags:
+      - advertisement-filter
   /open/advertisements/getall:
     get:
       description: endpoint for getting all advertisements
@@ -432,7 +460,7 @@ paths:
       summary: GET request to get advertisement by id
       tags:
       - open/advertisements/getbyid/{id}
-  /open/categories/getall:
+  /open/allcategories:
     get:
       description: endpoint for getting all categories
       produces:
@@ -446,7 +474,7 @@ paths:
             type: array
       summary: GET all categories parents with children in array
       tags:
-      - categories/getall
+      - open/allcategories
   /protected/advertisement-create:
     post:
       description: endpoint for advertisement creation
@@ -509,37 +537,6 @@ paths:
       summary: DELETE request to delete advertisement
       tags:
       - advertisement-delete
-  /protected/advertisement-filter:
-    post:
-      description: endpoint for getting specific advertisements
-      parameters:
-      - description: Insert your access token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: advertisement filter
-        in: body
-        name: advertisement-filter
-        required: true
-        schema:
-          $ref: '#/definitions/reqmodels.AdvertisementFilterRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/respmodels.AdvertisementPaginationResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/respmodels.FaieldResponse'
-      security:
-      - JWT: []
-      summary: POST request to get advertisement based on params in filter
-      tags:
-      - advertisement-filter
   /protected/advertisement-getmy:
     get:
       description: endpoint for getting user advertisements

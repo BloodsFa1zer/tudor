@@ -14,11 +14,10 @@ WITH cat_id AS (SELECT id FROM categories WHERE categories.name = $5),
             description,
             mobile_phone,
             email,
-            telegram,
-            created_at
+            telegram
         )
         VALUES (
-            $1, $2, $3, $4, (SELECT id FROM categories WHERE categories.name = $5), $6, $7, $8, $9, $10, $11, $12, $13, $14
+            $1, $2, $3, $4, (SELECT id FROM categories WHERE categories.name = $5), $6, $7, $8, $9, $10, $11, $12, $13
         )
         RETURNING *
      )
@@ -31,7 +30,8 @@ SELECT inserted_ad.id, inserted_ad.title, inserted_ad.attachment, inserted_ad.ex
 FROM inserted_ad
 JOIN users ON inserted_ad.provider_id = users.id
 JOIN categories ON inserted_ad.category_id = categories.id
-LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id;
+LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id
+WHERE categories.parent_id IS NOT NULL;
 
 -- name: UpdateAdvertisement :one
 UPDATE advertisements
@@ -53,19 +53,36 @@ RETURNING advertisements.id;
 
 -- name: GetAdvertisementAll :many
 SELECT 
-  advertisements.id AS id, advertisements.title AS title, advertisements.attachment AS attachment, 
-  advertisements.experience AS experience, advertisements.time AS time, advertisements.price AS price, 
-  advertisements.format AS format, advertisements.language AS language, advertisements.description AS description, 
-  advertisements.mobile_phone AS mobile_phone, advertisements.email AS email, advertisements.telegram AS telegram, 
-  advertisements.created_at AS created_at, advertisements.updated_at AS updated_at, users.id AS provider_id, 
-  users.name AS provider_name, users.email AS provider_email, users.photo AS provider_photo,
-  users.verified AS provider_verified, users.role AS provider_role, users.created_at AS provider_created_at,
-  users.updated_at AS provider_updated_at, categories.id AS category_id, categories.name AS category_name, 
+  advertisements.id AS id, 
+  advertisements.title AS title,
+  advertisements.attachment AS attachment,
+  advertisements.experience AS experience,
+  advertisements.time AS time,
+  advertisements.price AS price,
+  advertisements.format AS format,
+  advertisements.language AS language,
+  advertisements.description AS description, 
+  advertisements.mobile_phone AS mobile_phone,
+  advertisements.email AS email,
+  advertisements.telegram AS telegram, 
+  advertisements.created_at AS created_at,
+  advertisements.updated_at AS updated_at,
+  users.id AS provider_id,
+  users.name AS provider_name,
+  users.email AS provider_email,
+  users.photo AS provider_photo,
+  users.verified AS provider_verified,
+  users.role AS provider_role,
+  users.created_at AS provider_created_at,
+  users.updated_at AS provider_updated_at,
+  categories.id AS category_id,
+  categories.name AS category_name, 
   parent_category.name AS parent_category_name
 FROM advertisements
 JOIN users ON advertisements.provider_id = users.id
 JOIN categories ON advertisements.category_id = categories.id
 LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id
+WHERE categories.parent_id IS NOT NULL
 ORDER BY advertisements.created_at DESC LIMIT 10;
 
 -- name: GetMyAdvertisement :many
@@ -83,7 +100,7 @@ FROM advertisements
 JOIN users ON advertisements.provider_id = users.id
 JOIN categories ON advertisements.category_id = categories.id
 LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id
-WHERE advertisements.provider_id = $1;
+WHERE advertisements.provider_id = $1 AND categories.parent_id IS NOT NULL;
 
 -- name: GetAdvertisementCategoryAndUserByID :one
 SELECT 
@@ -138,39 +155,53 @@ DELETE FROM advertisements
 WHERE provider_id = $1;
 
 -- name: FilterAdvertisements :many
-WITH filtered_ads AS (
-SELECT * FROM advertisements
-  WHERE
-        (NULLIF(sqlc.arg(advCategory)::text, '')::text IS NULL OR category = sqlc.arg(advCategory)::text)
-        AND (NULLIF(sqlc.arg(timeLength)::int, 0) IS NULL OR time <= sqlc.arg(timeLength)::int)
-        AND (NULLIF(sqlc.arg(advFformat)::text, '') IS NULL OR format = sqlc.arg(advFormat)::text)
-        AND ((NULLIF(sqlc.arg(minExp)::int, 0) IS NULL AND NULLIF(sqlc.arg(maxExp)::int, 0) IS NULL) OR (experience >= sqlc.arg(minExp)::int AND experience <= sqlc.arg(maxExp)::int))
-        AND ((NULLIF(sqlc.arg(minPrice)::int, 0) IS NULL AND NULLIF(sqlc.arg(maxPrice)::int, 0) IS NULL) OR (price >= sqlc.arg(minPrice)::int AND price <= sqlc.arg(maxPrice)::int))
-        AND (NULLIF(sqlc.arg(advLanguage)::text, '') IS NULL OR language = sqlc.arg(advLanguage)::text)
-        AND (NULLIF(sqlc.arg(titleKeyword)::text, '') IS NULL OR title ILIKE '%' || sqlc.arg(titleKeyword)::text || '%')
-)
-SELECT
-  filtered_ads.id AS id, filtered_ads.title AS title, filtered_ads.attachment AS attachment, 
-  filtered_ads.experience AS experience, filtered_ads.time AS time, filtered_ads.price AS price, 
-  filtered_ads.format AS format, filtered_ads.language AS language, filtered_ads.description AS description, 
-  filtered_ads.mobile_phone AS mobile_phone, filtered_ads.email AS email, filtered_ads.telegram AS telegram,
-  filtered_ads.created_at AS created_at, filtered_ads.updated_at AS updated_at, users.id AS provider_id,
-  users.name AS provider_name, users.email AS provider_email, users.photo AS provider_photo,
-  users.verified AS provider_verified, users.role AS provider_role, users.created_at AS provider_created_at,
-  users.updated_at AS provider_updated_at, categories.id AS category_id, categories.name AS category_name, 
-  parent_category.name AS parent_category_name, COUNT(*) OVER () AS total_items
-FROM filtered_ads
-JOIN users ON filtered_ads.provider_id = users.id
-JOIN categories ON filtered_ads.category_id = categories.id
+SELECT 
+  advertisements.id,
+  advertisements.title,
+  advertisements.attachment,
+  advertisements.experience,
+  advertisements.time,
+  advertisements.price,
+  advertisements.format,
+  advertisements.language,
+  advertisements.description,
+  advertisements.mobile_phone,
+  advertisements.email,
+  advertisements.telegram,
+  advertisements.created_at,
+  advertisements.updated_at,
+  users.id AS provider_id,
+  users.name AS provider_name,
+  users.email AS provider_email,
+  users.photo AS provider_photo,
+  users.verified AS provider_verified,
+  users.role AS provider_role,
+  users.created_at AS provider_created_at,
+  users.updated_at AS provider_updated_at,
+  categories.id AS category_id,
+  categories.name AS category_name, 
+  parent_category.name AS parent_category_name,
+  COUNT(*) OVER () AS total_items
+FROM advertisements
+JOIN users ON advertisements.provider_id = users.id
+JOIN categories ON advertisements.category_id = categories.id
 LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id
+WHERE categories.parent_id IS NOT NULL
+    AND (NULLIF(sqlc.arg(advCategory)::text, '')::text IS NULL OR categories.name = sqlc.arg(advCategory)::text)
+    AND (NULLIF(sqlc.arg(timeLength)::int, 0) IS NULL OR time <= sqlc.arg(timeLength)::int)
+    AND (NULLIF(sqlc.arg(advFormat)::text, '') IS NULL OR format = sqlc.arg(advFormat)::text)
+    AND ((NULLIF(sqlc.arg(minExp)::int, 0) IS NULL AND NULLIF(sqlc.arg(maxExp)::int, 0) IS NULL) OR (experience >= sqlc.arg(minExp)::int AND experience <= sqlc.arg(maxExp)::int))
+    AND ((NULLIF(sqlc.arg(minPrice)::int, 0) IS NULL AND NULLIF(sqlc.arg(maxPrice)::int, 0) IS NULL) OR (price >= sqlc.arg(minPrice)::int AND price <= sqlc.arg(maxPrice)::int))
+    AND (NULLIF(sqlc.arg(advLanguage)::text, '') IS NULL OR language = sqlc.arg(advLanguage)::text)
+    AND (NULLIF(sqlc.arg(titleKeyword)::text, '') IS NULL OR title ILIKE '%' || sqlc.arg(titleKeyword)::text || '%')
 ORDER BY
   ( CASE
     WHEN sqlc.arg(orderBy)::text = 'price' AND sqlc.arg(sortOrder)::text = 'desc' THEN CAST(price AS TEXT)
     WHEN sqlc.arg(orderBy)::text = 'experience' AND sqlc.arg(sortOrder)::text = 'desc' THEN CAST(experience AS TEXT)
-    WHEN sqlc.arg(orderBy)::text = 'date' AND sqlc.arg(sortOrder)::text = 'desc' THEN CAST(created_at AS TEXT) END) DESC,
+    WHEN sqlc.arg(orderBy)::text = 'date' AND sqlc.arg(sortOrder)::text = 'desc' THEN CAST(advertisements.created_at AS TEXT) END) DESC,
   ( CASE
     WHEN sqlc.arg(orderBy)::text = 'price' THEN CAST(price AS TEXT)
     WHEN sqlc.arg(orderBy)::text = 'experience' THEN CAST(experience AS TEXT)  
-    ELSE CAST(created_at AS TEXT) END) ASC                                     
+    ELSE CAST(advertisements.created_at AS TEXT) END) ASC                                     
 LIMIT sqlc.arg(limitAdv)::integer    
-OFFSET sqlc.arg(offsetAdv)::integer; 
+OFFSET sqlc.arg(offsetAdv)::integer;

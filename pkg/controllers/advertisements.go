@@ -164,13 +164,13 @@ func (c *advertisementsController) AdvGetByID(ctx *gin.Context) {
 // @Summary					POST request to get advertisement based on params in filter
 // @Description				endpoint for getting specific advertisements
 // @Tags					advertisement-filter
-// @Security				JWT
-// @Param					Authorization			header	string						true	"Insert your access token"
+// deprecated(@Security				JWT)
+// deprecated(@Param					Authorization			header	string						true	"Insert your access token"))
 // @Param					advertisement-filter	body	reqmodels.AdvertisementFilterRequest	true	"advertisement filter"
 // @Produce					json
 // @Success					200	{object}	respmodels.AdvertisementPaginationResponse
 // @Failure					400	{object}	respmodels.FaieldResponse
-// @Router					/protected/advertisement-filter [post]
+// @Router					/open/advertisements/adv-filter [post]
 func (c *advertisementsController) AdvGetFiltered(ctx *gin.Context) {
 	var filter reqmodels.AdvertisementFilterRequest
 	err := ctx.ShouldBindJSON(&filter)

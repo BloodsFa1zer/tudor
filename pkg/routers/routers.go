@@ -30,20 +30,19 @@ func SetupRouter(conf *config.Config, server *gin.Engine, a *controllers.AppCont
 	protected.PATCH("/create-password", a.PasswordCreate)
 
 	// categories block
-	categories := server.Group("/open/categories")
-	categories.GET("/getall", a.CatGetAll)
+	server.GET("open/allcategories", a.CatGetAll)
 
 	// advertisements block
 	// open advertisements endpoints
 	advertisements := server.Group("/open/advertisements")
 	advertisements.GET("/getall", a.AdvGetAll)
 	advertisements.GET("/getbyid/:id", a.AdvGetByID)
+	advertisements.POST("/adv-filter", a.AdvGetFiltered)
 
 	// protected advertisements endpoints
 	protected.POST("/advertisement-create", a.AdvCreate)
 	protected.PATCH("/advertisement-patch", a.AdvPatch)
 	protected.DELETE("/advertisement-delete", a.AdvDelete)
-	protected.POST("/advertisement-filter", a.AdvGetFiltered)
 	protected.GET("/advertisement-getmy", a.AdvGetMy)
 
 	protected.Use(a.PasswordMiddleware())

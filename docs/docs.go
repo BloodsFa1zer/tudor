@@ -193,6 +193,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/open/advertisements/adv-filter": {
+            "post": {
+                "description": "endpoint for getting specific advertisements",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "advertisement-filter"
+                ],
+                "summary": "POST request to get advertisement based on params in filter",
+                "parameters": [
+                    {
+                        "description": "advertisement filter",
+                        "name": "advertisement-filter",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/reqmodels.AdvertisementFilterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.AdvertisementPaginationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/open/advertisements/getall": {
             "get": {
                 "description": "endpoint for getting all advertisements",
@@ -259,14 +296,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/open/categories/getall": {
+        "/open/allcategories": {
             "get": {
                 "description": "endpoint for getting all categories",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "categories/getall"
+                    "open/allcategories"
                 ],
                 "summary": "GET all categories parents with children in array",
                 "responses": {
@@ -369,55 +406,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/respmodels.StringResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/protected/advertisement-filter": {
-            "post": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "endpoint for getting specific advertisements",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "advertisement-filter"
-                ],
-                "summary": "POST request to get advertisement based on params in filter",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Insert your access token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "advertisement filter",
-                        "name": "advertisement-filter",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/reqmodels.AdvertisementFilterRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/respmodels.AdvertisementPaginationResponse"
                         }
                     },
                     "400": {
@@ -665,6 +653,12 @@ const docTemplate = `{
                 "per_page": {
                     "type": "integer"
                 },
+                "sort_by": {
+                    "type": "string"
+                },
+                "sort_order": {
+                    "type": "string"
+                },
                 "total_count": {
                     "type": "integer"
                 },
@@ -697,34 +691,34 @@ const docTemplate = `{
                 "language": {
                     "type": "string"
                 },
-                "limitadv": {
+                "max_exp": {
                     "type": "integer"
                 },
-                "maxexp": {
+                "max_price": {
                     "type": "integer"
                 },
-                "maxprice": {
+                "min_exp": {
                     "type": "integer"
                 },
-                "minexp": {
+                "min_price": {
                     "type": "integer"
                 },
-                "minprice": {
+                "page": {
                     "type": "integer"
                 },
-                "offsetadv": {
+                "per_page": {
                     "type": "integer"
                 },
-                "orderby": {
+                "sort_by": {
                     "type": "string"
                 },
-                "sortorder": {
+                "sort_order": {
                     "type": "string"
                 },
-                "timelength": {
+                "time_length": {
                     "type": "integer"
                 },
-                "titlekeyword": {
+                "title_keyword": {
                     "type": "string"
                 }
             }

@@ -28,11 +28,10 @@ WITH cat_id AS (SELECT id FROM categories WHERE categories.name = $5),
             description,
             mobile_phone,
             email,
-            telegram,
-            created_at
+            telegram
         )
         VALUES (
-            $1, $2, $3, $4, (SELECT id FROM categories WHERE categories.name = $5), $6, $7, $8, $9, $10, $11, $12, $13, $14
+            $1, $2, $3, $4, (SELECT id FROM categories WHERE categories.name = $5), $6, $7, $8, $9, $10, $11, $12, $13
         )
         RETURNING id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at
      )
@@ -46,6 +45,7 @@ FROM inserted_ad
 JOIN users ON inserted_ad.provider_id = users.id
 JOIN categories ON inserted_ad.category_id = categories.id
 LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id
+WHERE categories.parent_id IS NOT NULL
 `
 
 type CreateAdvertisementParams struct {
@@ -62,7 +62,6 @@ type CreateAdvertisementParams struct {
 	MobilePhone pgtype.Text `json:"mobile_phone"`
 	Email       pgtype.Text `json:"email"`
 	Telegram    pgtype.Text `json:"telegram"`
-	CreatedAt   time.Time   `json:"created_at"`
 }
 
 type CreateAdvertisementRow struct {
@@ -108,7 +107,6 @@ func (q *Queries) CreateAdvertisement(ctx context.Context, arg CreateAdvertiseme
 		arg.MobilePhone,
 		arg.Email,
 		arg.Telegram,
-		arg.CreatedAt,
 	)
 	var i CreateAdvertisementRow
 	err := row.Scan(
@@ -166,52 +164,61 @@ func (q *Queries) DeleteAdvertisementByUserID(ctx context.Context, providerID in
 }
 
 const filterAdvertisements = `-- name: FilterAdvertisements :many
-WITH filtered_ads AS (
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
-  WHERE
-        (NULLIF($5::text, '')::text IS NULL OR category = $5::text)
-        AND (NULLIF($6::int, 0) IS NULL OR time <= $6::int)
-        AND (NULLIF($7::text, '') IS NULL OR format = $8::text)
-        AND ((NULLIF($9::int, 0) IS NULL AND NULLIF($10::int, 0) IS NULL) OR (experience >= $9::int AND experience <= $10::int))
-        AND ((NULLIF($11::int, 0) IS NULL AND NULLIF($12::int, 0) IS NULL) OR (price >= $11::int AND price <= $12::int))
-        AND (NULLIF($13::text, '') IS NULL OR language = $13::text)
-        AND (NULLIF($14::text, '') IS NULL OR title ILIKE '%' || $14::text || '%')
-)
-SELECT
-  filtered_ads.id AS id, filtered_ads.title AS title, filtered_ads.attachment AS attachment, 
-  filtered_ads.experience AS experience, filtered_ads.time AS time, filtered_ads.price AS price, 
-  filtered_ads.format AS format, filtered_ads.language AS language, filtered_ads.description AS description, 
-  filtered_ads.mobile_phone AS mobile_phone, filtered_ads.email AS email, filtered_ads.telegram AS telegram,
-  filtered_ads.created_at AS created_at, filtered_ads.updated_at AS updated_at, users.id AS provider_id,
-  users.name AS provider_name, users.email AS provider_email, users.photo AS provider_photo,
-  users.verified AS provider_verified, users.role AS provider_role, users.created_at AS provider_created_at,
-  users.updated_at AS provider_updated_at, categories.id AS category_id, categories.name AS category_name, 
-  parent_category.name AS parent_category_name, COUNT(*) OVER () AS total_items
-FROM filtered_ads
-JOIN users ON filtered_ads.provider_id = users.id
-JOIN categories ON filtered_ads.category_id = categories.id
+SELECT 
+  advertisements.id,
+  advertisements.title,
+  advertisements.attachment,
+  advertisements.experience,
+  advertisements.time,
+  advertisements.price,
+  advertisements.format,
+  advertisements.language,
+  advertisements.description,
+  advertisements.mobile_phone,
+  advertisements.email,
+  advertisements.telegram,
+  advertisements.created_at,
+  advertisements.updated_at,
+  users.id AS provider_id,
+  users.name AS provider_name,
+  users.email AS provider_email,
+  users.photo AS provider_photo,
+  users.verified AS provider_verified,
+  users.role AS provider_role,
+  users.created_at AS provider_created_at,
+  users.updated_at AS provider_updated_at,
+  categories.id AS category_id,
+  categories.name AS category_name, 
+  parent_category.name AS parent_category_name,
+  COUNT(*) OVER () AS total_items
+FROM advertisements
+JOIN users ON advertisements.provider_id = users.id
+JOIN categories ON advertisements.category_id = categories.id
 LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id
+WHERE categories.parent_id IS NOT NULL
+    AND (NULLIF($1::text, '')::text IS NULL OR categories.name = $1::text)
+    AND (NULLIF($2::int, 0) IS NULL OR time <= $2::int)
+    AND (NULLIF($3::text, '') IS NULL OR format = $3::text)
+    AND ((NULLIF($4::int, 0) IS NULL AND NULLIF($5::int, 0) IS NULL) OR (experience >= $4::int AND experience <= $5::int))
+    AND ((NULLIF($6::int, 0) IS NULL AND NULLIF($7::int, 0) IS NULL) OR (price >= $6::int AND price <= $7::int))
+    AND (NULLIF($8::text, '') IS NULL OR language = $8::text)
+    AND (NULLIF($9::text, '') IS NULL OR title ILIKE '%' || $9::text || '%')
 ORDER BY
   ( CASE
-    WHEN $1::text = 'price' AND $2::text = 'desc' THEN CAST(price AS TEXT)
-    WHEN $1::text = 'experience' AND $2::text = 'desc' THEN CAST(experience AS TEXT)
-    WHEN $1::text = 'date' AND $2::text = 'desc' THEN CAST(created_at AS TEXT) END) DESC,
+    WHEN $10::text = 'price' AND $11::text = 'desc' THEN CAST(price AS TEXT)
+    WHEN $10::text = 'experience' AND $11::text = 'desc' THEN CAST(experience AS TEXT)
+    WHEN $10::text = 'date' AND $11::text = 'desc' THEN CAST(advertisements.created_at AS TEXT) END) DESC,
   ( CASE
-    WHEN $1::text = 'price' THEN CAST(price AS TEXT)
-    WHEN $1::text = 'experience' THEN CAST(experience AS TEXT)  
-    ELSE CAST(created_at AS TEXT) END) ASC                                     
-LIMIT $4::integer    
-OFFSET $3::integer
+    WHEN $10::text = 'price' THEN CAST(price AS TEXT)
+    WHEN $10::text = 'experience' THEN CAST(experience AS TEXT)  
+    ELSE CAST(advertisements.created_at AS TEXT) END) ASC                                     
+LIMIT $13::integer    
+OFFSET $12::integer
 `
 
 type FilterAdvertisementsParams struct {
-	Orderby      string `json:"orderby"`
-	Sortorder    string `json:"sortorder"`
-	Offsetadv    int32  `json:"offsetadv"`
-	Limitadv     int32  `json:"limitadv"`
 	Advcategory  string `json:"advcategory"`
 	Timelength   int32  `json:"timelength"`
-	Advfformat   string `json:"advfformat"`
 	Advformat    string `json:"advformat"`
 	Minexp       int32  `json:"minexp"`
 	Maxexp       int32  `json:"maxexp"`
@@ -219,6 +226,10 @@ type FilterAdvertisementsParams struct {
 	Maxprice     int32  `json:"maxprice"`
 	Advlanguage  string `json:"advlanguage"`
 	Titlekeyword string `json:"titlekeyword"`
+	Orderby      string `json:"orderby"`
+	Sortorder    string `json:"sortorder"`
+	Offsetadv    int32  `json:"offsetadv"`
+	Limitadv     int32  `json:"limitadv"`
 }
 
 type FilterAdvertisementsRow struct {
@@ -252,13 +263,8 @@ type FilterAdvertisementsRow struct {
 
 func (q *Queries) FilterAdvertisements(ctx context.Context, arg FilterAdvertisementsParams) ([]FilterAdvertisementsRow, error) {
 	rows, err := q.db.Query(ctx, filterAdvertisements,
-		arg.Orderby,
-		arg.Sortorder,
-		arg.Offsetadv,
-		arg.Limitadv,
 		arg.Advcategory,
 		arg.Timelength,
-		arg.Advfformat,
 		arg.Advformat,
 		arg.Minexp,
 		arg.Maxexp,
@@ -266,6 +272,10 @@ func (q *Queries) FilterAdvertisements(ctx context.Context, arg FilterAdvertisem
 		arg.Maxprice,
 		arg.Advlanguage,
 		arg.Titlekeyword,
+		arg.Orderby,
+		arg.Sortorder,
+		arg.Offsetadv,
+		arg.Limitadv,
 	)
 	if err != nil {
 		return nil, err
@@ -314,19 +324,36 @@ func (q *Queries) FilterAdvertisements(ctx context.Context, arg FilterAdvertisem
 
 const getAdvertisementAll = `-- name: GetAdvertisementAll :many
 SELECT 
-  advertisements.id AS id, advertisements.title AS title, advertisements.attachment AS attachment, 
-  advertisements.experience AS experience, advertisements.time AS time, advertisements.price AS price, 
-  advertisements.format AS format, advertisements.language AS language, advertisements.description AS description, 
-  advertisements.mobile_phone AS mobile_phone, advertisements.email AS email, advertisements.telegram AS telegram, 
-  advertisements.created_at AS created_at, advertisements.updated_at AS updated_at, users.id AS provider_id, 
-  users.name AS provider_name, users.email AS provider_email, users.photo AS provider_photo,
-  users.verified AS provider_verified, users.role AS provider_role, users.created_at AS provider_created_at,
-  users.updated_at AS provider_updated_at, categories.id AS category_id, categories.name AS category_name, 
+  advertisements.id AS id, 
+  advertisements.title AS title,
+  advertisements.attachment AS attachment,
+  advertisements.experience AS experience,
+  advertisements.time AS time,
+  advertisements.price AS price,
+  advertisements.format AS format,
+  advertisements.language AS language,
+  advertisements.description AS description, 
+  advertisements.mobile_phone AS mobile_phone,
+  advertisements.email AS email,
+  advertisements.telegram AS telegram, 
+  advertisements.created_at AS created_at,
+  advertisements.updated_at AS updated_at,
+  users.id AS provider_id,
+  users.name AS provider_name,
+  users.email AS provider_email,
+  users.photo AS provider_photo,
+  users.verified AS provider_verified,
+  users.role AS provider_role,
+  users.created_at AS provider_created_at,
+  users.updated_at AS provider_updated_at,
+  categories.id AS category_id,
+  categories.name AS category_name, 
   parent_category.name AS parent_category_name
 FROM advertisements
 JOIN users ON advertisements.provider_id = users.id
 JOIN categories ON advertisements.category_id = categories.id
 LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id
+WHERE categories.parent_id IS NOT NULL
 ORDER BY advertisements.created_at DESC LIMIT 10
 `
 
@@ -784,7 +811,7 @@ FROM advertisements
 JOIN users ON advertisements.provider_id = users.id
 JOIN categories ON advertisements.category_id = categories.id
 LEFT JOIN categories AS parent_category ON categories.parent_id = parent_category.id
-WHERE advertisements.provider_id = $1
+WHERE advertisements.provider_id = $1 AND categories.parent_id IS NOT NULL
 `
 
 type GetMyAdvertisementRow struct {
