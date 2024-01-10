@@ -193,6 +193,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/open/advertisements/adv-filter": {
+            "post": {
+                "description": "endpoint for getting specific advertisements",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "advertisement-filter"
+                ],
+                "summary": "POST request to get advertisement based on params in filter",
+                "parameters": [
+                    {
+                        "description": "advertisement filter",
+                        "name": "advertisement-filter",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/reqmodels.AdvertisementFilterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.AdvertisementPaginationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/open/advertisements/getall": {
             "get": {
                 "description": "endpoint for getting all advertisements",
@@ -369,55 +406,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/respmodels.StringResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/protected/advertisement-filter": {
-            "post": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
-                "description": "endpoint for getting specific advertisements",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "advertisement-filter"
-                ],
-                "summary": "POST request to get advertisement based on params in filter",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Insert your access token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "advertisement filter",
-                        "name": "advertisement-filter",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/reqmodels.AdvertisementFilterRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/respmodels.AdvertisementPaginationResponse"
                         }
                     },
                     "400": {
@@ -659,11 +647,17 @@ const docTemplate = `{
                 "offset": {
                     "type": "integer"
                 },
+                "orderby": {
+                    "type": "string"
+                },
                 "page": {
                     "type": "integer"
                 },
                 "per_page": {
                     "type": "integer"
+                },
+                "sortorder": {
+                    "type": "string"
                 },
                 "total_count": {
                     "type": "integer"
@@ -697,7 +691,7 @@ const docTemplate = `{
                 "language": {
                     "type": "string"
                 },
-                "limitadv": {
+                "limit": {
                     "type": "integer"
                 },
                 "maxexp": {
@@ -712,11 +706,11 @@ const docTemplate = `{
                 "minprice": {
                     "type": "integer"
                 },
-                "offsetadv": {
-                    "type": "integer"
-                },
                 "orderby": {
                     "type": "string"
+                },
+                "page": {
+                    "type": "integer"
                 },
                 "sortorder": {
                     "type": "string"

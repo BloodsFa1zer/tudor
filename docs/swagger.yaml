@@ -4,10 +4,14 @@ definitions:
     properties:
       offset:
         type: integer
+      orderby:
+        type: string
       page:
         type: integer
       per_page:
         type: integer
+      sortorder:
+        type: string
       total_count:
         type: integer
       total_pages:
@@ -29,7 +33,7 @@ definitions:
         type: string
       language:
         type: string
-      limitadv:
+      limit:
         type: integer
       maxexp:
         type: integer
@@ -39,10 +43,10 @@ definitions:
         type: integer
       minprice:
         type: integer
-      offsetadv:
-        type: integer
       orderby:
         type: string
+      page:
+        type: integer
       sortorder:
         type: string
       timelength:
@@ -390,6 +394,30 @@ paths:
       summary: POST request to update password
       tags:
       - reset-password
+  /open/advertisements/adv-filter:
+    post:
+      description: endpoint for getting specific advertisements
+      parameters:
+      - description: advertisement filter
+        in: body
+        name: advertisement-filter
+        required: true
+        schema:
+          $ref: '#/definitions/reqmodels.AdvertisementFilterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/respmodels.AdvertisementPaginationResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FaieldResponse'
+      summary: POST request to get advertisement based on params in filter
+      tags:
+      - advertisement-filter
   /open/advertisements/getall:
     get:
       description: endpoint for getting all advertisements
@@ -509,37 +537,6 @@ paths:
       summary: DELETE request to delete advertisement
       tags:
       - advertisement-delete
-  /protected/advertisement-filter:
-    post:
-      description: endpoint for getting specific advertisements
-      parameters:
-      - description: Insert your access token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: advertisement filter
-        in: body
-        name: advertisement-filter
-        required: true
-        schema:
-          $ref: '#/definitions/reqmodels.AdvertisementFilterRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/respmodels.AdvertisementPaginationResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/respmodels.FaieldResponse'
-      security:
-      - JWT: []
-      summary: POST request to get advertisement based on params in filter
-      tags:
-      - advertisement-filter
   /protected/advertisement-getmy:
     get:
       description: endpoint for getting user advertisements
