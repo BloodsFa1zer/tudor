@@ -19,8 +19,8 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": {
-		"install swager": "go install github.com/swaggo/swag/cmd/swag@latest",
 		"handshake github": "ssh-keyscan github.com > ~/.ssh/know_hosts",
+		"install swagger": "go install github.com/swaggo/swag/cmd/swag@latest",
 		"install sqlc": "go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest",
 		"install migration": "go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest",
 		"flyio": "curl -L https://fly.io/install.sh | sh && sudo cp /home/vscode/.fly/bin/flyctl /usr/local/bin"
