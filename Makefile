@@ -2,7 +2,7 @@ swag:
 	swag init --parseDependency --parseInternal --parseDepth 1 -md ./documentation -o ./docs
 
 db:
-	sqlc generate 
+	sqlc generate
 
 migrate:
 	migrate -verbose -path ./database/migrations -database $(MIGRATION_URL) up
@@ -13,7 +13,7 @@ migrate-down:
 migrate-create:
 	migrate create -ext sql -dir ./database/migrations -seq $(name)
 
-build: 
+build:
 	go build -o ./bin/run ./main.go
 
 run: migrate build

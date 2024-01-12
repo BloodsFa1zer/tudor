@@ -24,5 +24,6 @@ go.work
 .idea/
 bin/
 
-.devcontainer/devcontainer.env
+.devcontainer/.env
+.devcontainer/.features.temp.dockerfile
 fly.toml
