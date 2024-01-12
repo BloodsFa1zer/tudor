@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"study_marketplace/pkg/domen/models"
-	respmodels "study_marketplace/pkg/domen/models/response_models"
+	"study_marketplace/pkg/domain/models"
+	respmodels "study_marketplace/pkg/domain/models/response_models"
 	config "study_marketplace/pkg/infrastructure/config"
 
 	"github.com/gin-contrib/cors"
@@ -43,14 +43,14 @@ func (m *middleware) AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authString := c.GetHeader("Authorization")
 		if authString == "" {
-			c.JSON(http.StatusUnauthorized, respmodels.FaieldResponse{Data: "Unauthorized", Status: "failed"})
+			c.JSON(http.StatusUnauthorized, respmodels.FailedResponse{Data: "Unauthorized", Status: "failed"})
 			c.Abort()
 			return
 		}
 		authArray := strings.Split(authString, ":")
 		bearerAndJwt := strings.Split(authArray[0], " ")
 		if len(bearerAndJwt) != 2 && bearerAndJwt[0] != "Bearer" {
-			c.JSON(http.StatusUnauthorized, respmodels.FaieldResponse{Data: "Unauthorized", Status: "failed"})
+			c.JSON(http.StatusUnauthorized, respmodels.FailedResponse{Data: "Unauthorized", Status: "failed"})
 			c.Abort()
 			return
 		}
@@ -58,14 +58,14 @@ func (m *middleware) AuthMiddleware() gin.HandlerFunc {
 		token, err := jwtValidate(authJWT, m.conf.JWTSecret)
 
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, respmodels.FaieldResponse{Data: "Unauthorized", Status: "failed"})
+			c.JSON(http.StatusUnauthorized, respmodels.FailedResponse{Data: "Unauthorized", Status: "failed"})
 			c.Abort()
 			return
 		}
 
 		claims, ok := token.Claims.(*models.AuthClaims)
 		if !ok {
-			c.JSON(http.StatusUnauthorized, respmodels.FaieldResponse{Data: "Unauthorized", Status: "failed"})
+			c.JSON(http.StatusUnauthorized, respmodels.FailedResponse{Data: "Unauthorized", Status: "failed"})
 			c.Abort()
 			return
 		}
@@ -81,7 +81,7 @@ func (m *middleware) PasswordMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authString := c.GetHeader("Authorization")
 		if authString == "" {
-			c.JSON(http.StatusUnauthorized, respmodels.FaieldResponse{Data: "Unauthorized", Status: "failed"})
+			c.JSON(http.StatusUnauthorized, respmodels.FailedResponse{Data: "Unauthorized", Status: "failed"})
 			c.Abort()
 			return
 		}
@@ -89,7 +89,7 @@ func (m *middleware) PasswordMiddleware() gin.HandlerFunc {
 		// pswdString := strings.Split(authString, ":")
 
 		// if len(pswdString) != 2 {
-		// 	// c.JSON(http.StatusUnauthorized, respmodels.FaieldResponse{Data:"Not all info provided for change."))
+		// 	// c.JSON(http.StatusUnauthorized, respmodels.FailedResponse{Data:"Not all info provided for change."))
 		// 	// c.Abort()
 		// 	// return
 		// }

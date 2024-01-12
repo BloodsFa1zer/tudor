@@ -5,10 +5,12 @@ import (
 	"fmt"
 
 	"study_marketplace/database/queries"
-	dbmappers "study_marketplace/pkg/domen/mappers/db_mappers"
-	entities "study_marketplace/pkg/domen/models/entities"
-	reqmodels "study_marketplace/pkg/domen/models/request_models"
+	dbmappers "study_marketplace/pkg/domain/mappers/db_mappers"
+	entities "study_marketplace/pkg/domain/models/entities"
+	reqmodels "study_marketplace/pkg/domain/models/request_models"
 )
+
+//go:generate mockgen -destination=../../gen/mocks/mock_advertisements_repository.go -package=mocks . AdvertisementsRepository
 
 type AdvertisementsRepository interface {
 	CreateAdvertisement(ctx context.Context, arg *entities.Advertisement) (*entities.Advertisement, error)

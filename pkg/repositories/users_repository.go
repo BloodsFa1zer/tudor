@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"study_marketplace/database/queries"
-	dbmappers "study_marketplace/pkg/domen/mappers/db_mappers"
-	entities "study_marketplace/pkg/domen/models/entities"
+	dbmappers "study_marketplace/pkg/domain/mappers/db_mappers"
+	entities "study_marketplace/pkg/domain/models/entities"
 )
 
 //go:generate mockgen -destination=../../gen/mocks/mock_users_repository.go -package=mocks . UsersRepository

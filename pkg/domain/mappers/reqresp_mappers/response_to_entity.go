@@ -1,7 +1,7 @@
 package reqm
 
 import (
-	entities "study_marketplace/pkg/domen/models/entities"
+	entities "study_marketplace/pkg/domain/models/entities"
 
 	"github.com/markbates/goth"
 )

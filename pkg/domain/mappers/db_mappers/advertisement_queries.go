@@ -3,8 +3,8 @@ package dbmappers
 import (
 	"math"
 	"study_marketplace/database/queries"
-	entities "study_marketplace/pkg/domen/models/entities"
-	reqmodels "study_marketplace/pkg/domen/models/request_models"
+	entities "study_marketplace/pkg/domain/models/entities"
+	reqmodels "study_marketplace/pkg/domain/models/request_models"
 )
 
 func AdvertisementToCreateAdvertisementParams(adv *entities.Advertisement) queries.CreateAdvertisementParams {

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	reqm "study_marketplace/pkg/domen/mappers/reqresp_mappers"
+	reqm "study_marketplace/pkg/domain/mappers/reqresp_mappers"
 	"study_marketplace/pkg/services"
 
 	"github.com/gin-gonic/gin"

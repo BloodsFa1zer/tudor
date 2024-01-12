@@ -1,7 +1,7 @@
 package registry
 
 import (
-	"study_marketplace/pkg/domen/models"
+	"study_marketplace/pkg/domain/models"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"

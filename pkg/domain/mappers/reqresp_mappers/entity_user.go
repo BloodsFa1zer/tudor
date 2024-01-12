@@ -1,8 +1,8 @@
 package reqm
 
 import (
-	entities "study_marketplace/pkg/domen/models/entities"
-	respmodels "study_marketplace/pkg/domen/models/response_models"
+	entities "study_marketplace/pkg/domain/models/entities"
+	respmodels "study_marketplace/pkg/domain/models/response_models"
 )
 
 func UserToUserResponse(user *entities.User) *respmodels.UserInfoResponse {

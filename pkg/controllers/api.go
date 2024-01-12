@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"net/http"
-	respmodels "study_marketplace/pkg/domen/models/response_models"
+	respmodels "study_marketplace/pkg/domain/models/response_models"
 
 	"github.com/gin-gonic/gin"
 )

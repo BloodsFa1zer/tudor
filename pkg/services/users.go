@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	entities "study_marketplace/pkg/domen/models/entities"
+	entities "study_marketplace/pkg/domain/models/entities"
 	"study_marketplace/pkg/repositories"
 )
 

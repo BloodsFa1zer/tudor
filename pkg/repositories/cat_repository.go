@@ -6,6 +6,8 @@ import (
 	"study_marketplace/database/queries"
 )
 
+//go:generate mockgen -destination=../../gen/mocks/mock_categories_repository.go -package=mocks . CategoriesRepository
+
 type CategoriesRepository interface {
 	GetCategoriesWithChildren(ctx context.Context) ([]queries.GetCategoriesWithChildrenRow, error)
 	GetCategoryAndParent(ctx context.Context, name string) (queries.GetCategoryAndParentRow, error)
