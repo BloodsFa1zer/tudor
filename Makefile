@@ -25,7 +25,10 @@ fly:
 dpl:
 	flyctl deploy
 
-env:
+fenv:
 	flyctl secrets set $(env)
 
-.PHONY: swag sql migrate migrate-down migrate-create build run fly dpl env
+test:
+	go test -cover ./pkg/controllers | gocol
+
+.PHONY: swag sql migrate migrate-down migrate-create build run fly dpl fenv test
