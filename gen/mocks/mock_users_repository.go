@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 	queries "study_marketplace/database/queries"
-	entities "study_marketplace/pkg/domen/models/entities"
+	entities "study_marketplace/pkg/domain/models/entities"
 
 	gomock "github.com/golang/mock/gomock"
 )
