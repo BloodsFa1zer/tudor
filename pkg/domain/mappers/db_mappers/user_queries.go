@@ -54,6 +54,7 @@ func UserToUpdateUserParams(user *entities.User) queries.UpdateUserParams {
 		ID:      user.ID,
 		Column2: user.Name,
 		Column3: user.Email,
+		Column4: user.Password,
 	}
 }
 

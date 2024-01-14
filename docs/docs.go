@@ -506,6 +506,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/protected/change-password": {
+            "post": {
+                "description": "requires registred email address, current password and new password",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "change-password"
+                ],
+                "summary": "POST request to update password",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "user email for update",
+                        "name": "change-password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/reqmodels.PasswordChangeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.StringResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FailedResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/protected/create-password": {
             "patch": {
                 "description": "requires token. TODO! This endpoint may not work",
@@ -779,6 +823,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "reqmodels.PasswordChangeRequest": {
+            "type": "object",
+            "properties": {
+                "currentPassword": {
+                    "type": "string"
+                },
+                "newPassword": {
                     "type": "string"
                 }
             }

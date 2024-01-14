@@ -24,6 +24,12 @@ type PasswordResetRequest struct {
 	Email string `json:"email"`
 }
 
+// PasswordChangeRequest godoc
+type PasswordChangeRequest struct {
+	CurrentPassword string `json:"currentPassword"`
+	NewPassword     string `json:"newPassword"`
+}
+
 // PasswordCreateRequest godoc
 type PasswordCreateRequest struct {
 	Password string `json:"password"`

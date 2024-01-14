@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	reqm "study_marketplace/pkg/domain/mappers/reqresp_mappers"
@@ -16,6 +17,7 @@ type UserController interface {
 	UserInfo(ctx *gin.Context)
 	UserPatch(ctx *gin.Context)
 	PasswordReset(ctx *gin.Context)
+	PasswordChange(ctx *gin.Context)
 	PasswordCreate(ctx *gin.Context)
 }
 
@@ -159,6 +161,36 @@ func (t *userController) PasswordReset(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, reqm.StrResponse("Password Reset Email Has Been Sent"))
+}
+
+// @Change-password	godoc
+// @Summary			POST request to update password
+// @Description		requires registred email address, current password and new password
+// @Tags			change-password
+// @Param			Authorization	header	string				true	"Insert your access token"
+// @Param			change-password	body	reqmodels.PasswordChangeRequest	true	"user email for update"
+// @Produce			json
+// @Success			200	{object}	respmodels.StringResponse
+// @Failure			400	{object}	respmodels.FailedResponse
+// @Router			/protected/change-password [post]
+func (t *userController) PasswordChange(ctx *gin.Context) {
+	var request reqmodels.PasswordChangeRequest
+	userId := ctx.GetInt64("user_id")
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("Unable to read the request."))
+		return
+	}
+
+	if request.CurrentPassword == "" || request.NewPassword == "" || request.CurrentPassword == request.NewPassword {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("Wrong request."))
+		return
+	}
+
+	if err := t.userService.PasswordChange(ctx, userId, request.CurrentPassword, request.NewPassword); err != nil {
+		ctx.JSON(http.StatusUnauthorized, reqm.FailedResponse(fmt.Sprintf("Password change failed: %s", err.Error())))
+		return
+	}
+	ctx.JSON(http.StatusOK, reqm.StrResponse("Password has been updated"))
 }
 
 // @Create-password		godoc

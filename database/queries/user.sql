@@ -58,6 +58,7 @@ OFFSET $2;
 UPDATE users
 set name = COALESCE(NULLIF($2, ''), name),
 email = COALESCE(NULLIF($3, ''), email),
+password = COALESCE(NULLIF($4, ''), password),
 updated_at = CURRENT_TIMESTAMP
 WHERE id = $1
 RETURNING *;
