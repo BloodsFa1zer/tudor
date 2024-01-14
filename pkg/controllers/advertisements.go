@@ -144,7 +144,6 @@ func (t *advertisementsController) AdvGetAll(ctx *gin.Context) {
 func (c *advertisementsController) AdvGetByID(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := strconv.ParseInt(idParam, 10, 64)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return

@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"fmt"
 
 	"study_marketplace/database/queries"
 	dbmappers "study_marketplace/pkg/domain/mappers/db_mappers"
@@ -77,7 +76,6 @@ func (t *advertisementsRepository) GetAdvertisementAll(ctx context.Context) ([]e
 func (t *advertisementsRepository) FilterAdvertisements(ctx context.Context, filter *reqmodels.AdvertisementFilterRequest) (
 	*entities.AdvertisementPagination, error) {
 	arg := dbmappers.AdvertisementFiltRequestToFilterAdvertisementsParams(filter)
-	fmt.Printf("arg: \n\n==========\n%+v\n", arg)
 	filterdAdvs, err := t.q.FilterAdvertisements(ctx, arg)
 	if err != nil {
 		return nil, err
