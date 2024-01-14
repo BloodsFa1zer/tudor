@@ -24,7 +24,8 @@
 		"install sqlc": "go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest",
 		"install mock generator": "go install github.com/golang/mock/mockgen@v1.6.0",
 		"install migration": "go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest",
-		"flyio": "curl -L https://fly.io/install.sh | sh && sudo cp /home/vscode/.fly/bin/flyctl /usr/local/bin"
+		"flyio": "curl -L https://fly.io/install.sh | sh && sudo cp /home/vscode/.fly/bin/flyctl /usr/local/bin",
+		"tests coloring": "go install github.com/enrichman/gocol@v0.0.1"
 	},
 	"customizations": {
 		"vscode": {
