@@ -4,9 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	dbmappers "study_marketplace/pkg/domen/mappers/db_mappers"
-	entities "study_marketplace/pkg/domen/models/entities"
-	config "study_marketplace/pkg/infrastructure/config"
+	entities "study_marketplace/pkg/domain/models/entities"
 	"study_marketplace/pkg/repositories"
 )
 
@@ -21,7 +19,6 @@ type UserService interface {
 
 type userService struct {
 	db          repositories.UsersRepository
-	conf        *config.Config
 	genToken    func(userid int64, userName string) (string, error)
 	hashPass    func(password string) string
 	comparePass func(hashedPassword string, password string) error
@@ -29,13 +26,12 @@ type userService struct {
 }
 
 func NewUserService(
-	conf *config.Config,
 	gTF func(userid int64, userName string) (string, error),
 	hPass func(password string) string,
 	cPass func(hashedPassword string, password string) error,
 	sendEmail func(token string, to string) error,
 	db repositories.UsersRepository) UserService {
-	return &userService{db, conf, gTF, hPass, cPass, sendEmail}
+	return &userService{db, gTF, hPass, cPass, sendEmail}
 }
 
 func (s *userService) UserLogin(ctx context.Context, inputuser *entities.User) (string, *entities.User, error) {
@@ -56,7 +52,7 @@ func (s *userService) UserLogin(ctx context.Context, inputuser *entities.User) (
 
 func (s *userService) UserRegister(ctx context.Context, user *entities.User) (string, *entities.User, error) {
 	user.Password = s.hashPass(user.Password)
-	user, err := s.db.CreateUser(ctx, dbmappers.UserToCreateUserParams(user))
+	user, err := s.db.CreateUser(ctx, user)
 	if err != nil {
 		return "", nil, err
 	}

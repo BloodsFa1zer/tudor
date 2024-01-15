@@ -2,9 +2,9 @@ package reqm
 
 import (
 	"fmt"
-	entities "study_marketplace/pkg/domen/models/entities"
-	reqmodels "study_marketplace/pkg/domen/models/request_models"
-	respmodels "study_marketplace/pkg/domen/models/response_models"
+	entities "study_marketplace/pkg/domain/models/entities"
+	reqmodels "study_marketplace/pkg/domain/models/request_models"
+	respmodels "study_marketplace/pkg/domain/models/response_models"
 )
 
 func CreateAdvRequestToAdvertisement(req *reqmodels.CreateAdvertisementRequest, userId int64) *entities.Advertisement {
@@ -62,8 +62,8 @@ func AdvertisementToCreateUpdateAdvertisementResponse(adv *entities.Advertisemen
 			MobilePhone:  adv.MobilePhone,
 			Email:        adv.Email,
 			Telegram:     adv.Telegram,
-			CreatedAt:    adv.CreatedAt.GoString(),
-			UpdatedAt:    adv.UpdatedAt.GoString(),
+			CreatedAt:    adv.CreatedAt,
+			UpdatedAt:    adv.UpdatedAt,
 		},
 		Status: "success",
 	}
@@ -88,8 +88,8 @@ func AdvertisementsToAdvertisementsResponses(adv []entities.Advertisement) *resp
 			MobilePhone:  adv[i].MobilePhone,
 			Email:        adv[i].Email,
 			Telegram:     adv[i].Telegram,
-			CreatedAt:    adv[i].CreatedAt.GoString(),
-			UpdatedAt:    adv[i].UpdatedAt.GoString(),
+			CreatedAt:    adv[i].CreatedAt,
+			UpdatedAt:    adv[i].UpdatedAt,
 		}
 	}
 	return &respmodels.AdvertisementsResponse{

@@ -78,7 +78,7 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -118,7 +118,7 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -126,7 +126,7 @@
         },
         "/api/auth/reset-password": {
             "post": {
-                "description": "requires registred email address. TODO! This endpoint may not work",
+                "description": "requires registered email address. TODO! This endpoint may not work",
                 "produces": [
                     "application/json"
                 ],
@@ -155,7 +155,7 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -221,7 +221,7 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -247,7 +247,7 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -287,7 +287,7 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -359,7 +359,7 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -408,7 +408,7 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -448,7 +448,7 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -497,7 +497,7 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -541,7 +541,7 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -590,7 +590,7 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -630,7 +630,7 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -901,7 +901,7 @@
                 }
             }
         },
-        "respmodels.FaieldResponse": {
+        "respmodels.FailedResponse": {
             "type": "object",
             "properties": {
                 "data": {

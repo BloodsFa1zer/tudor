@@ -1,8 +1,8 @@
 package reqm
 
 import (
-	entities "study_marketplace/pkg/domen/models/entities"
-	reqmodels "study_marketplace/pkg/domen/models/request_models"
+	entities "study_marketplace/pkg/domain/models/entities"
+	reqmodels "study_marketplace/pkg/domain/models/request_models"
 )
 
 func RegUserToUser(regUser *reqmodels.RegistractionUserRequest) *entities.User {

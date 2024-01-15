@@ -2,13 +2,14 @@ package repositories
 
 import (
 	"context"
-	"fmt"
 
 	"study_marketplace/database/queries"
-	dbmappers "study_marketplace/pkg/domen/mappers/db_mappers"
-	entities "study_marketplace/pkg/domen/models/entities"
-	reqmodels "study_marketplace/pkg/domen/models/request_models"
+	dbmappers "study_marketplace/pkg/domain/mappers/db_mappers"
+	entities "study_marketplace/pkg/domain/models/entities"
+	reqmodels "study_marketplace/pkg/domain/models/request_models"
 )
+
+//go:generate mockgen -destination=../../gen/mocks/mock_advertisements_repository.go -package=mocks . AdvertisementsRepository
 
 type AdvertisementsRepository interface {
 	CreateAdvertisement(ctx context.Context, arg *entities.Advertisement) (*entities.Advertisement, error)
@@ -75,7 +76,6 @@ func (t *advertisementsRepository) GetAdvertisementAll(ctx context.Context) ([]e
 func (t *advertisementsRepository) FilterAdvertisements(ctx context.Context, filter *reqmodels.AdvertisementFilterRequest) (
 	*entities.AdvertisementPagination, error) {
 	arg := dbmappers.AdvertisementFiltRequestToFilterAdvertisementsParams(filter)
-	fmt.Printf("arg: \n\n==========\n%+v\n", arg)
 	filterdAdvs, err := t.q.FilterAdvertisements(ctx, arg)
 	if err != nil {
 		return nil, err

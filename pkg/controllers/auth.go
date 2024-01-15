@@ -3,10 +3,9 @@ package controllers
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"net/url"
-	reqm "study_marketplace/pkg/domen/mappers/reqresp_mappers"
+	"study_marketplace/pkg/domain/models/entities"
 	"study_marketplace/pkg/services"
 
 	"github.com/gin-gonic/gin"
@@ -20,22 +19,25 @@ type AuthController interface {
 
 type authController struct {
 	redirectPage string
+	callbackfunc func(res http.ResponseWriter, req *http.Request) (*entities.User, error)
 	services.AuthService
 }
 
-func NewAuthController(redirectPage string, us services.AuthService) AuthController {
-	return &authController{redirectPage: redirectPage, AuthService: us}
+func NewAuthController(redirectPage string,
+	callbackfunc func(res http.ResponseWriter, req *http.Request) (*entities.User, error),
+	us services.AuthService) AuthController {
+	return &authController{redirectPage: redirectPage, callbackfunc: callbackfunc, AuthService: us}
 }
 
 func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
 	provider := ctx.Param("provider")
 	ctx.Request = ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), "provider", provider))
-	user, err := gothic.CompleteUserAuth(ctx.Writer, ctx.Request)
+	user, err := c.callbackfunc(ctx.Writer, ctx.Request)
 	if err != nil {
 		ctx.AbortWithError(http.StatusForbidden, gin.Error{Err: errors.New("something went wrong")})
 		return
 	}
-	token, err := c.ProviderAuth(ctx, reqm.GothToUserToUser(user))
+	token, err := c.ProviderAuth(ctx, user)
 	if err != nil {
 		ctx.AbortWithError(http.StatusForbidden, gin.Error{Err: errors.New("something went wrong")})
 		return
@@ -44,7 +46,6 @@ func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
 	fragment.Set("token", token)
 	fragmentString := fragment.Encode()
 	redirectURL := c.redirectPage + "redirect#" + fragmentString
-	fmt.Printf("redirectURL: %s\n", redirectURL)
 	ctx.Redirect(http.StatusFound, redirectURL)
 }
 

@@ -2,8 +2,8 @@ package dbmappers
 
 import (
 	"study_marketplace/database/queries"
-	entities "study_marketplace/pkg/domen/models/entities"
-	reqmodels "study_marketplace/pkg/domen/models/request_models"
+	entities "study_marketplace/pkg/domain/models/entities"
+	reqmodels "study_marketplace/pkg/domain/models/request_models"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )

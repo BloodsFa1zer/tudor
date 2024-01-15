@@ -5,12 +5,14 @@ import (
 	"fmt"
 
 	"study_marketplace/database/queries"
-	dbmappers "study_marketplace/pkg/domen/mappers/db_mappers"
-	entities "study_marketplace/pkg/domen/models/entities"
+	dbmappers "study_marketplace/pkg/domain/mappers/db_mappers"
+	entities "study_marketplace/pkg/domain/models/entities"
 )
 
+//go:generate mockgen -destination=../../gen/mocks/mock_users_repository.go -package=mocks . UsersRepository
+
 type UsersRepository interface {
-	CreateUser(ctx context.Context, arg queries.CreateUserParams) (*entities.User, error)
+	CreateUser(ctx context.Context, user *entities.User) (*entities.User, error)
 	DeleteUser(ctx context.Context, id int64) error
 	GetUserByEmail(ctx context.Context, email string) (*entities.User, error)
 	GetUserById(ctx context.Context, id int64) (*entities.User, error)
@@ -26,8 +28,8 @@ type usersRepository struct {
 
 func NewUsersRepository(q *queries.Queries) *usersRepository { return &usersRepository{q} }
 
-func (t *usersRepository) CreateUser(ctx context.Context, arg queries.CreateUserParams) (*entities.User, error) {
-	dbuser, err := t.q.CreateUser(ctx, arg)
+func (t *usersRepository) CreateUser(ctx context.Context, user *entities.User) (*entities.User, error) {
+	dbuser, err := t.q.CreateUser(ctx, dbmappers.UserToCreateUserParams(user))
 	if err != nil {
 		return nil, err
 	}

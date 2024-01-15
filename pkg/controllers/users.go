@@ -3,9 +3,8 @@ package controllers
 import (
 	"net/http"
 
-	reqm "study_marketplace/pkg/domen/mappers/reqresp_mappers"
-	reqmodels "study_marketplace/pkg/domen/models/request_models"
-	respmodels "study_marketplace/pkg/domen/models/response_models"
+	reqm "study_marketplace/pkg/domain/mappers/reqresp_mappers"
+	reqmodels "study_marketplace/pkg/domain/models/request_models"
 	"study_marketplace/pkg/services"
 
 	"github.com/gin-gonic/gin"
@@ -36,22 +35,22 @@ func NewUsersController(us services.UserService) UserController {
 // @Produce			json
 // @Param			user_info	body		reqmodels.RegistractionUserRequest	true	"user info for sign up"
 // @Success			201			{object}	respmodels.SignUpINresponse
-// @Failure			400			{object}	respmodels.FaieldResponse
+// @Failure			400			{object}	respmodels.FailedResponse
 // @Router			/api/auth/register [post]
 func (t *userController) UserRegister(ctx *gin.Context) {
 	var inputModel reqmodels.RegistractionUserRequest
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
-		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: err.Error(), Status: "failed"})
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
 	if inputModel.Password == "" || inputModel.Email == "" {
-		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: "email and password required", Status: "failed"})
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("email and password required"))
 		return
 	}
 
 	token, _, err := t.userService.UserRegister(ctx, reqm.RegUserToUser(&inputModel))
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, respmodels.FaieldResponse{Data: err.Error(), Status: "failed"})
+		ctx.JSON(http.StatusUnauthorized, reqm.FailedResponse(err.Error()))
 		return
 	}
 	ctx.JSON(http.StatusCreated, reqm.TokenToSignUpINresponse(token))
@@ -65,22 +64,22 @@ func (t *userController) UserRegister(ctx *gin.Context) {
 // @Produce			json
 // @Param			request	body		reqmodels.LoginUserRequest	true	"request info"
 // @Success			200		{object}	respmodels.SignUpINresponse
-// @Failure			400		{object}	respmodels.FaieldResponse
+// @Failure			400		{object}	respmodels.FailedResponse
 // @Router			/api/auth/login [post]
 func (t *userController) UserLogin(ctx *gin.Context) {
 	var inputModel reqmodels.LoginUserRequest
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
-		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: err.Error(), Status: "failed"})
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
 	if inputModel.Password == "" || inputModel.Email == "" {
-		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: "email and password required", Status: "failed"})
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("email and password required"))
 		return
 	}
 
 	token, _, err := t.userService.UserLogin(ctx, reqm.LoginUserToUser(&inputModel))
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, respmodels.FaieldResponse{Data: err.Error(), Status: "failed"})
+		ctx.JSON(http.StatusUnauthorized, reqm.FailedResponse(err.Error()))
 		return
 	}
 	ctx.JSON(http.StatusOK, reqm.TokenToSignUpINresponse(token))
@@ -94,17 +93,17 @@ func (t *userController) UserLogin(ctx *gin.Context) {
 // @Param			Authorization	header	string	true	"Insert your access token"
 // @Produce			json
 // @Success			200	{object}	respmodels.UserInfoResponse
-// @Failure			400	{object}	respmodels.FaieldResponse
+// @Failure			400	{object}	respmodels.FailedResponse
 // @Router			/protected/userinfo [get]
 func (t *userController) UserInfo(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	if userID == 0 {
-		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: "user id error", Status: "failed"})
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("user id error"))
 		return
 	}
 	user, err := t.userService.UserInfo(ctx, userID)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, respmodels.FaieldResponse{Data: err.Error(), Status: "failed"})
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
 	ctx.JSON(http.StatusOK, reqm.UserToUserResponse(user))
@@ -119,18 +118,18 @@ func (t *userController) UserInfo(ctx *gin.Context) {
 // @Param			userinfo		body	reqmodels.UpdateUserRequest		true	"user info for update"
 // @Produce			json
 // @Success			200	{object}	respmodels.SignUpINresponse
-// @Failure			400	{object}	respmodels.FaieldResponse
+// @Failure			400	{object}	respmodels.FailedResponse
 // @Router			/protected/user-patch [patch]
 func (t *userController) UserPatch(ctx *gin.Context) {
 	userId := ctx.GetInt64("user_id")
 	var inputModel reqmodels.UpdateUserRequest
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
-		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: err.Error(), Status: "failed"})
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
 	token, _, err := t.userService.UserPatch(ctx, reqm.UpdateUserRequestToUser(&inputModel, userId))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: err.Error(), Status: "failed"})
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
 	ctx.JSON(http.StatusOK, reqm.TokenToSignUpINresponse(token))
@@ -138,28 +137,28 @@ func (t *userController) UserPatch(ctx *gin.Context) {
 
 // @Reset-password	godoc
 // @Summary			POST request to update password
-// @Description		requires registred email address. TODO! This endpoint may not work
+// @Description		requires registered email address. TODO! This endpoint may not work
 // @Tags			reset-password
 // @Param			reset-password	body	reqmodels.PasswordResetRequest	true	"user email for update"
 // @Produce			json
 // @Success			200	{object}	respmodels.StringResponse
-// @Failure			400	{object}	respmodels.FaieldResponse
+// @Failure			400	{object}	respmodels.FailedResponse
 // @Router			/api/auth/reset-password [post]
 func (t *userController) PasswordReset(ctx *gin.Context) {
 	var userEmail reqmodels.PasswordResetRequest
 	if err := ctx.ShouldBindJSON(&userEmail); err != nil {
-		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: "Can't read email.", Status: "failed"})
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
 	if userEmail.Email == "" {
-		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: "Email not provided.", Status: "failed"})
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("Email not provided."))
 		return
 	}
 	if err := t.userService.PasswordReset(ctx, userEmail.Email); err != nil {
-		ctx.JSON(http.StatusUnauthorized, respmodels.FaieldResponse{Data: "Email not found.", Status: "failed"})
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("Email not found."))
 		return
 	}
-	ctx.JSON(http.StatusOK, respmodels.StringResponse{Data: "Password Reset Email Has Been Sent", Status: "success"})
+	ctx.JSON(http.StatusOK, reqm.StrResponse("Password Reset Email Has Been Sent"))
 }
 
 // @Create-password		godoc
@@ -170,37 +169,24 @@ func (t *userController) PasswordReset(ctx *gin.Context) {
 // @Param				create-password	body	reqmodels.PasswordCreateRequest	true	"new user password"
 // @Produce				json
 // @Success				200	{object}	respmodels.StringResponse
-// @Failure				400	{object}	respmodels.FaieldResponse
+// @Failure				400	{object}	respmodels.FailedResponse
 // @Router				/protected/create-password [patch]
 func (t *userController) PasswordCreate(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	var newPassword reqmodels.PasswordCreateRequest
 	if err := ctx.ShouldBindJSON(&newPassword); err != nil {
-		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: "New password not provided.", Status: "failed"})
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
+		return
 	}
 	if newPassword.Password == "" {
-		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: "New password not provided.", Status: "failed"})
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("New password not provided."))
 		return
 	}
 	err := t.userService.PasswordCreate(ctx, userID, newPassword.Password)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, respmodels.FaieldResponse{Data: "Failed to create new passowrd.", Status: "failed"})
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("Failed to create new password."))
 		return
 	}
-	ctx.JSON(http.StatusOK, respmodels.StringResponse{Data: "Password updated.", Status: "success"})
+	ctx.JSON(http.StatusOK, reqm.StrResponse("Password updated."))
 }
-
-// // method used for password-middleware
-// // won't be publick endpoint
-// func (t *userController) GetPassword(ctx *gin.Context) string {
-// 	userID := ctx.GetInt64("user_id")
-// 	_, err := t.userService.UserInfo(ctx, userID)
-
-// 	if err != nil {
-// 		ctx.JSON(http.StatusUnauthorized, respmodels.FaieldResponse{Data:"No user found."))
-// 		return ""
-// 	}
-
-// 	return "user.Password"
-// }

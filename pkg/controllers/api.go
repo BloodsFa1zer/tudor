@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"net/http"
-	respmodels "study_marketplace/pkg/domen/models/response_models"
+	reqm "study_marketplace/pkg/domain/mappers/reqresp_mappers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,5 +16,5 @@ import (
 // @Success		200	{object}	respmodels.StringResponse
 // @Router			/api/ [get]
 func HealthCheck(c *gin.Context) {
-	c.JSON(http.StatusOK, respmodels.StringResponse{Data: "Server up and running.", Status: "success"})
+	c.JSON(http.StatusOK, reqm.StrResponse("Server up and running."))
 }

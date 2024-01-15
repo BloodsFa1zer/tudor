@@ -171,7 +171,7 @@ definitions:
       status:
         type: string
     type: object
-  respmodels.FaieldResponse:
+  respmodels.FailedResponse:
     properties:
       data:
         type: string
@@ -339,7 +339,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/respmodels.FaieldResponse'
+            $ref: '#/definitions/respmodels.FailedResponse'
       summary: POST request for login
       tags:
       - login
@@ -366,13 +366,14 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/respmodels.FaieldResponse'
+            $ref: '#/definitions/respmodels.FailedResponse'
       summary: POST request for registration
       tags:
       - register
   /api/auth/reset-password:
     post:
-      description: requires registred email address. TODO! This endpoint may not work
+      description: requires registered email address. TODO! This endpoint may not
+        work
       parameters:
       - description: user email for update
         in: body
@@ -390,7 +391,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/respmodels.FaieldResponse'
+            $ref: '#/definitions/respmodels.FailedResponse'
       summary: POST request to update password
       tags:
       - reset-password
@@ -414,7 +415,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/respmodels.FaieldResponse'
+            $ref: '#/definitions/respmodels.FailedResponse'
       summary: POST request to get advertisement based on params in filter
       tags:
       - advertisement-filter
@@ -431,7 +432,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/respmodels.FaieldResponse'
+            $ref: '#/definitions/respmodels.FailedResponse'
       summary: GET request to get 10 items sorted by creation date in desc order
       tags:
       - advertisements-getall
@@ -454,7 +455,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/respmodels.FaieldResponse'
+            $ref: '#/definitions/respmodels.FailedResponse'
       security:
       - JWT: []
       summary: GET request to get advertisement by id
@@ -500,7 +501,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/respmodels.FaieldResponse'
+            $ref: '#/definitions/respmodels.FailedResponse'
       security:
       - JWT: []
       summary: POST request to create advertisement
@@ -531,7 +532,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/respmodels.FaieldResponse'
+            $ref: '#/definitions/respmodels.FailedResponse'
       security:
       - JWT: []
       summary: DELETE request to delete advertisement
@@ -556,7 +557,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/respmodels.FaieldResponse'
+            $ref: '#/definitions/respmodels.FailedResponse'
       security:
       - JWT: []
       summary: GET request to get user created advertisements
@@ -587,7 +588,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/respmodels.FaieldResponse'
+            $ref: '#/definitions/respmodels.FailedResponse'
       security:
       - JWT: []
       summary: PATCH request to update advertisement
@@ -618,7 +619,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/respmodels.FaieldResponse'
+            $ref: '#/definitions/respmodels.FailedResponse'
       summary: PATCH request to create new password
       tags:
       - create-password
@@ -648,7 +649,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/respmodels.FaieldResponse'
+            $ref: '#/definitions/respmodels.FailedResponse'
       security:
       - JWT: []
       summary: PATCH request to update user
@@ -673,7 +674,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/respmodels.FaieldResponse'
+            $ref: '#/definitions/respmodels.FailedResponse'
       security:
       - JWT: []
       summary: Get request to see user info

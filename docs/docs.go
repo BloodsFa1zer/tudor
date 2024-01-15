@@ -81,7 +81,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -121,7 +121,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -129,7 +129,7 @@ const docTemplate = `{
         },
         "/api/auth/reset-password": {
             "post": {
-                "description": "requires registred email address. TODO! This endpoint may not work",
+                "description": "requires registered email address. TODO! This endpoint may not work",
                 "produces": [
                     "application/json"
                 ],
@@ -158,7 +158,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -224,7 +224,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -250,7 +250,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -290,7 +290,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -362,7 +362,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -411,7 +411,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -451,7 +451,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -500,7 +500,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -544,7 +544,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -593,7 +593,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -633,7 +633,7 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/respmodels.FaieldResponse"
+                            "$ref": "#/definitions/respmodels.FailedResponse"
                         }
                     }
                 }
@@ -904,7 +904,7 @@ const docTemplate = `{
                 }
             }
         },
-        "respmodels.FaieldResponse": {
+        "respmodels.FailedResponse": {
             "type": "object",
             "properties": {
                 "data": {
