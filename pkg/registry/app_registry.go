@@ -24,7 +24,7 @@ func categoriesRegister(r *registry) controllers.CategoriesController {
 }
 
 func authRegister(r *registry) controllers.AuthController {
-	return controllers.NewAuthController(r.config.RedirectUrl,
+	return controllers.NewAuthController(r.config.RedirectUrl, callbackfunc(),
 		services.NewAuthService(
 			genTokFunc(r.config.JWTSecret),
 			repositories.NewAuthRepository(r.queries)))
