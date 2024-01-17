@@ -5,6 +5,7 @@ import (
 	"strconv"
 	reqm "study_marketplace/pkg/domain/mappers/reqresp_mappers"
 	reqmodels "study_marketplace/pkg/domain/models/request_models"
+	v "study_marketplace/pkg/infrastructure/validator"
 	"study_marketplace/pkg/services"
 
 	"github.com/gin-gonic/gin"
@@ -41,15 +42,17 @@ func NewAdvertisementsController(sa services.AdvertisementService) Advertisement
 // @Router					/protected/advertisement-create [post]
 func (c *advertisementsController) AdvCreate(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
-	if userID == 0 {
-		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("user id error"))
-		return
-	}
 	var inputModel reqmodels.CreateAdvertisementRequest
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
+
+	if err := v.Validate(inputModel); err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
+		return
+	}
+
 	advertisement, err := c.advertisementService.AdvCreate(ctx,
 		reqm.CreateAdvRequestToAdvertisement(&inputModel, userID))
 	if err != nil {
@@ -74,6 +77,10 @@ func (c *advertisementsController) AdvPatch(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	var inputModel reqmodels.UpdateAdvertisementRequest
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
+		return
+	}
+	if err := v.Validate(inputModel); err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
@@ -171,6 +178,10 @@ func (c *advertisementsController) AdvGetFiltered(ctx *gin.Context) {
 	var filter reqmodels.AdvertisementFilterRequest
 	err := ctx.ShouldBindJSON(&filter)
 	if err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
+		return
+	}
+	if err := v.Validate(filter); err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}

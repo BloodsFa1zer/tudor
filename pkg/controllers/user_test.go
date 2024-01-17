@@ -72,16 +72,16 @@ func TestUserRegister(t *testing.T) {
 		expectedError      error
 	}{
 		{"success",
-			`{"email":"john@example.com","name": "John Doe","password": "123456"}`,
-			&entities.User{Name: "John Doe", Email: "john@example.com", Verified: true, Role: "user", Password: "123456"},
+			`{"email":"john@example.com","name": "John Doe","password": "123456Bb!"}`,
+			&entities.User{Name: "John Doe", Email: "john@example.com", Verified: true, Role: "user", Password: "123456Bb!"},
 			&entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "", Verified: true,
-				Password: "123456", Role: "user", CreatedAt: now, UpdatedAt: now},
+				Password: "123456Bb!", Role: "user", CreatedAt: now, UpdatedAt: now},
 			`{"data":{"token":"token"},"status":"success"}`, 201, nil},
 		{"failed_invalid_request", `{"email":"`, nil, nil, `{"data":"unexpected EOF","status":"failed"}`, 400, nil},
-		{"failed_invalid_email", `{"email":"","name": "John Doe","password": "123456"}`, nil, nil,
-			`{"data":"email and password required","status":"failed"}`, 400, nil},
-		{"failed_can_not_create_user", `{"email": "john@example.com", "name": "John Doe", "password": "123456"}`,
-			&entities.User{Name: "John Doe", Email: "john@example.com", Verified: true, Role: "user", Password: "123456"}, nil,
+		{"failed_invalid_email", `{"email":"","name": "John Doe","password": "123456bB!"}`, nil, nil,
+			`{"data":"Email: zero value","status":"failed"}`, 400, nil},
+		{"failed_can_not_create_user", `{"email": "john@example.com", "name": "John Doe", "password": "123456Bb!"}`,
+			&entities.User{Name: "John Doe", Email: "john@example.com", Verified: true, Role: "user", Password: "123456Bb!"}, nil,
 			`{"data":"can not create user","status":"failed"}`, 401, errors.New("can not create user")},
 	}
 	for _, tc := range testTable {
@@ -111,14 +111,14 @@ func TestUserLogin(t *testing.T) {
 		expectedError      error
 	}{
 		{"success",
-			`{"email":"john@example.com","password": "123456"}`, "john@example.com",
+			`{"email":"john@example.com","password": "123456bB!"}`, "john@example.com",
 			&entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "", Verified: true,
-				Password: "123456", Role: "user", CreatedAt: now, UpdatedAt: now},
+				Password: "123456bB!", Role: "user", CreatedAt: now, UpdatedAt: now},
 			`{"data":{"token":"token"},"status":"success"}`, 200, nil},
 		{"failed_invalid_request", `{"email":"`, "", nil, `{"data":"unexpected EOF","status":"failed"}`, 400, nil},
-		{"failed_invalid_email", `{"email":"","name": "John Doe","password": "123456"}`, "", nil,
-			`{"data":"email and password required","status":"failed"}`, 400, nil},
-		{"failed_can_not_fetch_user", `{"email": "john@example.com", "name": "John Doe", "password": "123456"}`, "john@example.com", nil,
+		{"failed_invalid_email", `{"email":"","name": "John Doe","password": "123456bB!"}`, "", nil,
+			`{"data":"Email: zero value","status":"failed"}`, 400, nil},
+		{"failed_can_not_fetch_user", `{"email": "john@example.com", "name": "John Doe", "password": "123456bB!"}`, "john@example.com", nil,
 			`{"data":"can not fetch user","status":"failed"}`, 401, errors.New("can not fetch user")},
 	}
 	for _, tc := range testTable {
@@ -187,7 +187,7 @@ func TestUserPatch(t *testing.T) {
 			`{"name": "John Doe", "email": "john@example.com"}`, 1,
 			&entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Verified: true, Role: "user"},
 			&entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "", Verified: true,
-				Password: "123456", Role: "user", CreatedAt: now, UpdatedAt: now},
+				Password: "123456Bb!", Role: "user", CreatedAt: now, UpdatedAt: now},
 			`{"data":{"token":"token"},"status":"success"}`, 200, nil},
 		{"failed_invalid_request", `{"email":"`, 1, nil, nil,
 			`{"data":"unexpected EOF","status":"failed"}`, 400, nil},
@@ -231,7 +231,7 @@ func TestPasswordReset(t *testing.T) {
 		{"failed_invalid_request", `{"email":"`, 1, "",
 			nil, `{"data":"unexpected EOF","status":"failed"}`, 400, nil},
 		{"failed_email_not_found", `{"email":""}`, 1, "",
-			nil, `{"data":"Email not provided.","status":"failed"}`, 400, nil},
+			nil, `{"data":"Email: zero value","status":"failed"}`, 400, nil},
 		{"failed_can_not_fetch_user", `{"email": "john@example.com"}`, 1, "john@example.com",
 			&entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "", Verified: true,
 				Password: "123456", Role: "user", CreatedAt: now, UpdatedAt: now},
@@ -265,18 +265,18 @@ func TestPasswordCreate(t *testing.T) {
 		expectedError      error
 	}{
 		{"success",
-			`{"password": "123456"}`, 1, &entities.User{ID: 1, Password: "123456"},
+			`{"password": "123456Bb!"}`, 1, &entities.User{ID: 1, Password: "123456Bb!"},
 			&entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "", Verified: true,
-				Password: "123456", Role: "user", CreatedAt: now, UpdatedAt: now},
+				Password: "123456Bb!", Role: "user", CreatedAt: now, UpdatedAt: now},
 			`{"data":"Password updated.","status":"success"}`, 200, nil},
 		{"failed_invalid_request", `{"pass":"`, 1, nil,
 			nil, `{"data":"unexpected EOF","status":"failed"}`, 400, nil},
 		{"failed_password_not_found", `{"password":""}`, 1, nil,
-			nil, `{"data":"New password not provided.","status":"failed"}`, 400, nil},
-		{"failed_can_not_update_users_password", `{"password": "123456"}`, 1, &entities.User{ID: 1, Password: "123456"},
+			nil, `{"data":"Password: password must be at least 8 characters long","status":"failed"}`, 400, nil},
+		{"failed_can_not_update_users_password", `{"password": "123456Bb!"}`, 1, &entities.User{ID: 1, Password: "123456Bb!"},
 			&entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "", Verified: true,
-				Password: "123456", Role: "user", CreatedAt: now, UpdatedAt: now},
-			`{"data":"Failed to create new password.","status":"failed"}`, 400, errors.New("can not fetch user")},
+				Password: "123456Bb!", Role: "user", CreatedAt: now, UpdatedAt: now},
+			`{"data":"failed request to DB","status":"failed"}`, 400, errors.New("can not fetch user")},
 	}
 	for _, tc := range testTable {
 		t.Run(tc.scenario, func(t *testing.T) {
@@ -308,17 +308,17 @@ func TestPasswordChange(t *testing.T) {
 		expectedError      error
 	}{
 		{"success",
-			`{"currentPassword": "123456", "newPassword": "654321"}`, 1, &entities.User{ID: 1, Password: "654321"},
+			`{"currentPassword": "123456bB!", "newPassword": "654321bB!"}`, 1, &entities.User{ID: 1, Password: "654321bB!"},
 			&entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "", Verified: true,
-				Password: "123456", Role: "user", CreatedAt: now, UpdatedAt: now},
+				Password: "123456bB!", Role: "user", CreatedAt: now, UpdatedAt: now},
 			`{"data":"Password has been updated","status":"success"}`, 200, nil},
 		{"failed_invalid_request", `{"currentPassword":"`, 1, nil,
 			nil, `{"data":"Unable to read the request.","status":"failed"}`, 400, nil},
-		{"failed_equal_passwords", `{"currentPassword":"123456", "newPassword": "123456"}`, 1, nil,
-			nil, `{"data":"Wrong request.","status":"failed"}`, 400, nil},
-		{"failed_wrong_password", `{"currentPassword":"111", "newPassword": "654321"}`, 1, nil,
+		{"failed_equal_passwords", `{"currentPassword":"123456bB!", "newPassword": "123456bB!"}`, 1, nil,
+			nil, `{"data":"current password and new password are equal","status":"failed"}`, 400, nil},
+		{"failed_wrong_password", `{"currentPassword":"111111Bb!", "newPassword": "654321bB!"}`, 1, nil,
 			&entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "", Verified: true,
-				Password: "123456", Role: "user", CreatedAt: now, UpdatedAt: now}, `{"data":"Password change failed: current password is wrong","status":"failed"}`, 401, nil},
+				Password: "123456bB!", Role: "user", CreatedAt: now, UpdatedAt: now}, `{"data":"Password change failed: current password is wrong","status":"failed"}`, 401, nil},
 	}
 	for _, tc := range testTable {
 		t.Run(tc.scenario, func(t *testing.T) {

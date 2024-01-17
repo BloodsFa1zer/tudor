@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	entities "study_marketplace/pkg/domain/models/entities"
-	v "study_marketplace/pkg/infrastructure/validator"
 	"study_marketplace/pkg/repositories"
 )
 
@@ -53,12 +52,8 @@ func (s *userService) UserLogin(ctx context.Context, inputuser *entities.User) (
 }
 
 func (s *userService) UserRegister(ctx context.Context, user *entities.User) (string, *entities.User, error) {
-	err := v.Validate(user)
-	if err != nil {
-		return "", nil, err
-	}
 	user.Password = s.hashPass(user.Password)
-	user, err = s.db.CreateUser(ctx, user)
+	user, err := s.db.CreateUser(ctx, user)
 	if err != nil {
 		return "", nil, err
 	}
@@ -90,11 +85,7 @@ func (s *userService) ProviderAuth(ctx context.Context, userInfo *entities.User)
 }
 
 func (s *userService) UserPatch(ctx context.Context, patch *entities.User) (string, *entities.User, error) {
-	err := v.Validate(patch)
-	if err != nil {
-		return "", nil, err
-	}
-	patch, err = s.db.UpdateUser(ctx, patch)
+	patch, err := s.db.UpdateUser(ctx, patch)
 	if err != nil {
 		return "", nil, err
 	}
@@ -132,10 +123,6 @@ func (s *userService) PasswordChange(ctx context.Context, userID int64, currentP
 		return fmt.Errorf("current password is wrong")
 	}
 
-	if currentPassword == newPassword {
-		return fmt.Errorf("current password and new password are equal")
-	}
-
 	userWithNewPassword := &entities.User{ID: user.ID, Password: s.hashPass(newPassword)}
 
 	_, err = s.db.UpdateUser(ctx, userWithNewPassword)
@@ -147,33 +134,10 @@ func (s *userService) PasswordChange(ctx context.Context, userID int64, currentP
 }
 
 func (s *userService) PasswordCreate(ctx context.Context, userID int64, newPassword string) error {
-	err := v.ValidateString(newPassword, "password")
-	if err != nil {
-		return err
-	}
-
 	pass := s.hashPass(newPassword)
-	_, err = s.db.UpdateUser(ctx, &entities.User{ID: userID, Password: pass})
+	_, err := s.db.UpdateUser(ctx, &entities.User{ID: userID, Password: pass})
 	if err != nil {
 		return fmt.Errorf("failed request to DB")
 	}
 	return nil
 }
-
-// func (s *userService) emailSend(userEmail string, user entities.User) (bool, error) {
-
-// 	response := s.newEmail(user.Email, token).message
-// 	msg := gomail.NewMessage()
-
-// 	msg.SetHeader("From", fmt.Sprintf("%s <%s>", s.conf.GoogleEmailSenderName, s.conf.GoogleEmailAddress))
-// 	msg.SetHeader("To", userEmail)
-// 	msg.SetHeader("Subject", "Password reset")
-// 	msg.SetBody("text/html", response)
-// 	postman := gomail.NewDialer("smtp.gmail.com", 587, s.conf.GoogleEmailAddress, s.conf.GoogleEmailSecret)
-
-// 	if err := postman.DialAndSend(msg); err != nil {
-// 		return false, fmt.Errorf("failed to send email")
-// 	}
-
-// 	return true, nil
-// }

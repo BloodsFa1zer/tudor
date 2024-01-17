@@ -3,7 +3,6 @@ package dbmappers
 import (
 	"study_marketplace/database/queries"
 	entities "study_marketplace/pkg/domain/models/entities"
-	reqmodels "study_marketplace/pkg/domain/models/request_models"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -91,11 +90,4 @@ func BoolTopgBool(b bool) pgtype.Bool {
 		return pgtype.Bool{Bool: b, Valid: true}
 	}
 	return pgtype.Bool{Bool: false, Valid: false}
-}
-
-func ParamListUsersToDbParam(param reqmodels.UsersListRequest) queries.ListUsersParams {
-	return queries.ListUsersParams{
-		Offset: int32(param.Offset),
-		Limit:  int32(param.Limit),
-	}
 }
