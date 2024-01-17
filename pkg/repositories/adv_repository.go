@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"errors"
 
 	"study_marketplace/database/queries"
 	dbmappers "study_marketplace/pkg/domain/mappers/db_mappers"
@@ -59,10 +60,18 @@ func (t *advertisementsRepository) GetAdvertisementByID(ctx context.Context, id 
 }
 
 func (t *advertisementsRepository) DeleteAdvertisementByID(ctx context.Context, advid, userid int64) error {
-	return t.q.DeleteAdvertisementByID(ctx, queries.DeleteAdvertisementByIDParams{
+	count, err := t.q.DeleteAdvertisementByID(ctx, queries.DeleteAdvertisementByIDParams{
 		ID:         advid,
 		ProviderID: userid,
 	})
+	if err != nil {
+		return err
+	}
+
+	if count == 0 {
+		return errors.New("you have no rights to delete this adv or such adv doesn't exist")
+	}
+	return nil
 }
 
 func (t *advertisementsRepository) GetAdvertisementAll(ctx context.Context) ([]entities.Advertisement, error) {

@@ -147,8 +147,11 @@ AND experience <= $2;
 SELECT * FROM advertisements
 WHERE language = $1;
 
--- name: DeleteAdvertisementByID :exec
-DELETE FROM advertisements WHERE id = $1 AND provider_id = $2;
+-- name: DeleteAdvertisementByID :one
+WITH deleted AS (
+  DELETE FROM advertisements WHERE id = $1 AND provider_id = $2 RETURNING *
+)
+SELECT COUNT(*) FROM deleted;
 
 -- name: DeleteAdvertisementByUserID :exec
 DELETE FROM advertisements

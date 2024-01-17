@@ -1,26 +1,25 @@
 package dbmappers
 
 import (
+	"database/sql"
 	"study_marketplace/database/queries"
 	entities "study_marketplace/pkg/domain/models/entities"
 	reqmodels "study_marketplace/pkg/domain/models/request_models"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 func UserToCreateOrUpdateUser(user *entities.User) queries.CreateOrUpdateUserParams {
 	return queries.CreateOrUpdateUserParams{
-		Name:       StrTopgText(user.Name),
+		Name:       StrToSqlStr(user.Name),
 		Email:      user.Email,
-		Photo:      StrTopgText(user.Photo),
+		Photo:      StrToSqlStr(user.Photo),
 		Verified:   user.Verified,
-		Password:   StrTopgText(user.Password),
+		Password:   StrToSqlStr(user.Password),
 		Role:       user.Role,
-		Name_2:     StrTopgText(user.Name),
-		Photo_2:    StrTopgText(user.Photo),
+		Name_2:     StrToSqlStr(user.Name),
+		Photo_2:    StrToSqlStr(user.Photo),
 		Verified_2: BoolTopgBool(user.Verified),
-		Password_2: StrTopgText(user.Password),
-		Role_2:     StrTopgText(user.Role),
+		Password_2: StrToSqlStr(user.Password),
+		Role_2:     StrToSqlStr(user.Role),
 	}
 }
 
@@ -40,10 +39,10 @@ func QueryUserToUser(user queries.User) *entities.User {
 
 func UserToCreateUserParams(user *entities.User) queries.CreateUserParams {
 	return queries.CreateUserParams{
-		Name:     StrTopgText(user.Name),
+		Name:     StrToSqlStr(user.Name),
 		Email:    user.Email,
-		Password: StrTopgText(user.Password),
-		Photo:    StrTopgText(user.Photo),
+		Password: StrToSqlStr(user.Password),
+		Photo:    StrToSqlStr(user.Photo),
 		Verified: user.Verified,
 		Role:     user.Role,
 	}
@@ -72,25 +71,25 @@ func CreateOrUpdateUserRowToUser(row queries.CreateOrUpdateUserRow) *entities.Us
 	}
 }
 
-func StrTopgText(str string) pgtype.Text {
+func StrToSqlStr(str string) sql.NullString {
 	if str != "" {
-		return pgtype.Text{String: str, Valid: true}
+		return sql.NullString{String: str, Valid: true}
 	}
-	return pgtype.Text{String: "", Valid: false}
+	return sql.NullString{String: "", Valid: false}
 }
 
-func IntTopgInt4(i int32) pgtype.Int4 {
+func IntTopgInt4(i int32) sql.NullInt32 {
 	if i != 0 {
-		return pgtype.Int4{Int32: int32(i), Valid: true}
+		return sql.NullInt32{Int32: int32(i), Valid: true}
 	}
-	return pgtype.Int4{Int32: 0, Valid: false}
+	return sql.NullInt32{Int32: 0, Valid: false}
 }
 
-func BoolTopgBool(b bool) pgtype.Bool {
+func BoolTopgBool(b bool) sql.NullBool {
 	if b {
-		return pgtype.Bool{Bool: b, Valid: true}
+		return sql.NullBool{Bool: b, Valid: true}
 	}
-	return pgtype.Bool{Bool: false, Valid: false}
+	return sql.NullBool{Bool: false, Valid: false}
 }
 
 func ParamListUsersToDbParam(param reqmodels.UsersListRequest) queries.ListUsersParams {
