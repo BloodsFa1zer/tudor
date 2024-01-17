@@ -186,13 +186,13 @@ func (t *userController) PasswordChange(ctx *gin.Context) {
 		return
 	}
 
-	if err := v.Validate(request); err != nil {
-		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
+	if request.CurrentPassword == request.NewPassword {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("current password and new password are equal"))
 		return
 	}
 
-	if request.CurrentPassword == request.NewPassword {
-		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("current password and new password are equal"))
+	if err := v.Validate(request); err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
 
