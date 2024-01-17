@@ -93,6 +93,13 @@ definitions:
       password:
         type: string
     type: object
+  reqmodels.PasswordChangeRequest:
+    properties:
+      currentPassword:
+        type: string
+      newPassword:
+        type: string
+    type: object
   reqmodels.PasswordCreateRequest:
     properties:
       password:
@@ -594,6 +601,35 @@ paths:
       summary: PATCH request to update advertisement
       tags:
       - advertisement-patch
+  /protected/change-password:
+    post:
+      description: requires registred email address, current password and new password
+      parameters:
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: user email for update
+        in: body
+        name: change-password
+        required: true
+        schema:
+          $ref: '#/definitions/reqmodels.PasswordChangeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/respmodels.StringResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FailedResponse'
+      summary: POST request to update password
+      tags:
+      - change-password
   /protected/create-password:
     patch:
       description: requires token. TODO! This endpoint may not work
