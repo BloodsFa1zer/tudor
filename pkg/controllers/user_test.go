@@ -294,3 +294,46 @@ func TestPasswordCreate(t *testing.T) {
 		})
 	}
 }
+
+func TestPasswordChange(t *testing.T) {
+	now := time.Now().Truncate(time.Second)
+	testTable := []struct {
+		scenario           string
+		request            string
+		inputDBId          int64
+		inputDBUser        *entities.User
+		expectedDBUser     *entities.User
+		expectedResponse   string
+		expectedStatusCode int
+		expectedError      error
+	}{
+		{"success",
+			`{"currentPassword": "123456", "newPassword": "654321"}`, 1, &entities.User{ID: 1, Password: "654321"},
+			&entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "", Verified: true,
+				Password: "123456", Role: "user", CreatedAt: now, UpdatedAt: now},
+			`{"data":"Password has been updated","status":"success"}`, 200, nil},
+		{"failed_invalid_request", `{"currentPassword":"`, 1, nil,
+			nil, `{"data":"Unable to read the request.","status":"failed"}`, 400, nil},
+		{"failed_equal_passwords", `{"currentPassword":"123456", "newPassword": "123456"}`, 1, nil,
+			nil, `{"data":"Wrong request.","status":"failed"}`, 400, nil},
+		{"failed_wrong_password", `{"currentPassword":"111", "newPassword": "654321"}`, 1, nil,
+			&entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "", Verified: true,
+				Password: "123456", Role: "user", CreatedAt: now, UpdatedAt: now}, `{"data":"Password change failed: current password is wrong","status":"failed"}`, 401, nil},
+	}
+	for _, tc := range testTable {
+		t.Run(tc.scenario, func(t *testing.T) {
+			ctrl, repo := newMockUsersRepository(t)
+			defer ctrl.Finish()
+			controller := newTestUserCtrller(repo)
+
+			ctx, w := newTestContext(http.MethodPost, "/api/protected/change-password", tc.request)
+			ctx.Set("user_id", tc.inputDBId)
+
+			repo.EXPECT().GetUserById(gomock.Any(), tc.inputDBId).Return(tc.expectedDBUser, tc.expectedError).AnyTimes()
+			repo.EXPECT().UpdateUser(gomock.Any(), tc.inputDBUser).Return(tc.expectedDBUser, tc.expectedError).AnyTimes()
+			controller.PasswordChange(ctx)
+
+			checkResponse(t, w, tc.expectedStatusCode, tc.expectedResponse)
+		})
+	}
+}

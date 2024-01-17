@@ -28,6 +28,7 @@ func SetupRouter(conf *config.Config, server *gin.Engine, a *controllers.AppCont
 	protected.Use(a.AuthMiddleware())
 	protected.GET("/userinfo", a.UserInfo)
 	protected.PATCH("/create-password", a.PasswordCreate)
+	protected.POST("/change-password", a.PasswordChange)
 
 	// categories block
 	server.GET("open/allcategories", a.CatGetAll)
@@ -47,5 +48,4 @@ func SetupRouter(conf *config.Config, server *gin.Engine, a *controllers.AppCont
 
 	protected.Use(a.PasswordMiddleware())
 	protected.PATCH("/user-patch", a.UserPatch)
-
 }

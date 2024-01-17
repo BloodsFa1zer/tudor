@@ -14,6 +14,7 @@ type UserService interface {
 	UserInfo(ctx context.Context, userId int64) (*entities.User, error)
 	UserPatch(ctx context.Context, patch *entities.User) (string, *entities.User, error)
 	PasswordReset(ctx context.Context, email string) error
+	PasswordChange(ctx context.Context, userID int64, currentPassword string, newPassword string) error
 	PasswordCreate(ctx context.Context, userID int64, newPassword string) error
 }
 
@@ -109,6 +110,30 @@ func (s *userService) PasswordReset(ctx context.Context, email string) error {
 	if err := s.sendEmail(token, user.Email); err != nil {
 		return err
 	}
+	return nil
+}
+
+func (s *userService) PasswordChange(ctx context.Context, userID int64, currentPassword string, newPassword string) error {
+	user, err := s.db.GetUserById(ctx, userID)
+	if err != nil {
+		return fmt.Errorf("failed request to DB")
+	}
+
+	if err := s.comparePass(user.Password, currentPassword); err != nil {
+		return fmt.Errorf("current password is wrong")
+	}
+
+	if currentPassword == newPassword {
+		return fmt.Errorf("current password and new password are equal")
+	}
+
+	userWithNewPassword := &entities.User{ID: user.ID, Password: s.hashPass(newPassword)}
+
+	_, err = s.db.UpdateUser(ctx, userWithNewPassword)
+	if err != nil {
+		return fmt.Errorf("failed to update password in the database")
+	}
+
 	return nil
 }
 
