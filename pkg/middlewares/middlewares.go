@@ -29,14 +29,21 @@ func NewMiddleware(conf *config.Config) Middleware {
 }
 
 func (m *middleware) CORS() gin.HandlerFunc {
-	cors := cors.New(
-		cors.Config{
-			// AllowWildcard: true,
-			AllowOrigins: m.conf.AllowedOrigins,
-			AllowMethods: []string{"GET", "POST", "PATCH", "DELETE", "HEAD", "OPTIONS"},
-			AllowHeaders: []string{"*"},
-		})
-	return cors
+	return func(ctx *gin.Context) {
+		cors := cors.New(
+			cors.Config{
+				AllowOrigins: m.conf.AllowedOrigins,
+				AllowMethods: []string{"GET", "POST", "PATCH", "DELETE", "HEAD", "OPTIONS"},
+				AllowHeaders: []string{"*"},
+			})
+		cors(ctx)
+		if ctx.Request.Method == "OPTIONS" {
+			ctx.Status(http.StatusOK)
+			return
+		}
+		ctx.Next()
+	}
+
 }
 
 func (m *middleware) AuthMiddleware() gin.HandlerFunc {
