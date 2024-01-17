@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	entities "study_marketplace/pkg/domain/models/entities"
+	v "study_marketplace/pkg/infrastructure/validator"
 	"study_marketplace/pkg/repositories"
 )
 
@@ -51,8 +52,12 @@ func (s *userService) UserLogin(ctx context.Context, inputuser *entities.User) (
 }
 
 func (s *userService) UserRegister(ctx context.Context, user *entities.User) (string, *entities.User, error) {
+	err := v.Validate(user)
+	if err != nil {
+		return "", nil, err
+	}
 	user.Password = s.hashPass(user.Password)
-	user, err := s.db.CreateUser(ctx, user)
+	user, err = s.db.CreateUser(ctx, user)
 	if err != nil {
 		return "", nil, err
 	}
@@ -84,7 +89,11 @@ func (s *userService) ProviderAuth(ctx context.Context, userInfo *entities.User)
 }
 
 func (s *userService) UserPatch(ctx context.Context, patch *entities.User) (string, *entities.User, error) {
-	patch, err := s.db.UpdateUser(ctx, patch)
+	err := v.Validate(patch)
+	if err != nil {
+		return "", nil, err
+	}
+	patch, err = s.db.UpdateUser(ctx, patch)
 	if err != nil {
 		return "", nil, err
 	}
@@ -113,8 +122,13 @@ func (s *userService) PasswordReset(ctx context.Context, email string) error {
 }
 
 func (s *userService) PasswordCreate(ctx context.Context, userID int64, newPassword string) error {
+	err := v.ValidateString(newPassword, "password")
+	if err != nil {
+		return err
+	}
+
 	pass := s.hashPass(newPassword)
-	_, err := s.db.UpdateUser(ctx, &entities.User{ID: userID, Password: pass})
+	_, err = s.db.UpdateUser(ctx, &entities.User{ID: userID, Password: pass})
 	if err != nil {
 		return fmt.Errorf("failed request to DB")
 	}
