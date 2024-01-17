@@ -79,12 +79,21 @@ definitions:
       time:
         type: integer
       title:
+        maxLength: 50
+        minLength: 2
         type: string
     type: object
   reqmodels.DeleteAdvertisementRequest:
     properties:
       id:
         type: integer
+    type: object
+  reqmodels.EmailChangeRequest:
+    properties:
+      currentPassword:
+        type: string
+      newEmail:
+        type: string
     type: object
   reqmodels.LoginUserRequest:
     properties:
@@ -115,6 +124,8 @@ definitions:
       email:
         type: string
       name:
+        maxLength: 50
+        minLength: 2
         type: string
       password:
         type: string
@@ -146,6 +157,7 @@ definitions:
       time:
         type: integer
       title:
+        maxLength: 50
         type: string
     type: object
   reqmodels.UpdateUserRequest:
@@ -153,6 +165,8 @@ definitions:
       email:
         type: string
       name:
+        maxLength: 50
+        minLength: 2
         type: string
     type: object
   respmodels.AdvertisementPaginationResponse:
@@ -601,9 +615,38 @@ paths:
       summary: PATCH request to update advertisement
       tags:
       - advertisement-patch
+  /protected/change-email:
+    post:
+      description: requires current password and new email
+      parameters:
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: user email for update
+        in: body
+        name: change-email
+        required: true
+        schema:
+          $ref: '#/definitions/reqmodels.EmailChangeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/respmodels.StringResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FailedResponse'
+      summary: POST request to update email
+      tags:
+      - change-email
   /protected/change-password:
     post:
-      description: requires registred email address, current password and new password
+      description: requires current password and new password
       parameters:
       - description: Insert your access token
         in: header

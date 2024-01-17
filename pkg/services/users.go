@@ -16,6 +16,7 @@ type UserService interface {
 	PasswordReset(ctx context.Context, email string) error
 	PasswordChange(ctx context.Context, userID int64, currentPassword string, newPassword string) error
 	PasswordCreate(ctx context.Context, userID int64, newPassword string) error
+	EmailChange(ctx context.Context, userID int64, currentPassword string, newEmail string) error
 }
 
 type userService struct {
@@ -139,5 +140,29 @@ func (s *userService) PasswordCreate(ctx context.Context, userID int64, newPassw
 	if err != nil {
 		return fmt.Errorf("failed request to DB")
 	}
+	return nil
+}
+
+func (s *userService) EmailChange(ctx context.Context, userID int64, currentPassword string, newEmail string) error {
+	user, err := s.db.GetUserById(ctx, userID)
+	if err != nil {
+		return fmt.Errorf("failed request to DB")
+	}
+
+	if err := s.comparePass(user.Password, currentPassword); err != nil {
+		return fmt.Errorf("current password is wrong")
+	}
+
+	if user.Email == newEmail {
+		return fmt.Errorf("current email and new email are equal")
+	}
+
+	userWithNewEmail := &entities.User{ID: user.ID, Email: newEmail}
+
+	_, err = s.db.UpdateUser(ctx, userWithNewEmail)
+	if err != nil {
+		return fmt.Errorf("failed to update email in the database")
+	}
+
 	return nil
 }
