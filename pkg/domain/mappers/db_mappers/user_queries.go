@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"study_marketplace/database/queries"
 	entities "study_marketplace/pkg/domain/models/entities"
-	reqmodels "study_marketplace/pkg/domain/models/request_models"
 )
 
 func UserToCreateOrUpdateUser(user *entities.User) queries.CreateOrUpdateUserParams {
