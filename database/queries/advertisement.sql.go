@@ -7,9 +7,8 @@ package queries
 
 import (
 	"context"
+	"database/sql"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createAdvertisement = `-- name: CreateAdvertisement :one
@@ -49,47 +48,47 @@ WHERE categories.parent_id IS NOT NULL
 `
 
 type CreateAdvertisementParams struct {
-	Title       string      `json:"title"`
-	ProviderID  int64       `json:"provider_id"`
-	Attachment  string      `json:"attachment"`
-	Experience  int32       `json:"experience"`
-	Name        string      `json:"name"`
-	Time        int32       `json:"time"`
-	Price       int32       `json:"price"`
-	Format      string      `json:"format"`
-	Language    string      `json:"language"`
-	Description string      `json:"description"`
-	MobilePhone pgtype.Text `json:"mobile_phone"`
-	Email       pgtype.Text `json:"email"`
-	Telegram    pgtype.Text `json:"telegram"`
+	Title       string         `json:"title"`
+	ProviderID  int64          `json:"provider_id"`
+	Attachment  string         `json:"attachment"`
+	Experience  int32          `json:"experience"`
+	Name        string         `json:"name"`
+	Time        int32          `json:"time"`
+	Price       int32          `json:"price"`
+	Format      string         `json:"format"`
+	Language    string         `json:"language"`
+	Description string         `json:"description"`
+	MobilePhone sql.NullString `json:"mobile_phone"`
+	Email       sql.NullString `json:"email"`
+	Telegram    sql.NullString `json:"telegram"`
 }
 
 type CreateAdvertisementRow struct {
-	ID                 int64       `json:"id"`
-	Title              string      `json:"title"`
-	Attachment         string      `json:"attachment"`
-	Experience         int32       `json:"experience"`
-	Time               int32       `json:"time"`
-	Price              int32       `json:"price"`
-	Format             string      `json:"format"`
-	Language           string      `json:"language"`
-	Description        string      `json:"description"`
-	MobilePhone        pgtype.Text `json:"mobile_phone"`
-	Email              pgtype.Text `json:"email"`
-	Telegram           pgtype.Text `json:"telegram"`
-	CreatedAt          time.Time   `json:"created_at"`
-	UpdatedAt          time.Time   `json:"updated_at"`
-	ProviderID         int64       `json:"provider_id"`
-	ProviderName       pgtype.Text `json:"provider_name"`
-	ProviderEmail      string      `json:"provider_email"`
-	ProviderPhoto      pgtype.Text `json:"provider_photo"`
-	ProviderVerified   bool        `json:"provider_verified"`
-	ProviderRole       string      `json:"provider_role"`
-	ProviderCreatedAt  time.Time   `json:"provider_created_at"`
-	ProviderUpdatedAt  time.Time   `json:"provider_updated_at"`
-	CategoryID         int64       `json:"category_id"`
-	CategoryName       string      `json:"category_name"`
-	ParentCategoryName string      `json:"parent_category_name"`
+	ID                 int64          `json:"id"`
+	Title              string         `json:"title"`
+	Attachment         string         `json:"attachment"`
+	Experience         int32          `json:"experience"`
+	Time               int32          `json:"time"`
+	Price              int32          `json:"price"`
+	Format             string         `json:"format"`
+	Language           string         `json:"language"`
+	Description        string         `json:"description"`
+	MobilePhone        sql.NullString `json:"mobile_phone"`
+	Email              sql.NullString `json:"email"`
+	Telegram           sql.NullString `json:"telegram"`
+	CreatedAt          time.Time      `json:"created_at"`
+	UpdatedAt          time.Time      `json:"updated_at"`
+	ProviderID         int64          `json:"provider_id"`
+	ProviderName       sql.NullString `json:"provider_name"`
+	ProviderEmail      string         `json:"provider_email"`
+	ProviderPhoto      sql.NullString `json:"provider_photo"`
+	ProviderVerified   bool           `json:"provider_verified"`
+	ProviderRole       string         `json:"provider_role"`
+	ProviderCreatedAt  time.Time      `json:"provider_created_at"`
+	ProviderUpdatedAt  time.Time      `json:"provider_updated_at"`
+	CategoryID         int64          `json:"category_id"`
+	CategoryName       string         `json:"category_name"`
+	ParentCategoryName string         `json:"parent_category_name"`
 }
 
 func (q *Queries) CreateAdvertisement(ctx context.Context, arg CreateAdvertisementParams) (CreateAdvertisementRow, error) {
@@ -139,8 +138,11 @@ func (q *Queries) CreateAdvertisement(ctx context.Context, arg CreateAdvertiseme
 	return i, err
 }
 
-const deleteAdvertisementByID = `-- name: DeleteAdvertisementByID :exec
-DELETE FROM advertisements WHERE id = $1 AND provider_id = $2
+const deleteAdvertisementByID = `-- name: DeleteAdvertisementByID :one
+WITH deleted AS (
+  DELETE FROM advertisements WHERE id = $1 AND provider_id = $2 RETURNING id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at
+)
+SELECT COUNT(*) FROM deleted
 `
 
 type DeleteAdvertisementByIDParams struct {
@@ -148,9 +150,11 @@ type DeleteAdvertisementByIDParams struct {
 	ProviderID int64 `json:"provider_id"`
 }
 
-func (q *Queries) DeleteAdvertisementByID(ctx context.Context, arg DeleteAdvertisementByIDParams) error {
-	_, err := q.db.Exec(ctx, deleteAdvertisementByID, arg.ID, arg.ProviderID)
-	return err
+func (q *Queries) DeleteAdvertisementByID(ctx context.Context, arg DeleteAdvertisementByIDParams) (int64, error) {
+	row := q.db.QueryRow(ctx, deleteAdvertisementByID, arg.ID, arg.ProviderID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }
 
 const deleteAdvertisementByUserID = `-- name: DeleteAdvertisementByUserID :exec
@@ -233,32 +237,32 @@ type FilterAdvertisementsParams struct {
 }
 
 type FilterAdvertisementsRow struct {
-	ID                 int64       `json:"id"`
-	Title              string      `json:"title"`
-	Attachment         string      `json:"attachment"`
-	Experience         int32       `json:"experience"`
-	Time               int32       `json:"time"`
-	Price              int32       `json:"price"`
-	Format             string      `json:"format"`
-	Language           string      `json:"language"`
-	Description        string      `json:"description"`
-	MobilePhone        pgtype.Text `json:"mobile_phone"`
-	Email              pgtype.Text `json:"email"`
-	Telegram           pgtype.Text `json:"telegram"`
-	CreatedAt          time.Time   `json:"created_at"`
-	UpdatedAt          time.Time   `json:"updated_at"`
-	ProviderID         int64       `json:"provider_id"`
-	ProviderName       pgtype.Text `json:"provider_name"`
-	ProviderEmail      string      `json:"provider_email"`
-	ProviderPhoto      pgtype.Text `json:"provider_photo"`
-	ProviderVerified   bool        `json:"provider_verified"`
-	ProviderRole       string      `json:"provider_role"`
-	ProviderCreatedAt  time.Time   `json:"provider_created_at"`
-	ProviderUpdatedAt  time.Time   `json:"provider_updated_at"`
-	CategoryID         int64       `json:"category_id"`
-	CategoryName       string      `json:"category_name"`
-	ParentCategoryName string      `json:"parent_category_name"`
-	TotalItems         int64       `json:"total_items"`
+	ID                 int64          `json:"id"`
+	Title              string         `json:"title"`
+	Attachment         string         `json:"attachment"`
+	Experience         int32          `json:"experience"`
+	Time               int32          `json:"time"`
+	Price              int32          `json:"price"`
+	Format             string         `json:"format"`
+	Language           string         `json:"language"`
+	Description        string         `json:"description"`
+	MobilePhone        sql.NullString `json:"mobile_phone"`
+	Email              sql.NullString `json:"email"`
+	Telegram           sql.NullString `json:"telegram"`
+	CreatedAt          time.Time      `json:"created_at"`
+	UpdatedAt          time.Time      `json:"updated_at"`
+	ProviderID         int64          `json:"provider_id"`
+	ProviderName       sql.NullString `json:"provider_name"`
+	ProviderEmail      string         `json:"provider_email"`
+	ProviderPhoto      sql.NullString `json:"provider_photo"`
+	ProviderVerified   bool           `json:"provider_verified"`
+	ProviderRole       string         `json:"provider_role"`
+	ProviderCreatedAt  time.Time      `json:"provider_created_at"`
+	ProviderUpdatedAt  time.Time      `json:"provider_updated_at"`
+	CategoryID         int64          `json:"category_id"`
+	CategoryName       string         `json:"category_name"`
+	ParentCategoryName string         `json:"parent_category_name"`
+	TotalItems         int64          `json:"total_items"`
 }
 
 func (q *Queries) FilterAdvertisements(ctx context.Context, arg FilterAdvertisementsParams) ([]FilterAdvertisementsRow, error) {
@@ -358,31 +362,31 @@ ORDER BY advertisements.created_at DESC LIMIT 10
 `
 
 type GetAdvertisementAllRow struct {
-	ID                 int64       `json:"id"`
-	Title              string      `json:"title"`
-	Attachment         string      `json:"attachment"`
-	Experience         int32       `json:"experience"`
-	Time               int32       `json:"time"`
-	Price              int32       `json:"price"`
-	Format             string      `json:"format"`
-	Language           string      `json:"language"`
-	Description        string      `json:"description"`
-	MobilePhone        pgtype.Text `json:"mobile_phone"`
-	Email              pgtype.Text `json:"email"`
-	Telegram           pgtype.Text `json:"telegram"`
-	CreatedAt          time.Time   `json:"created_at"`
-	UpdatedAt          time.Time   `json:"updated_at"`
-	ProviderID         int64       `json:"provider_id"`
-	ProviderName       pgtype.Text `json:"provider_name"`
-	ProviderEmail      string      `json:"provider_email"`
-	ProviderPhoto      pgtype.Text `json:"provider_photo"`
-	ProviderVerified   bool        `json:"provider_verified"`
-	ProviderRole       string      `json:"provider_role"`
-	ProviderCreatedAt  time.Time   `json:"provider_created_at"`
-	ProviderUpdatedAt  time.Time   `json:"provider_updated_at"`
-	CategoryID         int64       `json:"category_id"`
-	CategoryName       string      `json:"category_name"`
-	ParentCategoryName string      `json:"parent_category_name"`
+	ID                 int64          `json:"id"`
+	Title              string         `json:"title"`
+	Attachment         string         `json:"attachment"`
+	Experience         int32          `json:"experience"`
+	Time               int32          `json:"time"`
+	Price              int32          `json:"price"`
+	Format             string         `json:"format"`
+	Language           string         `json:"language"`
+	Description        string         `json:"description"`
+	MobilePhone        sql.NullString `json:"mobile_phone"`
+	Email              sql.NullString `json:"email"`
+	Telegram           sql.NullString `json:"telegram"`
+	CreatedAt          time.Time      `json:"created_at"`
+	UpdatedAt          time.Time      `json:"updated_at"`
+	ProviderID         int64          `json:"provider_id"`
+	ProviderName       sql.NullString `json:"provider_name"`
+	ProviderEmail      string         `json:"provider_email"`
+	ProviderPhoto      sql.NullString `json:"provider_photo"`
+	ProviderVerified   bool           `json:"provider_verified"`
+	ProviderRole       string         `json:"provider_role"`
+	ProviderCreatedAt  time.Time      `json:"provider_created_at"`
+	ProviderUpdatedAt  time.Time      `json:"provider_updated_at"`
+	CategoryID         int64          `json:"category_id"`
+	CategoryName       string         `json:"category_name"`
+	ParentCategoryName string         `json:"parent_category_name"`
 }
 
 func (q *Queries) GetAdvertisementAll(ctx context.Context) ([]GetAdvertisementAllRow, error) {
@@ -736,31 +740,31 @@ WHERE advertisements.id = $1
 `
 
 type GetAdvertisementCategoryAndUserByIDRow struct {
-	ID                 int64       `json:"id"`
-	Title              string      `json:"title"`
-	Attachment         string      `json:"attachment"`
-	Experience         int32       `json:"experience"`
-	Time               int32       `json:"time"`
-	Price              int32       `json:"price"`
-	Format             string      `json:"format"`
-	Language           string      `json:"language"`
-	Description        string      `json:"description"`
-	MobilePhone        pgtype.Text `json:"mobile_phone"`
-	Email              pgtype.Text `json:"email"`
-	Telegram           pgtype.Text `json:"telegram"`
-	CreatedAt          time.Time   `json:"created_at"`
-	UpdatedAt          time.Time   `json:"updated_at"`
-	ProviderID         int64       `json:"provider_id"`
-	ProviderName       pgtype.Text `json:"provider_name"`
-	ProviderEmail      string      `json:"provider_email"`
-	ProviderPhoto      pgtype.Text `json:"provider_photo"`
-	ProviderVerified   bool        `json:"provider_verified"`
-	ProviderRole       string      `json:"provider_role"`
-	ProviderCreatedAt  time.Time   `json:"provider_created_at"`
-	ProviderUpdatedAt  time.Time   `json:"provider_updated_at"`
-	CategoryID         int64       `json:"category_id"`
-	CategoryName       string      `json:"category_name"`
-	ParentCategoryName string      `json:"parent_category_name"`
+	ID                 int64          `json:"id"`
+	Title              string         `json:"title"`
+	Attachment         string         `json:"attachment"`
+	Experience         int32          `json:"experience"`
+	Time               int32          `json:"time"`
+	Price              int32          `json:"price"`
+	Format             string         `json:"format"`
+	Language           string         `json:"language"`
+	Description        string         `json:"description"`
+	MobilePhone        sql.NullString `json:"mobile_phone"`
+	Email              sql.NullString `json:"email"`
+	Telegram           sql.NullString `json:"telegram"`
+	CreatedAt          time.Time      `json:"created_at"`
+	UpdatedAt          time.Time      `json:"updated_at"`
+	ProviderID         int64          `json:"provider_id"`
+	ProviderName       sql.NullString `json:"provider_name"`
+	ProviderEmail      string         `json:"provider_email"`
+	ProviderPhoto      sql.NullString `json:"provider_photo"`
+	ProviderVerified   bool           `json:"provider_verified"`
+	ProviderRole       string         `json:"provider_role"`
+	ProviderCreatedAt  time.Time      `json:"provider_created_at"`
+	ProviderUpdatedAt  time.Time      `json:"provider_updated_at"`
+	CategoryID         int64          `json:"category_id"`
+	CategoryName       string         `json:"category_name"`
+	ParentCategoryName string         `json:"parent_category_name"`
 }
 
 func (q *Queries) GetAdvertisementCategoryAndUserByID(ctx context.Context, id int64) (GetAdvertisementCategoryAndUserByIDRow, error) {
@@ -815,31 +819,31 @@ WHERE advertisements.provider_id = $1 AND categories.parent_id IS NOT NULL
 `
 
 type GetMyAdvertisementRow struct {
-	ID                 int64       `json:"id"`
-	Title              string      `json:"title"`
-	Attachment         string      `json:"attachment"`
-	Experience         int32       `json:"experience"`
-	Time               int32       `json:"time"`
-	Price              int32       `json:"price"`
-	Format             string      `json:"format"`
-	Language           string      `json:"language"`
-	Description        string      `json:"description"`
-	MobilePhone        pgtype.Text `json:"mobile_phone"`
-	Email              pgtype.Text `json:"email"`
-	Telegram           pgtype.Text `json:"telegram"`
-	CreatedAt          time.Time   `json:"created_at"`
-	UpdatedAt          time.Time   `json:"updated_at"`
-	ProviderID         int64       `json:"provider_id"`
-	ProviderName       pgtype.Text `json:"provider_name"`
-	ProviderEmail      string      `json:"provider_email"`
-	ProviderPhoto      pgtype.Text `json:"provider_photo"`
-	ProviderVerified   bool        `json:"provider_verified"`
-	ProviderRole       string      `json:"provider_role"`
-	ProviderCreatedAt  time.Time   `json:"provider_created_at"`
-	ProviderUpdatedAt  time.Time   `json:"provider_updated_at"`
-	CategoryID         int64       `json:"category_id"`
-	CategoryName       string      `json:"category_name"`
-	ParentCategoryName string      `json:"parent_category_name"`
+	ID                 int64          `json:"id"`
+	Title              string         `json:"title"`
+	Attachment         string         `json:"attachment"`
+	Experience         int32          `json:"experience"`
+	Time               int32          `json:"time"`
+	Price              int32          `json:"price"`
+	Format             string         `json:"format"`
+	Language           string         `json:"language"`
+	Description        string         `json:"description"`
+	MobilePhone        sql.NullString `json:"mobile_phone"`
+	Email              sql.NullString `json:"email"`
+	Telegram           sql.NullString `json:"telegram"`
+	CreatedAt          time.Time      `json:"created_at"`
+	UpdatedAt          time.Time      `json:"updated_at"`
+	ProviderID         int64          `json:"provider_id"`
+	ProviderName       sql.NullString `json:"provider_name"`
+	ProviderEmail      string         `json:"provider_email"`
+	ProviderPhoto      sql.NullString `json:"provider_photo"`
+	ProviderVerified   bool           `json:"provider_verified"`
+	ProviderRole       string         `json:"provider_role"`
+	ProviderCreatedAt  time.Time      `json:"provider_created_at"`
+	ProviderUpdatedAt  time.Time      `json:"provider_updated_at"`
+	CategoryID         int64          `json:"category_id"`
+	CategoryName       string         `json:"category_name"`
+	ParentCategoryName string         `json:"parent_category_name"`
 }
 
 func (q *Queries) GetMyAdvertisement(ctx context.Context, providerID int64) ([]GetMyAdvertisementRow, error) {
@@ -908,20 +912,20 @@ RETURNING advertisements.id
 `
 
 type UpdateAdvertisementParams struct {
-	ID          int64       `json:"id"`
-	ProviderID  int64       `json:"provider_id"`
-	Title       pgtype.Text `json:"title"`
-	Attachment  pgtype.Text `json:"attachment"`
-	Experience  pgtype.Int4 `json:"experience"`
-	Name        pgtype.Text `json:"name"`
-	Time        pgtype.Int4 `json:"time"`
-	Price       pgtype.Int4 `json:"price"`
-	Format      pgtype.Text `json:"format"`
-	Language    pgtype.Text `json:"language"`
-	Description pgtype.Text `json:"description"`
-	MobilePhone pgtype.Text `json:"mobile_phone"`
-	Email       pgtype.Text `json:"email"`
-	Telegram    pgtype.Text `json:"telegram"`
+	ID          int64          `json:"id"`
+	ProviderID  int64          `json:"provider_id"`
+	Title       sql.NullString `json:"title"`
+	Attachment  sql.NullString `json:"attachment"`
+	Experience  sql.NullInt32  `json:"experience"`
+	Name        sql.NullString `json:"name"`
+	Time        sql.NullInt32  `json:"time"`
+	Price       sql.NullInt32  `json:"price"`
+	Format      sql.NullString `json:"format"`
+	Language    sql.NullString `json:"language"`
+	Description sql.NullString `json:"description"`
+	MobilePhone sql.NullString `json:"mobile_phone"`
+	Email       sql.NullString `json:"email"`
+	Telegram    sql.NullString `json:"telegram"`
 }
 
 func (q *Queries) UpdateAdvertisement(ctx context.Context, arg UpdateAdvertisementParams) (int64, error) {

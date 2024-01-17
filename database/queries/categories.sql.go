@@ -7,8 +7,7 @@ package queries
 
 import (
 	"context"
-
-	"github.com/jackc/pgx/v5/pgtype"
+	"database/sql"
 )
 
 const getCategoriesWithChildren = `-- name: GetCategoriesWithChildren :many
@@ -76,8 +75,8 @@ WHERE
 `
 
 type GetCategoryAndParentRow struct {
-	CategoryName string      `json:"category_name"`
-	ParentName   pgtype.Text `json:"parent_name"`
+	CategoryName string         `json:"category_name"`
+	ParentName   sql.NullString `json:"parent_name"`
 }
 
 func (q *Queries) GetCategoryAndParent(ctx context.Context, name string) (GetCategoryAndParentRow, error) {

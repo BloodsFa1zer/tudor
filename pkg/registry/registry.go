@@ -5,7 +5,7 @@ import (
 	"study_marketplace/pkg/controllers"
 	config "study_marketplace/pkg/infrastructure/config"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v4"
 )
 
 type registry struct {

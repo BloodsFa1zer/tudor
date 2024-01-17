@@ -7,9 +7,8 @@ package queries
 
 import (
 	"context"
+	"database/sql"
 	"time"
-
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createOrUpdateUser = `-- name: CreateOrUpdateUser :one
@@ -37,29 +36,29 @@ SELECT id, name, email, photo, verified, password, role, created_at, updated_at 
 `
 
 type CreateOrUpdateUserParams struct {
-	Name       pgtype.Text `json:"name"`
-	Email      string      `json:"email"`
-	Photo      pgtype.Text `json:"photo"`
-	Verified   bool        `json:"verified"`
-	Password   pgtype.Text `json:"password"`
-	Role       string      `json:"role"`
-	Name_2     pgtype.Text `json:"name_2"`
-	Photo_2    pgtype.Text `json:"photo_2"`
-	Verified_2 pgtype.Bool `json:"verified_2"`
-	Password_2 pgtype.Text `json:"password_2"`
-	Role_2     pgtype.Text `json:"role_2"`
+	Name       sql.NullString `json:"name"`
+	Email      string         `json:"email"`
+	Photo      sql.NullString `json:"photo"`
+	Verified   bool           `json:"verified"`
+	Password   sql.NullString `json:"password"`
+	Role       string         `json:"role"`
+	Name_2     sql.NullString `json:"name_2"`
+	Photo_2    sql.NullString `json:"photo_2"`
+	Verified_2 sql.NullBool   `json:"verified_2"`
+	Password_2 sql.NullString `json:"password_2"`
+	Role_2     sql.NullString `json:"role_2"`
 }
 
 type CreateOrUpdateUserRow struct {
-	ID        int64       `json:"id"`
-	Name      pgtype.Text `json:"name"`
-	Email     string      `json:"email"`
-	Photo     pgtype.Text `json:"photo"`
-	Verified  bool        `json:"verified"`
-	Password  pgtype.Text `json:"password"`
-	Role      string      `json:"role"`
-	CreatedAt time.Time   `json:"created_at"`
-	UpdatedAt time.Time   `json:"updated_at"`
+	ID        int64          `json:"id"`
+	Name      sql.NullString `json:"name"`
+	Email     string         `json:"email"`
+	Photo     sql.NullString `json:"photo"`
+	Verified  bool           `json:"verified"`
+	Password  sql.NullString `json:"password"`
+	Role      string         `json:"role"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
 }
 
 func (q *Queries) CreateOrUpdateUser(ctx context.Context, arg CreateOrUpdateUserParams) (CreateOrUpdateUserRow, error) {
@@ -106,12 +105,12 @@ RETURNING id, name, email, photo, verified, password, role, created_at, updated_
 `
 
 type CreateUserParams struct {
-	Name     pgtype.Text `json:"name"`
-	Email    string      `json:"email"`
-	Photo    pgtype.Text `json:"photo"`
-	Verified bool        `json:"verified"`
-	Password pgtype.Text `json:"password"`
-	Role     string      `json:"role"`
+	Name     sql.NullString `json:"name"`
+	Email    string         `json:"email"`
+	Photo    sql.NullString `json:"photo"`
+	Verified bool           `json:"verified"`
+	Password sql.NullString `json:"password"`
+	Role     string         `json:"role"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {

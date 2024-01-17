@@ -19,9 +19,9 @@ func AdvertisementToCreateAdvertisementParams(adv *entities.Advertisement) queri
 		Format:      adv.Format,
 		Language:    adv.Language,
 		Description: adv.Description,
-		MobilePhone: StrTopgText(adv.MobilePhone),
-		Email:       StrTopgText(adv.Email),
-		Telegram:    StrTopgText(adv.Telegram),
+		MobilePhone: StrToSqlStr(adv.MobilePhone),
+		Email:       StrToSqlStr(adv.Email),
+		Telegram:    StrToSqlStr(adv.Telegram),
 	}
 }
 
@@ -65,18 +65,18 @@ func AdvertisementToUpdateAdvertisementParams(adv *entities.Advertisement) queri
 	return queries.UpdateAdvertisementParams{
 		ID:          adv.ID,
 		ProviderID:  adv.Provider.ID,
-		Title:       StrTopgText(adv.Title),
-		Attachment:  StrTopgText(adv.Attachment),
+		Title:       StrToSqlStr(adv.Title),
+		Attachment:  StrToSqlStr(adv.Attachment),
 		Experience:  IntTopgInt4(int32(adv.Experience)),
-		Name:        StrTopgText(adv.Category.Name),
+		Name:        StrToSqlStr(adv.Category.Name),
 		Time:        IntTopgInt4(int32(adv.Time)),
 		Price:       IntTopgInt4(int32(adv.Price)),
-		Format:      StrTopgText(adv.Format),
-		Language:    StrTopgText(adv.Language),
-		Description: StrTopgText(adv.Description),
-		MobilePhone: StrTopgText(adv.MobilePhone),
-		Email:       StrTopgText(adv.Email),
-		Telegram:    StrTopgText(adv.Telegram),
+		Format:      StrToSqlStr(adv.Format),
+		Language:    StrToSqlStr(adv.Language),
+		Description: StrToSqlStr(adv.Description),
+		MobilePhone: StrToSqlStr(adv.MobilePhone),
+		Email:       StrToSqlStr(adv.Email),
+		Telegram:    StrToSqlStr(adv.Telegram),
 	}
 }
 
