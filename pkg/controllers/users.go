@@ -6,6 +6,7 @@ import (
 
 	reqm "study_marketplace/pkg/domain/mappers/reqresp_mappers"
 	reqmodels "study_marketplace/pkg/domain/models/request_models"
+	v "study_marketplace/pkg/infrastructure/validator"
 	"study_marketplace/pkg/services"
 
 	"github.com/gin-gonic/gin"
@@ -45,8 +46,8 @@ func (t *userController) UserRegister(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
-	if inputModel.Password == "" || inputModel.Email == "" {
-		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("email and password required"))
+	if err := v.Validate(inputModel); err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
 
@@ -74,8 +75,8 @@ func (t *userController) UserLogin(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
-	if inputModel.Password == "" || inputModel.Email == "" {
-		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("email and password required"))
+	if err := v.Validate(inputModel); err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
 
@@ -129,6 +130,10 @@ func (t *userController) UserPatch(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
+	if err := v.Validate(inputModel); err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
+		return
+	}
 	token, _, err := t.userService.UserPatch(ctx, reqm.UpdateUserRequestToUser(&inputModel, userId))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
@@ -152,8 +157,8 @@ func (t *userController) PasswordReset(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
-	if userEmail.Email == "" {
-		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("Email not provided."))
+	if err := v.Validate(userEmail); err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
 	if err := t.userService.PasswordReset(ctx, userEmail.Email); err != nil {
@@ -181,8 +186,13 @@ func (t *userController) PasswordChange(ctx *gin.Context) {
 		return
 	}
 
-	if request.CurrentPassword == "" || request.NewPassword == "" || request.CurrentPassword == request.NewPassword {
-		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("Wrong request."))
+	if request.CurrentPassword == request.NewPassword {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("current password and new password are equal"))
+		return
+	}
+
+	if err := v.Validate(request); err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
 
@@ -210,14 +220,15 @@ func (t *userController) PasswordCreate(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
-	if newPassword.Password == "" {
-		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("New password not provided."))
+	if err := v.Validate(newPassword); err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
+
 	err := t.userService.PasswordCreate(ctx, userID, newPassword.Password)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("Failed to create new password."))
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
 	ctx.JSON(http.StatusOK, reqm.StrResponse("Password updated."))

@@ -2,24 +2,24 @@ package reqmodels
 
 // CreateAdvertisementRequest godoc
 type CreateAdvertisementRequest struct {
-	Title        string `json:"title"`
+	Title        string `json:"title" validate:"min=2,max=50, nonzero"`
 	Attachment   string `json:"attachment"`
-	Experience   int32  `json:"experience"`
+	Experience   int32  `json:"experience" `
 	CategoryName string `json:"category"`
 	Time         int32  `json:"time"`
 	Price        int32  `json:"price"`
 	Format       string `json:"format"`
 	Language     string `json:"language"`
 	Description  string `json:"description"`
-	MobilePhone  string `json:"mobile_phone"`
-	Email        string `json:"email"`
+	MobilePhone  string `json:"mobile_phone" validate:"phone,nonzero"`
+	Email        string `json:"email" validate:"email,nonzero"`
 	Telegram     string `json:"telegram"`
 }
 
 // UpdateAdvertisementRequest godoc
 type UpdateAdvertisementRequest struct {
 	ID           int64  `json:"id"`
-	Title        string `json:"title"`
+	Title        string `json:"title" validate:"max=50"`
 	Attachment   string `json:"attachment"`
 	Experience   int32  `json:"experience"`
 	CategoryName string `json:"category"`
@@ -28,8 +28,8 @@ type UpdateAdvertisementRequest struct {
 	Format       string `json:"format"`
 	Language     string `json:"language"`
 	Description  string `json:"description"`
-	MobilePhone  string `json:"mobile_phone"`
-	Email        string `json:"email"`
+	MobilePhone  string `json:"mobile_phone" validate:"phone"`
+	Email        string `json:"email" validate:"email"`
 	Telegram     string `json:"telegram"`
 }
 
@@ -40,8 +40,8 @@ type DeleteAdvertisementRequest struct {
 
 // AdvGetFiltered godoc
 type AdvertisementFilterRequest struct {
-	Orderby      string `json:"sort_by"`
-	Sortorder    string `json:"sort_order"`
+	Orderby      string `json:"sort_by" validate:"regexp=^(price|date|experience|)$"`
+	Sortorder    string `json:"sort_order" validate:"regexp=^(asc|desc|)$"`
 	Page         int32  `json:"page"`
 	Limitadv     int32  `json:"per_page"`
 	Category     string `json:"category"`

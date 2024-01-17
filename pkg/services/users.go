@@ -123,10 +123,6 @@ func (s *userService) PasswordChange(ctx context.Context, userID int64, currentP
 		return fmt.Errorf("current password is wrong")
 	}
 
-	if currentPassword == newPassword {
-		return fmt.Errorf("current password and new password are equal")
-	}
-
 	userWithNewPassword := &entities.User{ID: user.ID, Password: s.hashPass(newPassword)}
 
 	_, err = s.db.UpdateUser(ctx, userWithNewPassword)
@@ -145,21 +141,3 @@ func (s *userService) PasswordCreate(ctx context.Context, userID int64, newPassw
 	}
 	return nil
 }
-
-// func (s *userService) emailSend(userEmail string, user entities.User) (bool, error) {
-
-// 	response := s.newEmail(user.Email, token).message
-// 	msg := gomail.NewMessage()
-
-// 	msg.SetHeader("From", fmt.Sprintf("%s <%s>", s.conf.GoogleEmailSenderName, s.conf.GoogleEmailAddress))
-// 	msg.SetHeader("To", userEmail)
-// 	msg.SetHeader("Subject", "Password reset")
-// 	msg.SetBody("text/html", response)
-// 	postman := gomail.NewDialer("smtp.gmail.com", 587, s.conf.GoogleEmailAddress, s.conf.GoogleEmailSecret)
-
-// 	if err := postman.DialAndSend(msg); err != nil {
-// 		return false, fmt.Errorf("failed to send email")
-// 	}
-
-// 	return true, nil
-// }

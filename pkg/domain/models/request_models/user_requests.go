@@ -2,40 +2,35 @@ package reqmodels
 
 // RegistractionUserRequest godoc
 type RegistractionUserRequest struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Name     string `json:"name" validate:"min=2,max=50, nonzero"`
+	Email    string `json:"email" validate:"email,nonzero"`
+	Password string `json:"password" validate:"password"`
 }
 
 // LoginUserRequest godoc
 type LoginUserRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" validate:"email,nonzero"`
+	Password string `json:"password" validate:"password"`
 }
 
 // UpdateUserRequest godoc
 type UpdateUserRequest struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	Name  string `json:"name" validate:"min=2,max=50, nonzero"`
+	Email string `json:"email" validate:"email,nonzero"`
 }
 
 // PasswordResetRequest godoc
 type PasswordResetRequest struct {
-	Email string `json:"email"`
+	Email string `json:"email" validate:"email,nonzero"`
 }
 
 // PasswordChangeRequest godoc
 type PasswordChangeRequest struct {
-	CurrentPassword string `json:"currentPassword"`
-	NewPassword     string `json:"newPassword"`
+	CurrentPassword string `json:"currentPassword" validate:"password"`
+	NewPassword     string `json:"newPassword" validate:"password"`
 }
 
 // PasswordCreateRequest godoc
 type PasswordCreateRequest struct {
-	Password string `json:"password"`
-}
-
-type UsersListRequest struct {
-	Offset int `json:"offset"`
-	Limit  int `json:"limit"`
+	Password string `json:"password" validate:"password"`
 }

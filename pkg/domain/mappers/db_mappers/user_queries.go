@@ -91,10 +91,3 @@ func BoolTopgBool(b bool) sql.NullBool {
 	}
 	return sql.NullBool{Bool: false, Valid: false}
 }
-
-func ParamListUsersToDbParam(param reqmodels.UsersListRequest) queries.ListUsersParams {
-	return queries.ListUsersParams{
-		Offset: int32(param.Offset),
-		Limit:  int32(param.Limit),
-	}
-}

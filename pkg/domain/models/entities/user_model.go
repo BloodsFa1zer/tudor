@@ -11,7 +11,7 @@ type User struct {
 	Email     string    `json:"email"`
 	Photo     string    `json:"photo"`
 	Verified  bool      `json:"verified"`
-	Password  string    `json:"password"`
+	Password  string    `json:"password" `
 	Role      string    `json:"role"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
