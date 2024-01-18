@@ -506,9 +506,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/protected/change-email": {
+            "post": {
+                "description": "requires current password and new email",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "change-email"
+                ],
+                "summary": "POST request to update email",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "user email for update",
+                        "name": "change-email",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/reqmodels.EmailChangeRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.StringResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FailedResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/protected/change-password": {
             "post": {
-                "description": "requires registred email address, current password and new password",
+                "description": "requires current password and new password",
                 "produces": [
                     "application/json"
                 ],
@@ -804,7 +848,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
                 }
             }
         },
@@ -813,6 +859,17 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "type": "integer"
+                }
+            }
+        },
+        "reqmodels.EmailChangeRequest": {
+            "type": "object",
+            "properties": {
+                "currentPassword": {
+                    "type": "string"
+                },
+                "newEmail": {
+                    "type": "string"
                 }
             }
         },
@@ -861,7 +918,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
                 },
                 "password": {
                     "type": "string"
@@ -908,7 +967,8 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50
                 }
             }
         },
@@ -919,7 +979,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "name": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 50,
+                    "minLength": 2
                 }
             }
         },

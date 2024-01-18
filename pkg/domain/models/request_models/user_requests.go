@@ -30,6 +30,12 @@ type PasswordChangeRequest struct {
 	NewPassword     string `json:"newPassword" validate:"password"`
 }
 
+// EmailChangeRequest godoc
+type EmailChangeRequest struct {
+	CurrentPassword string `json:"currentPassword" validate:"password"`
+	NewEmail        string `json:"newEmail" validate:"email,nonzero"`
+}
+
 // PasswordCreateRequest godoc
 type PasswordCreateRequest struct {
 	Password string `json:"password" validate:"password"`

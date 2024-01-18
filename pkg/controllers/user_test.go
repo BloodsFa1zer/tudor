@@ -337,3 +337,49 @@ func TestPasswordChange(t *testing.T) {
 		})
 	}
 }
+
+func TestEmailChange(t *testing.T) {
+	now := time.Now().Truncate(time.Second)
+	testTable := []struct {
+		scenario           string
+		request            string
+		inputDBId          int64
+		inputDBUser        *entities.User
+		expectedDBUser     *entities.User
+		expectedResponse   string
+		expectedStatusCode int
+		expectedError      error
+	}{
+		{"success",
+			`{"currentPassword": "123456bB!", "newEmail": "jane@example.com"}`, 1, &entities.User{ID: 1, Email: "jane@example.com"},
+			&entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "", Verified: true,
+				Password: "123456bB!", Role: "user", CreatedAt: now, UpdatedAt: now},
+			`{"data":"Email has been updated","status":"success"}`, 200, nil},
+		{"failed_invalid_request", `{"currentPassword":"`, 1, nil,
+			nil, `{"data":"Unable to read the request.","status":"failed"}`, 400, nil},
+		{"failed_wrong_request", `{"currentPassword":"", "newEmail": ""}`, 1, nil,
+			nil, `{"data":"CurrentPassword: password must be at least 8 characters long, NewEmail: zero value","status":"failed"}`, 400, nil},
+		{"failed_equal_emails", `{"currentPassword":"123456bB!", "newEmail": "john@example.com"}`, 1, nil,
+			&entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "", Verified: true,
+				Password: "123456bB!", Role: "user", CreatedAt: now, UpdatedAt: now}, `{"data":"Email change failed: current email and new email are equal","status":"failed"}`, 401, nil},
+		{"failed_wrong_password", `{"currentPassword":"654321bB!", "newEmail": "jane@example.com"}`, 1, nil,
+			&entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "", Verified: true,
+				Password: "123456bB!", Role: "user", CreatedAt: now, UpdatedAt: now}, `{"data":"Email change failed: current password is wrong","status":"failed"}`, 401, nil},
+	}
+	for _, tc := range testTable {
+		t.Run(tc.scenario, func(t *testing.T) {
+			ctrl, repo := newMockUsersRepository(t)
+			defer ctrl.Finish()
+			controller := newTestUserCtrller(repo)
+
+			ctx, w := newTestContext(http.MethodPost, "/api/protected/change-email", tc.request)
+			ctx.Set("user_id", tc.inputDBId)
+
+			repo.EXPECT().GetUserById(gomock.Any(), tc.inputDBId).Return(tc.expectedDBUser, tc.expectedError).AnyTimes()
+			repo.EXPECT().UpdateUser(gomock.Any(), tc.inputDBUser).Return(tc.expectedDBUser, tc.expectedError).AnyTimes()
+			controller.EmailChange(ctx)
+
+			checkResponse(t, w, tc.expectedStatusCode, tc.expectedResponse)
+		})
+	}
+}

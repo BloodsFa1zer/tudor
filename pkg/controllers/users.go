@@ -20,6 +20,7 @@ type UserController interface {
 	PasswordReset(ctx *gin.Context)
 	PasswordChange(ctx *gin.Context)
 	PasswordCreate(ctx *gin.Context)
+	EmailChange(ctx *gin.Context)
 }
 
 type userController struct {
@@ -170,7 +171,7 @@ func (t *userController) PasswordReset(ctx *gin.Context) {
 
 // @Change-password	godoc
 // @Summary			POST request to update password
-// @Description		requires registred email address, current password and new password
+// @Description		requires current password and new password
 // @Tags			change-password
 // @Param			Authorization	header	string				true	"Insert your access token"
 // @Param			change-password	body	reqmodels.PasswordChangeRequest	true	"user email for update"
@@ -232,4 +233,34 @@ func (t *userController) PasswordCreate(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, reqm.StrResponse("Password updated."))
+}
+
+// @Change-email	godoc
+// @Summary			POST request to update email
+// @Description		requires current password and new email
+// @Tags			change-email
+// @Param			Authorization	header	string				true	"Insert your access token"
+// @Param			change-email	body	reqmodels.EmailChangeRequest	true	"user email for update"
+// @Produce			json
+// @Success			200	{object}	respmodels.StringResponse
+// @Failure			400	{object}	respmodels.FailedResponse
+// @Router			/protected/change-email [post]
+func (t *userController) EmailChange(ctx *gin.Context) {
+	var request reqmodels.EmailChangeRequest
+	userId := ctx.GetInt64("user_id")
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("Unable to read the request."))
+		return
+	}
+
+	if err := v.Validate(request); err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
+		return
+	}
+
+	if err := t.userService.EmailChange(ctx, userId, request.CurrentPassword, request.NewEmail); err != nil {
+		ctx.JSON(http.StatusUnauthorized, reqm.FailedResponse(fmt.Sprintf("Email change failed: %s", err.Error())))
+		return
+	}
+	ctx.JSON(http.StatusOK, reqm.StrResponse("Email has been updated"))
 }
