@@ -31,5 +31,6 @@ func main() {
 	ac := registry.NewRegistry(conf, db).NewAppController()
 
 	routers.SetupRouter(conf, s, ac)
+
 	log.Fatal(s.Run(conf.ServerHostname))
 }
