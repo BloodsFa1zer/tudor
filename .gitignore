@@ -26,4 +26,3 @@ bin/
 
 .devcontainer/.env
 .devcontainer/.features.temp.dockerfile
-fly.toml
