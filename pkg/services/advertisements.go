@@ -31,6 +31,7 @@ func (t *advertisementService) AdvCreate(ctx context.Context, adv *entities.Adve
 }
 
 func (t *advertisementService) AdvPatch(ctx context.Context, adv *entities.Advertisement) (*entities.Advertisement, error) {
+
 	return t.db.UpdateAdvertisement(ctx, adv)
 }
 
