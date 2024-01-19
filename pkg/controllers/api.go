@@ -16,5 +16,6 @@ import (
 // @Success		200	{object}	respmodels.StringResponse
 // @Router			/api/ [get]
 func HealthCheck(c *gin.Context) {
+
 	c.JSON(http.StatusOK, reqm.StrResponse("Server up and running."))
 }
