@@ -26,4 +26,3 @@ bin/sqlc
 **/bin
 
 **/.devcontainer/devcontainer.env
-fly.toml
