@@ -24,12 +24,12 @@ jobs:
     needs: test
     concurrency: deploy-group
     steps:
-      - name: Check fly.toml
-        run: ls -l fly.toml
-      - name: Checkout code
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Checkout flyctl
         uses: superfly/flyctl-actions/setup-flyctl@master
       - name: Deploy to Fly
-        run: flyctl deploy
+        run: flyctl deploy --app ${{ secrets.FLY_APP_NAME }} --config fly.toml --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
