@@ -1,0 +1,19 @@
+name: Pull Request checks
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  
+    test:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v3
+        - name: Setup Golang with cache
+          uses: magnetikonline/action-golang-cache@v4
+          with:
+            go-version-file: go.mod
+        - name: Test
+          run: go test ./pkg/controllers
