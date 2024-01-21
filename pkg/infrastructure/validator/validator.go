@@ -16,6 +16,8 @@ func init() {
 	v.SetValidationFunc("email", email)
 	v.SetValidationFunc("password", password)
 	v.SetValidationFunc("phone", phone)
+	v.SetValidationFunc("advertisementSortOrder", advertisementSortOrder)
+	v.SetValidationFunc("sortOrder", sortOrder)
 }
 
 func Validate(s interface{}) error {
@@ -71,5 +73,33 @@ func phone(v interface{}, param string) error {
 	if !match {
 		return errors.New("invalid phone number format")
 	}
+	return nil
+}
+
+func advertisementSortOrder(v interface{}, param string) error {
+	str := v.(string)
+
+	if len(str) == 0 {
+		return nil
+	}
+
+	if str != "price" && str != "date" && str != "experience" {
+		return errors.New("invalid advertisement sort order value")
+	}
+
+	return nil
+}
+
+func sortOrder(v interface{}, param string) error {
+	str := v.(string)
+
+	if len(str) == 0 {
+		return nil
+	}
+
+	if str != "asc" && str != "desc" {
+		return errors.New("invalid sort order value")
+	}
+
 	return nil
 }
