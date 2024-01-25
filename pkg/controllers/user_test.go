@@ -31,7 +31,7 @@ var (
 				return errors.New("passwords not equal")
 			},
 			func(token, to string) error { return nil },
-			db))
+			db), "")
 	}
 
 	// this is a function that returns a UserController with a mocked UsersRepository and a request

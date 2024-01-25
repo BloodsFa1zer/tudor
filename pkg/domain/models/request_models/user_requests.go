@@ -9,8 +9,8 @@ type RegistractionUserRequest struct {
 
 // LoginUserRequest godoc
 type LoginUserRequest struct {
-	Email    string `json:"email" validate:"email,nonzero"`
-	Password string `json:"password" validate:"password"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 // UpdateUserRequest godoc

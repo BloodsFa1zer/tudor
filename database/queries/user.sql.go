@@ -249,6 +249,7 @@ UPDATE users
 set name = COALESCE(NULLIF($2, ''), name),
 email = COALESCE(NULLIF($3, ''), email),
 password = COALESCE(NULLIF($4, ''), password),
+photo = COALESCE(NULLIF($5, ''), photo),
 updated_at = CURRENT_TIMESTAMP
 WHERE id = $1
 RETURNING id, name, email, photo, verified, password, role, created_at, updated_at
@@ -259,6 +260,7 @@ type UpdateUserParams struct {
 	Column2 interface{} `json:"column_2"`
 	Column3 interface{} `json:"column_3"`
 	Column4 interface{} `json:"column_4"`
+	Column5 interface{} `json:"column_5"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -267,6 +269,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.Column2,
 		arg.Column3,
 		arg.Column4,
+		arg.Column5,
 	)
 	var i User
 	err := row.Scan(

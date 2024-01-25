@@ -27,6 +27,7 @@ type Config struct {
 	JWTSecret    string `env:"JWT_SECRET,required"`
 	CookieSecret string `env:"COOKIE_SECRET,required"`
 	RedirectUrl  string `env:"REDIRECT_URL,required"`
+	BasicAppUrl  string `env:"BASIC_APP_URL,required"`
 }
 
 func SetUpConfig() *Config {

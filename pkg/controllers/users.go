@@ -3,8 +3,10 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	reqm "study_marketplace/pkg/domain/mappers/reqresp_mappers"
+	"study_marketplace/pkg/domain/models/entities"
 	reqmodels "study_marketplace/pkg/domain/models/request_models"
 	v "study_marketplace/pkg/infrastructure/validator"
 	"study_marketplace/pkg/services"
@@ -21,14 +23,16 @@ type UserController interface {
 	PasswordChange(ctx *gin.Context)
 	PasswordCreate(ctx *gin.Context)
 	EmailChange(ctx *gin.Context)
+	UploadAvatar(ctx *gin.Context)
 }
 
 type userController struct {
 	userService services.UserService
+	basicAppUrl string
 }
 
-func NewUsersController(us services.UserService) UserController {
-	return &userController{us}
+func NewUsersController(us services.UserService, basicUrl string) UserController {
+	return &userController{us, basicUrl}
 }
 
 // @Registraction	godoc
@@ -263,4 +267,46 @@ func (t *userController) EmailChange(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, reqm.StrResponse("Email has been updated"))
+}
+
+// @Upload-avatar	godoc
+// @Summary			POST request to upload avatar
+// @Description		requires valid token and avatar
+// @Tags			upload-avatar
+// @Security		JWT
+// @Param			Authorization	header	string				true	"Insert your access token"
+// @Param			avatar			formData	file				true	"avatar for upload"
+// @Produce			json
+// @Success			200	{object}	respmodels.StringResponse
+// @Failure			400	{object}	respmodels.FailedResponse
+// @Router			/protected/upload-avatar [post]
+func (t *userController) UploadAvatar(ctx *gin.Context) {
+	userID := ctx.GetInt64("user_id")
+	file, err := ctx.FormFile("avatar")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
+		return
+	}
+	user, err := t.userService.UserInfo(ctx, userID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
+		return
+	}
+	if user.Photo != "" {
+		_ = os.Remove(user.Photo)
+	}
+
+	path := fmt.Sprintf("avatars/%d-%s", userID, file.Filename)
+	if err := ctx.SaveUploadedFile(file, path); err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
+		return
+	}
+
+	if _, _, err = t.userService.UserPatch(ctx,
+		&entities.User{ID: userID, Photo: fmt.Sprintf("%s/%s", t.basicAppUrl, path)}); err != nil {
+		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, reqm.StrResponse("Avatar uploaded"))
 }
