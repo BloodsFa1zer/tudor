@@ -28,6 +28,14 @@ type Advertisement struct {
 	UpdatedAt   time.Time      `json:"updated_at"`
 }
 
+type Avatar struct {
+	ID         int64  `json:"id"`
+	Filename   string `json:"filename"`
+	Fileadress string `json:"fileadress"`
+	Data       []byte `json:"data"`
+	ProviderID int64  `json:"provider_id"`
+}
+
 type Category struct {
 	ID       int64         `json:"id"`
 	Name     string        `json:"name"`
