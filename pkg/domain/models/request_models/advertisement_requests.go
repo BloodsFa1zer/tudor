@@ -8,7 +8,8 @@ type CreateAdvertisementRequest struct {
 	CategoryName string `json:"category"`
 	Time         int32  `json:"time"`
 	Price        int32  `json:"price"`
-	Format       string `json:"format"`
+	Currency     string `json:"currency" validate:"advertisementCurrency,nonzero"`
+	Format       string `json:"format" validate:"advertisementFormat,nonzero"`
 	Language     string `json:"language"`
 	Description  string `json:"description"`
 	MobilePhone  string `json:"mobile_phone" validate:"phone,nonzero"`
@@ -25,7 +26,8 @@ type UpdateAdvertisementRequest struct {
 	CategoryName string `json:"category"`
 	Time         int32  `json:"time"`
 	Price        int32  `json:"price"`
-	Format       string `json:"format"`
+	Currency     string `json:"currency" validate:"advertisementCurrency"`
+	Format       string `json:"format" validate:"advertisementFormat"`
 	Language     string `json:"language"`
 	Description  string `json:"description"`
 	MobilePhone  string `json:"mobile_phone" validate:"phone"`
@@ -46,7 +48,8 @@ type AdvertisementFilterRequest struct {
 	Limitadv     int32  `json:"per_page"`
 	Category     string `json:"category"`
 	Timelength   int32  `json:"time_length"`
-	Format       string `json:"format"`
+	Currency     string `json:"currency" validate:"advertisementCurrency"`
+	Format       string `json:"format" validate:"advertisementFormat"`
 	Minexp       int32  `json:"min_exp"`
 	Maxexp       int32  `json:"max_exp"`
 	Minprice     int32  `json:"min_price"`

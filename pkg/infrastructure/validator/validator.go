@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"study_marketplace/pkg/domain/models/entities"
 
 	"gopkg.in/validator.v2"
 )
@@ -18,6 +19,8 @@ func init() {
 	v.SetValidationFunc("phone", phone)
 	v.SetValidationFunc("advertisementSortOrder", advertisementSortOrder)
 	v.SetValidationFunc("sortOrder", sortOrder)
+	v.SetValidationFunc("advertisementFormat", advertisementFormat)
+	v.SetValidationFunc("advertisementCurrency", advertisementCurrency)
 }
 
 func Validate(s interface{}) error {
@@ -99,6 +102,41 @@ func sortOrder(v interface{}, param string) error {
 
 	if str != "asc" && str != "desc" {
 		return errors.New("invalid sort order value")
+	}
+
+	return nil
+}
+
+func advertisementFormat(v interface{}, param string) error {
+	str := v.(string)
+
+	if len(str) == 0 {
+		return nil
+	}
+
+	if str != string(entities.AdvertisementFormatOnline) && str != string(entities.AdvertisementFormatOffline) {
+		return errors.New("invalid advertisement format value")
+	}
+
+	return nil
+}
+
+func advertisementCurrency(v interface{}, param string) error {
+	str := v.(string)
+
+	if len(str) == 0 {
+		return nil
+	}
+
+	validAdvertisementCurrencies := map[string]struct{}{
+		string(entities.AdvertisementCurrencyEUR): {},
+		string(entities.AdvertisementCurrencyUSD): {},
+		string(entities.AdvertisementCurrencyUAH): {},
+		// Add more currencies as needed
+	}
+
+	if _, err := validAdvertisementCurrencies[str]; !err {
+		return errors.New("invalid advertisement currency value")
 	}
 
 	return nil
