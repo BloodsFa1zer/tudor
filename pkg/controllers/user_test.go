@@ -1,9 +1,13 @@
 package controllers_test
 
 import (
+	"bytes"
 	"errors"
+	"io"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"study_marketplace/gen/mocks"
 	"study_marketplace/pkg/controllers"
@@ -116,7 +120,7 @@ func TestUserLogin(t *testing.T) {
 				Password: "123456bB!", Role: "user", CreatedAt: now, UpdatedAt: now},
 			`{"data":{"token":"token"},"status":"success"}`, 200, nil},
 		{"failed_invalid_request", `{"email":"`, "", nil, `{"data":"unexpected EOF","status":"failed"}`, 400, nil},
-		{"failed_invalid_email", `{"email":"","name": "John Doe","password": "123456bB!"}`, "", nil,
+		{"failed_invalid_email", `{"email":"","password": "123456bB!"}`, "", nil,
 			`{"data":"Email: zero value","status":"failed"}`, 400, nil},
 		{"failed_can_not_fetch_user", `{"email": "john@example.com", "name": "John Doe", "password": "123456bB!"}`, "john@example.com", nil,
 			`{"data":"can not fetch user","status":"failed"}`, 401, errors.New("can not fetch user")},
@@ -378,6 +382,86 @@ func TestEmailChange(t *testing.T) {
 			repo.EXPECT().GetUserById(gomock.Any(), tc.inputDBId).Return(tc.expectedDBUser, tc.expectedError).AnyTimes()
 			repo.EXPECT().UpdateUser(gomock.Any(), tc.inputDBUser).Return(tc.expectedDBUser, tc.expectedError).AnyTimes()
 			controller.EmailChange(ctx)
+
+			checkResponse(t, w, tc.expectedStatusCode, tc.expectedResponse)
+		})
+	}
+}
+
+func TestUploadAvatar(t *testing.T) {
+	now := time.Now().Truncate(time.Second)
+	testTable := []struct {
+		scenario            string
+		inputDBId           int64
+		expectetDBUserInfo  *entities.User
+		inputUpdateDBUser   *entities.User
+		expectedDBUpdate    *entities.User
+		expectedResponse    string
+		expectedStatusCode  int
+		expectedInfoError   error
+		expectedUpdateError error
+	}{
+		{"success", 1, &entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "/avatars/photo.jpg", Verified: true,
+			Role: "user", Password: "123456Bb!", CreatedAt: now, UpdatedAt: now},
+			&entities.User{ID: 1, Photo: "/avatars/1-test_avatar.jpg"},
+			&entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "/avatars/1-test_avatar.jpg", Verified: true,
+				Password: "123456Bb!", Role: "user", CreatedAt: now, UpdatedAt: now},
+			`{"data":"Avatar uploaded","status":"success"}`, 200, nil, nil},
+		{"failed_userinfo_not_found", 1, nil, nil, nil, `{"data":"can not fetch user","status":"failed"}`, 400, errors.New("can not fetch user"), nil},
+		{"failed_update_user", 1, &entities.User{ID: 1, Name: "John Doe", Email: "john@example.com", Photo: "/avatars/photo.jpg", Verified: true,
+			Role: "user", Password: "123456Bb!", CreatedAt: now, UpdatedAt: now}, &entities.User{ID: 1, Photo: "/avatars/1-test_avatar.jpg"}, nil,
+			`{"data":"can not update user","status":"failed"}`, 400, nil, errors.New("can not update user")},
+		{"failed_format_error", 1, nil, nil, nil, `{"data":"unexpected EOF","status":"failed"}`, 400, nil, nil},
+	}
+	for _, tc := range testTable {
+		t.Run(tc.scenario, func(t *testing.T) {
+			ctrl, repo := newMockUsersRepository(t)
+			defer ctrl.Finish()
+			controller := newTestUserCtrller(repo)
+
+			tmpFile, err := os.CreateTemp("", "test_avatar*.jpg")
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer os.Remove(tmpFile.Name())
+			content := []byte("test content")
+			if _, err := tmpFile.Write(content); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := tmpFile.Seek(0, 0); err != nil {
+				t.Fatal(err)
+			}
+			fileHeader := &multipart.FileHeader{
+				Filename: "test_avatar.jpg",
+				Size:     int64(len(content)),
+			}
+
+			body := &bytes.Buffer{}
+			writer := multipart.NewWriter(body)
+
+			part, err := writer.CreateFormFile("avatar", fileHeader.Filename)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = io.Copy(part, tmpFile)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if tc.scenario != "failed_format_error" {
+				writer.Close()
+			}
+
+			r := httptest.NewRequest("POST", "/api/protected/upload-avatar", body)
+			r.Header.Set("Content-Type", writer.FormDataContentType())
+			w := httptest.NewRecorder()
+			ctx := gin.CreateTestContextOnly(w, router)
+			ctx.Request = r
+
+			ctx.Set("user_id", tc.inputDBId)
+
+			repo.EXPECT().GetUserById(gomock.Any(), tc.inputDBId).Return(tc.expectetDBUserInfo, tc.expectedInfoError).AnyTimes()
+			repo.EXPECT().UpdateUser(gomock.Any(), tc.inputUpdateDBUser).Return(tc.expectedDBUpdate, tc.expectedUpdateError).AnyTimes()
+			controller.UploadAvatar(ctx)
 
 			checkResponse(t, w, tc.expectedStatusCode, tc.expectedResponse)
 		})

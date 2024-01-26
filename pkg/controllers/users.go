@@ -128,7 +128,7 @@ func (t *userController) UserInfo(ctx *gin.Context) {
 // @Success			200	{object}	respmodels.SignUpINresponse
 // @Failure			400	{object}	respmodels.FailedResponse
 // @Router			/protected/user-patch [patch]
-func (t *userController) UserPatch(ctx *gin.Context) {
+func (t *userController) UserPatch(ctx *gin.Context) { // deprecated <<======================================
 	userId := ctx.GetInt64("user_id")
 	var inputModel reqmodels.UpdateUserRequest
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
@@ -292,6 +292,7 @@ func (t *userController) UploadAvatar(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
+
 	if user.Photo != "" {
 		_ = os.Remove(user.Photo)
 	}
