@@ -9,14 +9,14 @@ type RegistractionUserRequest struct {
 
 // LoginUserRequest godoc
 type LoginUserRequest struct {
-	Email    string `json:"email" validate:"email,nonzero"`
-	Password string `json:"password" validate:"password"`
+	Email    string `json:"email" validate:"nonzero"`
+	Password string `json:"password" validate:"nonzero"`
 }
 
 // UpdateUserRequest godoc
 type UpdateUserRequest struct {
-	Name  string `json:"name" validate:"min=2,max=50, nonzero"`
-	Email string `json:"email" validate:"email,nonzero"`
+	Name  string `json:"name" validate:"min=2,max=50, nonzero"` // deprecated
+	Email string `json:"email" validate:"email,nonzero"`        // deprecated
 }
 
 // PasswordResetRequest godoc

@@ -14,7 +14,7 @@ func userRegister(r *registry) controllers.UserController {
 			hashPasFunc(),
 			comparePasFunc(),
 			emailSenderFunc(r.config.RedirectUrl, r.config.GoogleEmailSenderName, r.config.GoogleEmailAddress, r.config.GoogleEmailSecret),
-			repositories.NewUsersRepository(r.queries)))
+			repositories.NewUsersRepository(r.queries)), r.config.BasicAppUrl)
 }
 
 func categoriesRegister(r *registry) controllers.CategoriesController {

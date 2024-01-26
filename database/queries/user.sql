@@ -59,6 +59,7 @@ UPDATE users
 set name = COALESCE(NULLIF($2, ''), name),
 email = COALESCE(NULLIF($3, ''), email),
 password = COALESCE(NULLIF($4, ''), password),
+photo = COALESCE(NULLIF($5, ''), photo),
 updated_at = CURRENT_TIMESTAMP
 WHERE id = $1
 RETURNING *;

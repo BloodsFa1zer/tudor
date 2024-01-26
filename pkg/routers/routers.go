@@ -30,6 +30,8 @@ func SetupRouter(conf *config.Config, server *gin.Engine, a *controllers.AppCont
 	protected.PATCH("/create-password", a.PasswordCreate)
 	protected.POST("/change-password", a.PasswordChange)
 	protected.POST("/change-email", a.EmailChange)
+	protected.POST("/upload-avatar", a.UploadAvatar)
+	server.Static("/avatars", "./avatars")
 
 	// categories block
 	server.GET("open/allcategories", a.CatGetAll)

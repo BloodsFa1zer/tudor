@@ -702,6 +702,36 @@ paths:
       summary: PATCH request to create new password
       tags:
       - create-password
+  /protected/upload-avatar:
+    post:
+      description: requires valid token and avatar
+      parameters:
+      - description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: avatar for upload
+        in: formData
+        name: avatar
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/respmodels.StringResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/respmodels.FailedResponse'
+      security:
+      - JWT: []
+      summary: POST request to upload avatar
+      tags:
+      - upload-avatar
   /protected/user-patch:
     patch:
       description: requires valid token and user info for update. Returns user info

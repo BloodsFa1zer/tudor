@@ -16,6 +16,8 @@ primary_region = "waw"
   FACEBOOK_OAUTH_REDIRECT_PAGE = "https://tudor-match.fly.dev/api/auth/facebook/callback"
   GOOGLE_OAUTH_REDIRECT_PAGE = "https://tudor-match.fly.dev/api/auth/google/callback"
   REDIRECT_URL = "https://s-dn7b.onrender.com/"
+  BASIC_APP_URL = "https://tudor-match.fly.dev"
+
 
 
   # List of secrets to be injected into the app at runtime

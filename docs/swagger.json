@@ -635,6 +635,53 @@
                 }
             }
         },
+        "/protected/upload-avatar": {
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "requires valid token and avatar",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "upload-avatar"
+                ],
+                "summary": "POST request to upload avatar",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "avatar for upload",
+                        "name": "avatar",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.StringResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/respmodels.FailedResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/protected/user-patch": {
             "patch": {
                 "security": [
