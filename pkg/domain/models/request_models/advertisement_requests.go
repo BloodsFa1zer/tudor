@@ -40,8 +40,8 @@ type DeleteAdvertisementRequest struct {
 
 // AdvGetFiltered godoc
 type AdvertisementFilterRequest struct {
-	Orderby      string `json:"sort_by" validate:"regexp=^(price|date|experience|)$"`
-	Sortorder    string `json:"sort_order" validate:"regexp=^(asc|desc|)$"`
+	Orderby      string `json:"sort_by" validate:"advertisementSortOrder"`
+	Sortorder    string `json:"sort_order" validate:"sortOrder"`
 	Page         int32  `json:"page"`
 	Limitadv     int32  `json:"per_page"`
 	Category     string `json:"category"`
