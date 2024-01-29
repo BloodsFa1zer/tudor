@@ -40,30 +40,33 @@ func TestAdvCreate(t *testing.T) {
 		expectedError         error
 	}{
 		{"success", `{"title":"test","attachment":"test_attachment","experience":100500,"category":"English","time": 2,` +
-			`"price": 100,"format":"online","language":"English","description":"test_description","mobile_phone":"0930123456",` +
+			`"price": 100,"currency":"EUR","format":"online","language":"English","description":"test_description","mobile_phone":"0930123456",` +
 			`"email":"test@email.com","telegram":"test_telegram"}`, 1,
 			&entities.Advertisement{Title: "test", Provider: &entities.User{ID: 1}, Attachment: "test_attachment", Experience: 100500,
-				Category: &entities.Category{Name: "English"}, Time: 2, Price: 100, Format: "online", Language: "English",
+				Category: &entities.Category{Name: "English"}, Time: 2, Price: 100, Currency: "EUR", Format: "online", Language: "English",
 				Description: "test_description", MobilePhone: "0930123456", Email: "test@email.com", Telegram: "test_telegram"},
 			&entities.Advertisement{ID: 1, Title: "test", Provider: &entities.User{ID: 1}, Attachment: "test_attachment", Experience: 10050,
 				Category: &entities.Category{Name: "English", ParentCategory: &entities.ParentCategory{Name: "Language learning"}},
-				Time:     2, Price: 100, Format: "online", Language: "English", Description: "test_description",
+				Time:     2, Price: 100, Currency: entities.AdvertisementCurrencyEUR, Format: entities.AdvertisementFormatOnline, Language: "English", Description: "test_description",
 				MobilePhone: "0930123456", Email: "test@email.com", Telegram: "test_telegram", CreatedAt: now, UpdatedAt: now},
 			`{"data":{"id":1,"title":"test","provider_id":1,"provider_name":"","description":"test_description","attachment":"test_attachment",` +
-				`"experience":10050,"category_name":"Language learning: English","time":2,"price":100,"format":"online","language":"English",` +
+				`"experience":10050,"category_name":"Language learning: English","time":2,"price":100,"currency":"EUR","format":"online","language":"English",` +
 				`"mobile_phone":"0930123456","email":"test@email.com","telegram":"test_telegram","created_at":"` + now.Format(time.RFC3339) + `",` +
 				`"updated_at":"` + now.Format(time.RFC3339) + `"},"status":"success"}`,
 			http.StatusOK, nil},
-		{"validation_failed", `{"title":"test","attachment":"test_attachment","experience":100500,"category":"English","time": 2,` +
-			`"price": 100,"format":"online","language":"English","description":"test_description","mobile_phone":"wrong",` +
+		{"phone_validation_failed", `{"title":"test","attachment":"test_attachment","experience":100500,"category":"English","time": 2,` +
+			`"price": 100,"currency":"EUR","format":"online","language":"English","description":"test_description","mobile_phone":"wrong",` +
 			`"email":"test@email.com","telegram":"test_telegram"}`, 0, nil, nil, `{"data":"MobilePhone: invalid phone number format","status":"failed"}`, http.StatusBadRequest, nil},
+		{"currency_validation_failed", `{"title":"test","attachment":"test_attachment","experience":100500,"category":"English","time": 2,` +
+			`"price": 100,"currency":"ANY","format":"online","language":"English","description":"test_description","mobile_phone":"0930123456",` +
+			`"email":"test@email.com","telegram":"test_telegram"}`, 0, nil, nil, `{"data":"Currency: invalid advertisement currency value","status":"failed"}`, http.StatusBadRequest, nil},
 		{"failed_bind_json", `{"title":"test","attachment":"test_attachment","experience":100500,`, 1, nil, nil,
 			`{"data":"unexpected EOF","status":"failed"}`, http.StatusBadRequest, nil},
-		{"failed_db", `{"title":"test","attachment":"test_attachment","experience":100500,"category":"English","time": 2,"price": 100,` +
+		{"failed_db", `{"title":"test","attachment":"test_attachment","experience":100500,"category":"English","time": 2,"price": 100,"currency":"EUR",` +
 			`"format":"online","language":"English","description":"test_description","mobile_phone":"0930123456","email":"test@email.com",` +
 			`"telegram":"test_telegram"}`, 1,
 			&entities.Advertisement{Title: "test", Provider: &entities.User{ID: 1}, Attachment: "test_attachment", Experience: 100500,
-				Category: &entities.Category{Name: "English"}, Time: 2, Price: 100, Format: "online", Language: "English",
+				Category: &entities.Category{Name: "English"}, Time: 2, Price: 100, Currency: "EUR", Format: "online", Language: "English",
 				Description: "test_description", MobilePhone: "0930123456", Email: "test@email.com",
 				Telegram: "test_telegram"}, nil, `{"data":"db error","status":"failed"}`, http.StatusBadRequest, errors.New("db error")},
 	}
@@ -100,10 +103,10 @@ func TestAdvPatch(t *testing.T) {
 				Category: &entities.Category{Name: "English"}},
 			&entities.Advertisement{ID: 1, Title: "test", Provider: &entities.User{ID: 1}, Attachment: "test_attachment", Experience: 10050,
 				Category: &entities.Category{Name: "English", ParentCategory: &entities.ParentCategory{Name: "Language learning"}},
-				Time:     2, Price: 100, Format: "online", Language: "English", Description: "test_description",
+				Time:     2, Price: 100, Currency: "EUR", Format: "online", Language: "English", Description: "test_description",
 				MobilePhone: "0930123456", Email: "test_email", Telegram: "test_telegram", CreatedAt: now, UpdatedAt: now},
 			`{"data":{"id":1,"title":"test","provider_id":1,"provider_name":"","description":"test_description","attachment":"test_attachment",` +
-				`"experience":10050,"category_name":"Language learning: English","time":2,"price":100,"format":"online","language":"English",` +
+				`"experience":10050,"category_name":"Language learning: English","time":2,"price":100,"currency":"EUR","format":"online","language":"English",` +
 				`"mobile_phone":"0930123456","email":"test_email","telegram":"test_telegram","created_at":"` + now.Format(time.RFC3339) + `",` +
 				`"updated_at":"` + now.Format(time.RFC3339) + `"},"status":"success"}`,
 			http.StatusOK, nil},
@@ -174,10 +177,10 @@ func TestAdvGetAll(t *testing.T) {
 		{"success",
 			genAdvs(now),
 			`{"data":[{"id":1,"title":"test","provider_id":1,"provider_name":"John","description":"test_description","attachment":"test_attachment",` +
-				`"experience":10050,"category_name":"Language learning: English","time":2,"price":100,"format":"online","language":"English",` +
+				`"experience":10050,"category_name":"Language learning: English","time":2,"price":100,"currency":"EUR","format":"online","language":"English",` +
 				`"mobile_phone":"test_mobile_phone","email":"test_email","telegram":"test_telegram","created_at":"` + now.Format(time.RFC3339) + `",` +
 				`"updated_at":"` + now.Format(time.RFC3339) + `"},{"id":2,"title":"test","provider_id":1,"provider_name":"John","description":"test_description",` +
-				`"attachment":"test_attachment","experience":10050,"category_name":"Language learning: English","time":2,"price":100,"format":"online",` +
+				`"attachment":"test_attachment","experience":10050,"category_name":"Language learning: English","time":2,"price":100,"currency":"EUR","format":"online",` +
 				`"language":"English","mobile_phone":"test_mobile_phone","email":"test_email","telegram":"test_telegram","created_at":"` +
 				now.Format(time.RFC3339) + `","updated_at":"` + now.Format(time.RFC3339) + `"}],"status":"success"}`,
 			http.StatusOK, nil},
@@ -202,7 +205,7 @@ func genAdvs(now time.Time) []entities.Advertisement {
 	for i := range advs {
 		advs[i] = entities.Advertisement{ID: int64(i + 1), Title: "test", Provider: &entities.User{ID: 1, Name: "John"}, Attachment: "test_attachment", Experience: 10050,
 			Category: &entities.Category{Name: "English", ParentCategory: &entities.ParentCategory{Name: "Language learning"}},
-			Time:     2, Price: 100, Format: "online", Language: "English", Description: "test_description",
+			Time:     2, Price: 100, Currency: "EUR", Format: "online", Language: "English", Description: "test_description",
 			MobilePhone: "test_mobile_phone", Email: "test_email", Telegram: "test_telegram", CreatedAt: now, UpdatedAt: now}
 	}
 	return advs
@@ -222,10 +225,10 @@ func TestAdvGetByID(t *testing.T) {
 		{"success", "1", 1,
 			&entities.Advertisement{ID: 1, Title: "test", Provider: &entities.User{ID: 1}, Attachment: "test_attachment", Experience: 10050,
 				Category: &entities.Category{Name: "English", ParentCategory: &entities.ParentCategory{Name: "Language learning"}},
-				Time:     2, Price: 100, Format: "online", Language: "English", Description: "test_description",
+				Time:     2, Price: 100, Currency: "EUR", Format: "online", Language: "English", Description: "test_description",
 				MobilePhone: "test_mobile_phone", Email: "test_email", Telegram: "test_telegram", CreatedAt: now, UpdatedAt: now},
 			`{"data":{"id":1,"title":"test","provider_id":1,"provider_name":"","description":"test_description","attachment":"test_attachment",` +
-				`"experience":10050,"category_name":"Language learning: English","time":2,"price":100,"format":"online","language":"English",` +
+				`"experience":10050,"category_name":"Language learning: English","time":2,"price":100,"currency":"EUR","format":"online","language":"English",` +
 				`"mobile_phone":"test_mobile_phone","email":"test_email","telegram":"test_telegram","created_at":"` + now.Format(time.RFC3339) +
 				`","updated_at":"` + now.Format(time.RFC3339) + `"},"status":"success"}`,
 			http.StatusOK, nil},
@@ -268,11 +271,11 @@ func TestAdvGetFiltered(t *testing.T) {
 					Orderby: "date", Sortorder: "asc",
 				}},
 			`{"data":{"advertisements":[{"id":1,"title":"test","provider_id":1,"provider_name":"John","description":"test_description",` +
-				`"attachment":"test_attachment","experience":10050,"category_name":"Language learning: English","time":2,"price":100,` +
+				`"attachment":"test_attachment","experience":10050,"category_name":"Language learning: English","time":2,"price":100,"currency":"EUR",` +
 				`"format":"online","language":"English","mobile_phone":"test_mobile_phone","email":"test_email","telegram":"test_telegram",` +
 				`"created_at":"` + now.Format(time.RFC3339) + `","updated_at":"` + now.Format(time.RFC3339) + `"},{"id":2,"title":"test",` +
 				`"provider_id":1,"provider_name":"John","description":"test_description","attachment":"test_attachment","experience":10050,` +
-				`"category_name":"Language learning: English","time":2,"price":100,"format":"online","language":"English",` +
+				`"category_name":"Language learning: English","time":2,"price":100,"currency":"EUR","format":"online","language":"English",` +
 				`"mobile_phone":"test_mobile_phone","email":"test_email","telegram":"test_telegram","created_at":"` +
 				now.Format(time.RFC3339) + `","updated_at":"` + now.Format(time.RFC3339) + `"}],"pagination_info":` +
 				`{"total_pages":1,"total_count":2,"page":1,"per_page":2,"offset":0,"sort_by":"date","sort_order":"asc"}},"status":"success"}`,
@@ -309,11 +312,11 @@ func TestAdvGetMy(t *testing.T) {
 	}{
 		{"success", 1, genAdvs(now),
 			`{"data":[{"id":1,"title":"test","provider_id":1,"provider_name":"John","description":"test_description","attachment":` +
-				`"test_attachment","experience":10050,"category_name":"Language learning: English","time":2,"price":100,"format":"online",` +
+				`"test_attachment","experience":10050,"category_name":"Language learning: English","time":2,"price":100,"currency":"EUR","format":"online",` +
 				`"language":"English","mobile_phone":"test_mobile_phone","email":"test_email","telegram":"test_telegram",` +
 				`"created_at":"` + now.Format(time.RFC3339) + `","updated_at":"` + now.Format(time.RFC3339) + `"},{"id":2,"title":"test",` +
 				`"provider_id":1,"provider_name":"John","description":"test_description","attachment":"test_attachment","experience":10050,` +
-				`"category_name":"Language learning: English","time":2,"price":100,"format":"online","language":"English",` +
+				`"category_name":"Language learning: English","time":2,"price":100,"currency":"EUR","format":"online","language":"English",` +
 				`"mobile_phone":"test_mobile_phone","email":"test_email","telegram":"test_telegram","created_at":"` + now.Format(time.RFC3339) +
 				`","updated_at":"` + now.Format(time.RFC3339) + `"}],"status":"success"}`,
 			http.StatusOK, nil},

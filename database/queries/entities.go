@@ -26,6 +26,7 @@ type Advertisement struct {
 	Telegram    sql.NullString `json:"telegram"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
+	Currency    sql.NullString `json:"currency"`
 }
 
 type Avatar struct {

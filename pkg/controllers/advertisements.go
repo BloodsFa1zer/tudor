@@ -31,7 +31,7 @@ func NewAdvertisementsController(sa services.AdvertisementService) Advertisement
 
 // @Advertisement-create	godoc
 // @Summary					POST request to create advertisement
-// @Description				endpoint for advertisement creation
+// @Description				endpoint for advertisement creation. Format must be either "online" or "offline".
 // @Tags					advertisement-create
 // @Security				JWT
 // @Param					Authorization			header	string						true	"Insert your access token"

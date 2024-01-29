@@ -9,6 +9,7 @@ WITH cat_id AS (SELECT id FROM categories WHERE categories.name = $5),
             category_id,
             time,
             price,
+            currency,
             format,
             language,
             description,
@@ -17,11 +18,11 @@ WITH cat_id AS (SELECT id FROM categories WHERE categories.name = $5),
             telegram
         )
         VALUES (
-            $1, $2, $3, $4, (SELECT id FROM categories WHERE categories.name = $5), $6, $7, $8, $9, $10, $11, $12, $13
+            $1, $2, $3, $4, (SELECT id FROM categories WHERE categories.name = $5), $6, $7, $8, $9, $10, $11, $12, $13, $14
         )
         RETURNING *
      )
-SELECT inserted_ad.id, inserted_ad.title, inserted_ad.attachment, inserted_ad.experience, inserted_ad.time, inserted_ad.price, 
+SELECT inserted_ad.id, inserted_ad.title, inserted_ad.attachment, inserted_ad.experience, inserted_ad.time, inserted_ad.price, inserted_ad.currency, 
   inserted_ad.format, inserted_ad.language, inserted_ad.description, inserted_ad.mobile_phone, inserted_ad.email, 
   inserted_ad.telegram, inserted_ad.created_at, inserted_ad.updated_at, users.id AS provider_id, users.name AS provider_name,
   users.email AS provider_email, users.photo AS provider_photo, users.verified AS provider_verified, users.role AS provider_role,
@@ -42,6 +43,7 @@ SET
   category_id = COALESCE((SELECT id FROM categories WHERE name = sqlc.narg('name')), category_id),
   time = COALESCE(sqlc.narg('time'), time),
   price = COALESCE(sqlc.narg('price'), price),
+  currency = COALESCE(sqlc.narg('currency'), currency),
   format = COALESCE(sqlc.narg('format'), format),
   language = COALESCE(sqlc.narg('language'), language),
   description = COALESCE(sqlc.narg('description'), description),
@@ -59,6 +61,7 @@ SELECT
   advertisements.experience AS experience,
   advertisements.time AS time,
   advertisements.price AS price,
+  advertisements.currency AS currency,
   advertisements.format AS format,
   advertisements.language AS language,
   advertisements.description AS description, 
@@ -88,7 +91,7 @@ ORDER BY advertisements.created_at DESC LIMIT 10;
 -- name: GetMyAdvertisement :many
 SELECT 
   advertisements.id AS id, advertisements.title AS title, advertisements.attachment AS attachment, 
-  advertisements.experience AS experience, advertisements.time AS time, advertisements.price AS price, 
+  advertisements.experience AS experience, advertisements.time AS time, advertisements.price AS price, advertisements.currency AS currency, 
   advertisements.format AS format, advertisements.language AS language, advertisements.description AS description, 
   advertisements.mobile_phone AS mobile_phone, advertisements.email AS email, advertisements.telegram AS telegram, 
   advertisements.created_at AS created_at, advertisements.updated_at AS updated_at, users.id AS provider_id, 
@@ -105,7 +108,7 @@ WHERE advertisements.provider_id = $1 AND categories.parent_id IS NOT NULL;
 -- name: GetAdvertisementCategoryAndUserByID :one
 SELECT 
   advertisements.id AS id, advertisements.title AS title, advertisements.attachment AS attachment, advertisements.experience AS experience,
-  advertisements.time AS time, advertisements.price AS price, advertisements.format AS format, advertisements.language AS language,
+  advertisements.time AS time, advertisements.price AS price, advertisements.currency AS currency, advertisements.format AS format, advertisements.language AS language,
   advertisements.description AS description, advertisements.mobile_phone AS mobile_phone, advertisements.email AS email,
   advertisements.telegram AS telegram, advertisements.created_at AS created_at, advertisements.updated_at AS updated_at,
   users.id AS provider_id, users.name AS provider_name, users.email AS provider_email, users.photo AS provider_photo,
@@ -165,6 +168,7 @@ SELECT
   advertisements.experience,
   advertisements.time,
   advertisements.price,
+  advertisements.currency,
   advertisements.format,
   advertisements.language,
   advertisements.description,
@@ -193,6 +197,7 @@ WHERE categories.parent_id IS NOT NULL
     AND (NULLIF(sqlc.arg(advCategory)::text, '')::text IS NULL OR categories.name = sqlc.arg(advCategory)::text)
     AND (NULLIF(sqlc.arg(timeLength)::int, 0) IS NULL OR time <= sqlc.arg(timeLength)::int)
     AND (NULLIF(sqlc.arg(advFormat)::text, '') IS NULL OR format = sqlc.arg(advFormat)::text)
+    AND (NULLIF(sqlc.arg(currency)::text, '') IS NULL OR format = sqlc.arg(currency)::text)
     AND ((NULLIF(sqlc.arg(minExp)::int, 0) IS NULL AND NULLIF(sqlc.arg(maxExp)::int, 0) IS NULL) OR (experience >= sqlc.arg(minExp)::int AND experience <= sqlc.arg(maxExp)::int))
     AND ((NULLIF(sqlc.arg(minPrice)::int, 0) IS NULL AND NULLIF(sqlc.arg(maxPrice)::int, 0) IS NULL) OR (price >= sqlc.arg(minPrice)::int AND price <= sqlc.arg(maxPrice)::int))
     AND (NULLIF(sqlc.arg(advLanguage)::text, '') IS NULL OR language = sqlc.arg(advLanguage)::text)

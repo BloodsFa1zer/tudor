@@ -22,6 +22,7 @@ WITH cat_id AS (SELECT id FROM categories WHERE categories.name = $5),
             category_id,
             time,
             price,
+            currency,
             format,
             language,
             description,
@@ -30,11 +31,11 @@ WITH cat_id AS (SELECT id FROM categories WHERE categories.name = $5),
             telegram
         )
         VALUES (
-            $1, $2, $3, $4, (SELECT id FROM categories WHERE categories.name = $5), $6, $7, $8, $9, $10, $11, $12, $13
+            $1, $2, $3, $4, (SELECT id FROM categories WHERE categories.name = $5), $6, $7, $8, $9, $10, $11, $12, $13, $14
         )
-        RETURNING id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at
+        RETURNING id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at, currency
      )
-SELECT inserted_ad.id, inserted_ad.title, inserted_ad.attachment, inserted_ad.experience, inserted_ad.time, inserted_ad.price, 
+SELECT inserted_ad.id, inserted_ad.title, inserted_ad.attachment, inserted_ad.experience, inserted_ad.time, inserted_ad.price, inserted_ad.currency, 
   inserted_ad.format, inserted_ad.language, inserted_ad.description, inserted_ad.mobile_phone, inserted_ad.email, 
   inserted_ad.telegram, inserted_ad.created_at, inserted_ad.updated_at, users.id AS provider_id, users.name AS provider_name,
   users.email AS provider_email, users.photo AS provider_photo, users.verified AS provider_verified, users.role AS provider_role,
@@ -55,6 +56,7 @@ type CreateAdvertisementParams struct {
 	Name        string         `json:"name"`
 	Time        int32          `json:"time"`
 	Price       int32          `json:"price"`
+	Currency    sql.NullString `json:"currency"`
 	Format      string         `json:"format"`
 	Language    string         `json:"language"`
 	Description string         `json:"description"`
@@ -70,6 +72,7 @@ type CreateAdvertisementRow struct {
 	Experience         int32          `json:"experience"`
 	Time               int32          `json:"time"`
 	Price              int32          `json:"price"`
+	Currency           sql.NullString `json:"currency"`
 	Format             string         `json:"format"`
 	Language           string         `json:"language"`
 	Description        string         `json:"description"`
@@ -100,6 +103,7 @@ func (q *Queries) CreateAdvertisement(ctx context.Context, arg CreateAdvertiseme
 		arg.Name,
 		arg.Time,
 		arg.Price,
+		arg.Currency,
 		arg.Format,
 		arg.Language,
 		arg.Description,
@@ -115,6 +119,7 @@ func (q *Queries) CreateAdvertisement(ctx context.Context, arg CreateAdvertiseme
 		&i.Experience,
 		&i.Time,
 		&i.Price,
+		&i.Currency,
 		&i.Format,
 		&i.Language,
 		&i.Description,
@@ -140,7 +145,7 @@ func (q *Queries) CreateAdvertisement(ctx context.Context, arg CreateAdvertiseme
 
 const deleteAdvertisementByID = `-- name: DeleteAdvertisementByID :one
 WITH deleted AS (
-  DELETE FROM advertisements WHERE id = $1 AND provider_id = $2 RETURNING id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at
+  DELETE FROM advertisements WHERE id = $1 AND provider_id = $2 RETURNING id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at, currency
 )
 SELECT COUNT(*) FROM deleted
 `
@@ -175,6 +180,7 @@ SELECT
   advertisements.experience,
   advertisements.time,
   advertisements.price,
+  advertisements.currency,
   advertisements.format,
   advertisements.language,
   advertisements.description,
@@ -203,27 +209,29 @@ WHERE categories.parent_id IS NOT NULL
     AND (NULLIF($1::text, '')::text IS NULL OR categories.name = $1::text)
     AND (NULLIF($2::int, 0) IS NULL OR time <= $2::int)
     AND (NULLIF($3::text, '') IS NULL OR format = $3::text)
-    AND ((NULLIF($4::int, 0) IS NULL AND NULLIF($5::int, 0) IS NULL) OR (experience >= $4::int AND experience <= $5::int))
-    AND ((NULLIF($6::int, 0) IS NULL AND NULLIF($7::int, 0) IS NULL) OR (price >= $6::int AND price <= $7::int))
-    AND (NULLIF($8::text, '') IS NULL OR language = $8::text)
-    AND (NULLIF($9::text, '') IS NULL OR title ILIKE '%' || $9::text || '%')
+    AND (NULLIF($4::text, '') IS NULL OR format = $4::text)
+    AND ((NULLIF($5::int, 0) IS NULL AND NULLIF($6::int, 0) IS NULL) OR (experience >= $5::int AND experience <= $6::int))
+    AND ((NULLIF($7::int, 0) IS NULL AND NULLIF($8::int, 0) IS NULL) OR (price >= $7::int AND price <= $8::int))
+    AND (NULLIF($9::text, '') IS NULL OR language = $9::text)
+    AND (NULLIF($10::text, '') IS NULL OR title ILIKE '%' || $10::text || '%')
 ORDER BY
   ( CASE
-    WHEN $10::text = 'price' AND $11::text = 'desc' THEN CAST(price AS TEXT)
-    WHEN $10::text = 'experience' AND $11::text = 'desc' THEN CAST(experience AS TEXT)
-    WHEN $10::text = 'date' AND $11::text = 'desc' THEN CAST(advertisements.created_at AS TEXT) END) DESC,
+    WHEN $11::text = 'price' AND $12::text = 'desc' THEN CAST(price AS TEXT)
+    WHEN $11::text = 'experience' AND $12::text = 'desc' THEN CAST(experience AS TEXT)
+    WHEN $11::text = 'date' AND $12::text = 'desc' THEN CAST(advertisements.created_at AS TEXT) END) DESC,
   ( CASE
-    WHEN $10::text = 'price' THEN CAST(price AS TEXT)
-    WHEN $10::text = 'experience' THEN CAST(experience AS TEXT)  
+    WHEN $11::text = 'price' THEN CAST(price AS TEXT)
+    WHEN $11::text = 'experience' THEN CAST(experience AS TEXT)  
     ELSE CAST(advertisements.created_at AS TEXT) END) ASC                                     
-LIMIT $13::integer    
-OFFSET $12::integer
+LIMIT $14::integer    
+OFFSET $13::integer
 `
 
 type FilterAdvertisementsParams struct {
 	Advcategory  string `json:"advcategory"`
 	Timelength   int32  `json:"timelength"`
 	Advformat    string `json:"advformat"`
+	Currency     string `json:"currency"`
 	Minexp       int32  `json:"minexp"`
 	Maxexp       int32  `json:"maxexp"`
 	Minprice     int32  `json:"minprice"`
@@ -243,6 +251,7 @@ type FilterAdvertisementsRow struct {
 	Experience         int32          `json:"experience"`
 	Time               int32          `json:"time"`
 	Price              int32          `json:"price"`
+	Currency           sql.NullString `json:"currency"`
 	Format             string         `json:"format"`
 	Language           string         `json:"language"`
 	Description        string         `json:"description"`
@@ -270,6 +279,7 @@ func (q *Queries) FilterAdvertisements(ctx context.Context, arg FilterAdvertisem
 		arg.Advcategory,
 		arg.Timelength,
 		arg.Advformat,
+		arg.Currency,
 		arg.Minexp,
 		arg.Maxexp,
 		arg.Minprice,
@@ -295,6 +305,7 @@ func (q *Queries) FilterAdvertisements(ctx context.Context, arg FilterAdvertisem
 			&i.Experience,
 			&i.Time,
 			&i.Price,
+			&i.Currency,
 			&i.Format,
 			&i.Language,
 			&i.Description,
@@ -334,6 +345,7 @@ SELECT
   advertisements.experience AS experience,
   advertisements.time AS time,
   advertisements.price AS price,
+  advertisements.currency AS currency,
   advertisements.format AS format,
   advertisements.language AS language,
   advertisements.description AS description, 
@@ -368,6 +380,7 @@ type GetAdvertisementAllRow struct {
 	Experience         int32          `json:"experience"`
 	Time               int32          `json:"time"`
 	Price              int32          `json:"price"`
+	Currency           sql.NullString `json:"currency"`
 	Format             string         `json:"format"`
 	Language           string         `json:"language"`
 	Description        string         `json:"description"`
@@ -405,6 +418,7 @@ func (q *Queries) GetAdvertisementAll(ctx context.Context) ([]GetAdvertisementAl
 			&i.Experience,
 			&i.Time,
 			&i.Price,
+			&i.Currency,
 			&i.Format,
 			&i.Language,
 			&i.Description,
@@ -437,7 +451,7 @@ func (q *Queries) GetAdvertisementAll(ctx context.Context) ([]GetAdvertisementAl
 
 const getAdvertisementByCategory = `-- name: GetAdvertisementByCategory :many
 WITH id AS (SELECT id FROM categories WHERE name = $1)
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at, currency FROM advertisements
 WHERE category_id = id
 `
 
@@ -467,6 +481,7 @@ func (q *Queries) GetAdvertisementByCategory(ctx context.Context, name string) (
 			&i.Telegram,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Currency,
 		); err != nil {
 			return nil, err
 		}
@@ -479,7 +494,7 @@ func (q *Queries) GetAdvertisementByCategory(ctx context.Context, name string) (
 }
 
 const getAdvertisementByExperience = `-- name: GetAdvertisementByExperience :many
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at, currency FROM advertisements
 WHERE experience >= $1
 AND experience <= $2
 `
@@ -515,6 +530,7 @@ func (q *Queries) GetAdvertisementByExperience(ctx context.Context, arg GetAdver
 			&i.Telegram,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Currency,
 		); err != nil {
 			return nil, err
 		}
@@ -527,7 +543,7 @@ func (q *Queries) GetAdvertisementByExperience(ctx context.Context, arg GetAdver
 }
 
 const getAdvertisementByFormat = `-- name: GetAdvertisementByFormat :many
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at, currency FROM advertisements
 WHERE format = $1
 `
 
@@ -557,6 +573,7 @@ func (q *Queries) GetAdvertisementByFormat(ctx context.Context, format string) (
 			&i.Telegram,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Currency,
 		); err != nil {
 			return nil, err
 		}
@@ -569,7 +586,7 @@ func (q *Queries) GetAdvertisementByFormat(ctx context.Context, format string) (
 }
 
 const getAdvertisementByID = `-- name: GetAdvertisementByID :one
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at, currency FROM advertisements
 WHERE id = $1
 `
 
@@ -593,12 +610,13 @@ func (q *Queries) GetAdvertisementByID(ctx context.Context, id int64) (Advertise
 		&i.Telegram,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Currency,
 	)
 	return i, err
 }
 
 const getAdvertisementByLanguage = `-- name: GetAdvertisementByLanguage :many
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at, currency FROM advertisements
 WHERE language = $1
 `
 
@@ -628,6 +646,7 @@ func (q *Queries) GetAdvertisementByLanguage(ctx context.Context, language strin
 			&i.Telegram,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Currency,
 		); err != nil {
 			return nil, err
 		}
@@ -640,7 +659,7 @@ func (q *Queries) GetAdvertisementByLanguage(ctx context.Context, language strin
 }
 
 const getAdvertisementByTime = `-- name: GetAdvertisementByTime :many
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at, currency FROM advertisements
 WHERE time <= $1
 `
 
@@ -670,6 +689,7 @@ func (q *Queries) GetAdvertisementByTime(ctx context.Context, argTime int32) ([]
 			&i.Telegram,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Currency,
 		); err != nil {
 			return nil, err
 		}
@@ -682,7 +702,7 @@ func (q *Queries) GetAdvertisementByTime(ctx context.Context, argTime int32) ([]
 }
 
 const getAdvertisementByUserID = `-- name: GetAdvertisementByUserID :many
-SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at FROM advertisements
+SELECT id, title, provider_id, attachment, experience, category_id, time, price, format, language, description, mobile_phone, email, telegram, created_at, updated_at, currency FROM advertisements
 WHERE provider_id = $1
 `
 
@@ -712,6 +732,7 @@ func (q *Queries) GetAdvertisementByUserID(ctx context.Context, providerID int64
 			&i.Telegram,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.Currency,
 		); err != nil {
 			return nil, err
 		}
@@ -726,7 +747,7 @@ func (q *Queries) GetAdvertisementByUserID(ctx context.Context, providerID int64
 const getAdvertisementCategoryAndUserByID = `-- name: GetAdvertisementCategoryAndUserByID :one
 SELECT 
   advertisements.id AS id, advertisements.title AS title, advertisements.attachment AS attachment, advertisements.experience AS experience,
-  advertisements.time AS time, advertisements.price AS price, advertisements.format AS format, advertisements.language AS language,
+  advertisements.time AS time, advertisements.price AS price, advertisements.currency AS currency, advertisements.format AS format, advertisements.language AS language,
   advertisements.description AS description, advertisements.mobile_phone AS mobile_phone, advertisements.email AS email,
   advertisements.telegram AS telegram, advertisements.created_at AS created_at, advertisements.updated_at AS updated_at,
   users.id AS provider_id, users.name AS provider_name, users.email AS provider_email, users.photo AS provider_photo,
@@ -746,6 +767,7 @@ type GetAdvertisementCategoryAndUserByIDRow struct {
 	Experience         int32          `json:"experience"`
 	Time               int32          `json:"time"`
 	Price              int32          `json:"price"`
+	Currency           sql.NullString `json:"currency"`
 	Format             string         `json:"format"`
 	Language           string         `json:"language"`
 	Description        string         `json:"description"`
@@ -777,6 +799,7 @@ func (q *Queries) GetAdvertisementCategoryAndUserByID(ctx context.Context, id in
 		&i.Experience,
 		&i.Time,
 		&i.Price,
+		&i.Currency,
 		&i.Format,
 		&i.Language,
 		&i.Description,
@@ -803,7 +826,7 @@ func (q *Queries) GetAdvertisementCategoryAndUserByID(ctx context.Context, id in
 const getMyAdvertisement = `-- name: GetMyAdvertisement :many
 SELECT 
   advertisements.id AS id, advertisements.title AS title, advertisements.attachment AS attachment, 
-  advertisements.experience AS experience, advertisements.time AS time, advertisements.price AS price, 
+  advertisements.experience AS experience, advertisements.time AS time, advertisements.price AS price, advertisements.currency AS currency, 
   advertisements.format AS format, advertisements.language AS language, advertisements.description AS description, 
   advertisements.mobile_phone AS mobile_phone, advertisements.email AS email, advertisements.telegram AS telegram, 
   advertisements.created_at AS created_at, advertisements.updated_at AS updated_at, users.id AS provider_id, 
@@ -825,6 +848,7 @@ type GetMyAdvertisementRow struct {
 	Experience         int32          `json:"experience"`
 	Time               int32          `json:"time"`
 	Price              int32          `json:"price"`
+	Currency           sql.NullString `json:"currency"`
 	Format             string         `json:"format"`
 	Language           string         `json:"language"`
 	Description        string         `json:"description"`
@@ -862,6 +886,7 @@ func (q *Queries) GetMyAdvertisement(ctx context.Context, providerID int64) ([]G
 			&i.Experience,
 			&i.Time,
 			&i.Price,
+			&i.Currency,
 			&i.Format,
 			&i.Language,
 			&i.Description,
@@ -901,12 +926,13 @@ SET
   category_id = COALESCE((SELECT id FROM categories WHERE name = $6), category_id),
   time = COALESCE($7, time),
   price = COALESCE($8, price),
-  format = COALESCE($9, format),
-  language = COALESCE($10, language),
-  description = COALESCE($11, description),
-  mobile_phone = COALESCE($12, mobile_phone),
-  email = COALESCE($13, email),
-  telegram = COALESCE($14, telegram)
+  currency = COALESCE($9, currency),
+  format = COALESCE($10, format),
+  language = COALESCE($11, language),
+  description = COALESCE($12, description),
+  mobile_phone = COALESCE($13, mobile_phone),
+  email = COALESCE($14, email),
+  telegram = COALESCE($15, telegram)
 WHERE advertisements.id = $1 AND advertisements.provider_id = $2
 RETURNING advertisements.id
 `
@@ -920,6 +946,7 @@ type UpdateAdvertisementParams struct {
 	Name        sql.NullString `json:"name"`
 	Time        sql.NullInt32  `json:"time"`
 	Price       sql.NullInt32  `json:"price"`
+	Currency    sql.NullString `json:"currency"`
 	Format      sql.NullString `json:"format"`
 	Language    sql.NullString `json:"language"`
 	Description sql.NullString `json:"description"`
@@ -938,6 +965,7 @@ func (q *Queries) UpdateAdvertisement(ctx context.Context, arg UpdateAdvertiseme
 		arg.Name,
 		arg.Time,
 		arg.Price,
+		arg.Currency,
 		arg.Format,
 		arg.Language,
 		arg.Description,
