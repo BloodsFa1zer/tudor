@@ -14,7 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type UserController interface {
+type UserControllerInterface interface {
 	UserRegister(ctx *gin.Context)
 	UserLogin(ctx *gin.Context)
 	UserInfo(ctx *gin.Context)
@@ -31,22 +31,23 @@ type userController struct {
 	basicAppUrl string
 }
 
-func NewUsersController(us services.UserService, basicUrl string) UserController {
+func NewUsersController(us services.UserService, basicUrl string) UserControllerInterface {
 	return &userController{us, basicUrl}
 }
 
-// @Registraction	godoc
+// @Registration	godoc
 // @Summary			POST request for registration
 // @Description		requires email and password for registration. Returns user info and Authorization token  in header
 // @Tags			register
 // @Accept			json
 // @Produce			json
-// @Param			user_info	body		reqmodels.RegistractionUserRequest	true	"user info for sign up"
+// @Param			user_info	body		reqmodels.RegistrationUserRequest	true	"user info for sign up"
 // @Success			201			{object}	respmodels.SignUpINresponse
 // @Failure			400			{object}	respmodels.FailedResponse
 // @Router			/api/auth/register [post]
-func (t *userController) UserRegister(ctx *gin.Context) {
-	var inputModel reqmodels.RegistractionUserRequest
+
+func (uc *userController) UserRegister(ctx *gin.Context) {
+	var inputModel reqmodels.RegistrationUserRequest
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
@@ -56,12 +57,12 @@ func (t *userController) UserRegister(ctx *gin.Context) {
 		return
 	}
 
-	token, _, err := t.userService.UserRegister(ctx, reqm.RegUserToUser(&inputModel))
+	token, _, err := uc.userService.UserRegister(ctx, reqm.RegUserToUser(&inputModel))
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, reqm.FailedResponse(err.Error()))
 		return
 	}
-	ctx.JSON(http.StatusCreated, reqm.TokenToSignUpINresponse(token))
+	ctx.JSON(http.StatusCreated, reqm.TokenToSignUpInResponse(token))
 }
 
 // @Login			godoc
@@ -74,7 +75,8 @@ func (t *userController) UserRegister(ctx *gin.Context) {
 // @Success			200		{object}	respmodels.SignUpINresponse
 // @Failure			400		{object}	respmodels.FailedResponse
 // @Router			/api/auth/login [post]
-func (t *userController) UserLogin(ctx *gin.Context) {
+
+func (uc *userController) UserLogin(ctx *gin.Context) {
 	var inputModel reqmodels.LoginUserRequest
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
@@ -85,12 +87,12 @@ func (t *userController) UserLogin(ctx *gin.Context) {
 		return
 	}
 
-	token, _, err := t.userService.UserLogin(ctx, reqm.LoginUserToUser(&inputModel))
+	token, _, err := uc.userService.UserLogin(ctx, reqm.LoginUserToUser(&inputModel))
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, reqm.FailedResponse(err.Error()))
 		return
 	}
-	ctx.JSON(http.StatusOK, reqm.TokenToSignUpINresponse(token))
+	ctx.JSON(http.StatusOK, reqm.TokenToSignUpInResponse(token))
 }
 
 // @Userinfo		godoc
@@ -103,13 +105,14 @@ func (t *userController) UserLogin(ctx *gin.Context) {
 // @Success			200	{object}	respmodels.UserInfoResponse
 // @Failure			400	{object}	respmodels.FailedResponse
 // @Router			/protected/userinfo [get]
-func (t *userController) UserInfo(ctx *gin.Context) {
+
+func (uc *userController) UserInfo(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	if userID == 0 {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("user id error"))
 		return
 	}
-	user, err := t.userService.UserInfo(ctx, userID)
+	user, err := uc.userService.UserInfo(ctx, userID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
@@ -128,7 +131,8 @@ func (t *userController) UserInfo(ctx *gin.Context) {
 // @Success			200	{object}	respmodels.SignUpINresponse
 // @Failure			400	{object}	respmodels.FailedResponse
 // @Router			/protected/user-patch [patch]
-func (t *userController) UserPatch(ctx *gin.Context) { // deprecated <<======================================
+
+func (uc *userController) UserPatch(ctx *gin.Context) { // deprecated <<======================================
 	userId := ctx.GetInt64("user_id")
 	var inputModel reqmodels.UpdateUserRequest
 	if err := ctx.ShouldBindJSON(&inputModel); err != nil {
@@ -139,12 +143,12 @@ func (t *userController) UserPatch(ctx *gin.Context) { // deprecated <<=========
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
-	token, _, err := t.userService.UserPatch(ctx, reqm.UpdateUserRequestToUser(&inputModel, userId))
+	token, _, err := uc.userService.UserPatch(ctx, reqm.UpdateUserRequestToUser(&inputModel, userId))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
-	ctx.JSON(http.StatusOK, reqm.TokenToSignUpINresponse(token))
+	ctx.JSON(http.StatusOK, reqm.TokenToSignUpInResponse(token))
 }
 
 // @Reset-password	godoc
@@ -156,7 +160,8 @@ func (t *userController) UserPatch(ctx *gin.Context) { // deprecated <<=========
 // @Success			200	{object}	respmodels.StringResponse
 // @Failure			400	{object}	respmodels.FailedResponse
 // @Router			/api/auth/reset-password [post]
-func (t *userController) PasswordReset(ctx *gin.Context) {
+
+func (uc *userController) PasswordReset(ctx *gin.Context) {
 	var userEmail reqmodels.PasswordResetRequest
 	if err := ctx.ShouldBindJSON(&userEmail); err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
@@ -166,7 +171,7 @@ func (t *userController) PasswordReset(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
-	if err := t.userService.PasswordReset(ctx, userEmail.Email); err != nil {
+	if err := uc.userService.PasswordReset(ctx, userEmail.Email); err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse("Email not found."))
 		return
 	}
@@ -183,7 +188,8 @@ func (t *userController) PasswordReset(ctx *gin.Context) {
 // @Success			200	{object}	respmodels.StringResponse
 // @Failure			400	{object}	respmodels.FailedResponse
 // @Router			/protected/change-password [post]
-func (t *userController) PasswordChange(ctx *gin.Context) {
+
+func (uc *userController) PasswordChange(ctx *gin.Context) {
 	var request reqmodels.PasswordChangeRequest
 	userId := ctx.GetInt64("user_id")
 	if err := ctx.ShouldBindJSON(&request); err != nil {
@@ -201,7 +207,7 @@ func (t *userController) PasswordChange(ctx *gin.Context) {
 		return
 	}
 
-	if err := t.userService.PasswordChange(ctx, userId, request.CurrentPassword, request.NewPassword); err != nil {
+	if err := uc.userService.PasswordChange(ctx, userId, request.CurrentPassword, request.NewPassword); err != nil {
 		ctx.JSON(http.StatusUnauthorized, reqm.FailedResponse(fmt.Sprintf("Password change failed: %s", err.Error())))
 		return
 	}
@@ -218,7 +224,8 @@ func (t *userController) PasswordChange(ctx *gin.Context) {
 // @Success				200	{object}	respmodels.StringResponse
 // @Failure				400	{object}	respmodels.FailedResponse
 // @Router				/protected/create-password [patch]
-func (t *userController) PasswordCreate(ctx *gin.Context) {
+
+func (uc *userController) PasswordCreate(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	var newPassword reqmodels.PasswordCreateRequest
 	if err := ctx.ShouldBindJSON(&newPassword); err != nil {
@@ -230,7 +237,7 @@ func (t *userController) PasswordCreate(ctx *gin.Context) {
 		return
 	}
 
-	err := t.userService.PasswordCreate(ctx, userID, newPassword.Password)
+	err := uc.userService.PasswordCreate(ctx, userID, newPassword.Password)
 
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
@@ -249,7 +256,8 @@ func (t *userController) PasswordCreate(ctx *gin.Context) {
 // @Success			200	{object}	respmodels.StringResponse
 // @Failure			400	{object}	respmodels.FailedResponse
 // @Router			/protected/change-email [post]
-func (t *userController) EmailChange(ctx *gin.Context) {
+
+func (uc *userController) EmailChange(ctx *gin.Context) {
 	var request reqmodels.EmailChangeRequest
 	userId := ctx.GetInt64("user_id")
 	if err := ctx.ShouldBindJSON(&request); err != nil {
@@ -262,7 +270,7 @@ func (t *userController) EmailChange(ctx *gin.Context) {
 		return
 	}
 
-	if err := t.userService.EmailChange(ctx, userId, request.CurrentPassword, request.NewEmail); err != nil {
+	if err := uc.userService.EmailChange(ctx, userId, request.CurrentPassword, request.NewEmail); err != nil {
 		ctx.JSON(http.StatusUnauthorized, reqm.FailedResponse(fmt.Sprintf("Email change failed: %s", err.Error())))
 		return
 	}
@@ -274,20 +282,21 @@ func (t *userController) EmailChange(ctx *gin.Context) {
 // @Description		requires valid token and avatar
 // @Tags			upload-avatar
 // @Security		JWT
-// @Param			Authorization	header	string				true	"Insert your access token"
-// @Param			avatar			formData	file				true	"avatar for upload"
+// @Param			Authorization	header	string	true	"Insert your access token"
+// @Param			avatar			formData	file true	"avatar for upload"
 // @Produce			json
 // @Success			200	{object}	respmodels.StringResponse
 // @Failure			400	{object}	respmodels.FailedResponse
 // @Router			/protected/upload-avatar [post]
-func (t *userController) UploadAvatar(ctx *gin.Context) {
+
+func (uc *userController) UploadAvatar(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	file, err := ctx.FormFile("avatar")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}
-	user, err := t.userService.UserInfo(ctx, userID)
+	user, err := uc.userService.UserInfo(ctx, userID)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
@@ -303,8 +312,8 @@ func (t *userController) UploadAvatar(ctx *gin.Context) {
 		return
 	}
 
-	if _, _, err = t.userService.UserPatch(ctx,
-		&entities.User{ID: userID, Photo: fmt.Sprintf("%s/%s", t.basicAppUrl, path)}); err != nil {
+	if _, _, err = uc.userService.UserPatch(ctx,
+		&entities.User{ID: userID, Photo: fmt.Sprintf("%s/%s", uc.basicAppUrl, path)}); err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
 	}

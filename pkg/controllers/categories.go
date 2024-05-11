@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type CategoriesController interface {
-	CatGetAll(ctx *gin.Context)
+type CategoriesControllerInterface interface {
+	CategoriesGetAll(ctx *gin.Context)
 }
 
 type categoriesController struct {
@@ -27,7 +27,7 @@ func NewCatController(sc services.CategoriesService) *categoriesController {
 // @Produce			json
 // @Success			200	{object}	[]queries.GetCategoriesWithChildrenRow
 // @Router			/open/allcategories [get]
-func (t *categoriesController) CatGetAll(ctx *gin.Context) {
+func (t *categoriesController) CategoriesGetAll(ctx *gin.Context) {
 	categories, err := t.categoriesService.CatGetAll(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))

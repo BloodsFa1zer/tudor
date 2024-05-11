@@ -15,7 +15,7 @@ const createOrUpdateUser = `-- name: CreateOrUpdateUser :one
 WITH updated_user AS (
   UPDATE users
   SET 
-    name = COALESCE($7::text, name),
+    name = COALESCE($7::text, name),ex
     photo = COALESCE($8::text, photo),
     verified = COALESCE($9::bool, verified),
     password = COALESCE($10::text, password),

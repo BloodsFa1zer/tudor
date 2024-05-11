@@ -1,7 +1,7 @@
 package reqmodels
 
-// RegistractionUserRequest godoc
-type RegistractionUserRequest struct {
+// RegistrationUserRequest godoc
+type RegistrationUserRequest struct {
 	Name     string `json:"name" validate:"min=2,max=50, nonzero"`
 	Email    string `json:"email" validate:"email,nonzero"`
 	Password string `json:"password" validate:"password"`

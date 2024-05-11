@@ -21,8 +21,8 @@ func UserToUserResponse(user *entities.User) *respmodels.UserInfoResponse {
 	}
 }
 
-func TokenToSignUpINresponse(token string) *respmodels.SignUpINresponse {
-	return &respmodels.SignUpINresponse{
+func TokenToSignUpInResponse(token string) *respmodels.SignUpInResponse {
+	return &respmodels.SignUpInResponse{
 		AccessToken: struct {
 			Token string `json:"token"`
 		}{

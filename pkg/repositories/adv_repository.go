@@ -16,7 +16,7 @@ type AdvertisementsRepository interface {
 	CreateAdvertisement(ctx context.Context, arg *entities.Advertisement) (*entities.Advertisement, error)
 	UpdateAdvertisement(ctx context.Context, arg *entities.Advertisement) (*entities.Advertisement, error)
 	GetAdvertisementByID(ctx context.Context, id int64) (*entities.Advertisement, error)
-	DeleteAdvertisementByID(ctx context.Context, advid, userid int64) error
+	DeleteAdvertisementByID(ctx context.Context, advId, userId int64) error
 	GetAdvertisementAll(ctx context.Context) ([]entities.Advertisement, error)
 	FilterAdvertisements(ctx context.Context, filter *reqmodels.AdvertisementFilterRequest) (*entities.AdvertisementPagination, error)
 	GetAdvertisementMy(ctx context.Context, userID int64) ([]entities.Advertisement, error)
@@ -32,36 +32,36 @@ func NewAdvertisementsRepository(q *queries.Queries) AdvertisementsRepository {
 
 func (t *advertisementsRepository) CreateAdvertisement(ctx context.Context, arg *entities.Advertisement) (
 	*entities.Advertisement, error) {
-	dbadv, err := t.q.CreateAdvertisement(ctx, dbmappers.AdvertisementToCreateAdvertisementParams(arg))
+	dbAdv, err := t.q.CreateAdvertisement(ctx, dbmappers.AdvertisementToCreateAdvertisementParams(arg))
 	if err != nil {
 		return nil, err
 	}
-	return dbmappers.CreateAdvertisementRowToAdvertisement(dbadv), nil
+	return dbmappers.CreateAdvertisementRowToAdvertisement(dbAdv), nil
 }
 
 func (t *advertisementsRepository) UpdateAdvertisement(ctx context.Context, arg *entities.Advertisement) (*entities.Advertisement, error) {
-	dbadv, err := t.q.UpdateAdvertisement(ctx, dbmappers.AdvertisementToUpdateAdvertisementParams(arg))
+	dbAdv, err := t.q.UpdateAdvertisement(ctx, dbmappers.AdvertisementToUpdateAdvertisementParams(arg))
 	if err != nil {
 		return nil, err
 	}
-	fullDbadv, err := t.q.GetAdvertisementCategoryAndUserByID(ctx, dbadv)
+	fullDbAdv, err := t.q.GetAdvertisementCategoryAndUserByID(ctx, dbAdv)
 	if err != nil {
 		return nil, err
 	}
-	return dbmappers.GetFullAdvToAdvertisement(fullDbadv), nil
+	return dbmappers.GetFullAdvToAdvertisement(fullDbAdv), nil
 }
 
 func (t *advertisementsRepository) GetAdvertisementByID(ctx context.Context, id int64) (*entities.Advertisement, error) {
-	fullDbadv, err := t.q.GetAdvertisementCategoryAndUserByID(ctx, id)
+	fullDbAdv, err := t.q.GetAdvertisementCategoryAndUserByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	return dbmappers.GetFullAdvToAdvertisement(fullDbadv), nil
+	return dbmappers.GetFullAdvToAdvertisement(fullDbAdv), nil
 }
 
-func (t *advertisementsRepository) DeleteAdvertisementByID(ctx context.Context, advid, userid int64) error {
+func (t *advertisementsRepository) DeleteAdvertisementByID(ctx context.Context, advId, userid int64) error {
 	count, err := t.q.DeleteAdvertisementByID(ctx, queries.DeleteAdvertisementByIDParams{
-		ID:         advid,
+		ID:         advId,
 		ProviderID: userid,
 	})
 	if err != nil {
@@ -75,27 +75,27 @@ func (t *advertisementsRepository) DeleteAdvertisementByID(ctx context.Context, 
 }
 
 func (t *advertisementsRepository) GetAdvertisementAll(ctx context.Context) ([]entities.Advertisement, error) {
-	dbadvs, err := t.q.GetAdvertisementAll(ctx)
+	dbAdvs, err := t.q.GetAdvertisementAll(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return dbmappers.GetAdvertisementsAllToAdvertisements(dbadvs), nil
+	return dbmappers.GetAdvertisementsAllToAdvertisements(dbAdvs), nil
 }
 
 func (t *advertisementsRepository) FilterAdvertisements(ctx context.Context, filter *reqmodels.AdvertisementFilterRequest) (
 	*entities.AdvertisementPagination, error) {
-	arg := dbmappers.AdvertisementFiltRequestToFilterAdvertisementsParams(filter)
-	filterdAdvs, err := t.q.FilterAdvertisements(ctx, arg)
+	arg := dbmappers.AdvertisementFilterRequestToFilterAdvertisementsParams(filter)
+	filterAdvs, err := t.q.FilterAdvertisements(ctx, arg)
 	if err != nil {
 		return nil, err
 	}
-	return dbmappers.FiltAdvToAdvPagination(&arg, filterdAdvs), nil
+	return dbmappers.FilterAdvToAdvPagination(&arg, filterAdvs), nil
 }
 
 func (t *advertisementsRepository) GetAdvertisementMy(ctx context.Context, userID int64) ([]entities.Advertisement, error) {
-	dbadv, err := t.q.GetMyAdvertisement(ctx, userID)
+	dbAdv, err := t.q.GetMyAdvertisement(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
-	return dbmappers.GetMyAdvertisementsToAdvertisements(dbadv), nil
+	return dbmappers.GetMyAdvertisementsToAdvertisements(dbAdv), nil
 }

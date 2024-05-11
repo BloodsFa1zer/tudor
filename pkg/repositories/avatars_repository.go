@@ -25,19 +25,19 @@ type avatarRepository struct {
 func NewAvatarsRepository(q *queries.Queries) *avatarRepository { return &avatarRepository{q} }
 
 func (t *avatarRepository) CreateAvatar(ctx context.Context, arg *entities.Avatar) (*entities.Avatar, error) {
-	dbavatar, err := t.q.CreateAvatar(ctx, dbmappers.AvatarToCreateAvatar(arg))
+	dbAvatar, err := t.q.CreateAvatar(ctx, dbmappers.AvatarToCreateAvatar(arg))
 	if err != nil {
 		return nil, err
 	}
-	return dbmappers.DBAvatarToAvatar(&dbavatar), nil
+	return dbmappers.DBAvatarToAvatar(&dbAvatar), nil
 }
 
 func (t *avatarRepository) UpdateAvatar(ctx context.Context, arg *entities.Avatar) (*entities.Avatar, error) {
-	dbavatar, err := t.q.UpdateAvatarByProviderID(ctx, dbmappers.AvatarToUpdateAvatar(arg))
+	dbAvatar, err := t.q.UpdateAvatarByProviderID(ctx, dbmappers.AvatarToUpdateAvatar(arg))
 	if err != nil {
 		return nil, err
 	}
-	return dbmappers.DBAvatarToAvatar(&dbavatar), nil
+	return dbmappers.DBAvatarToAvatar(&dbAvatar), nil
 }
 
 func (t *avatarRepository) DeleteAvatar(ctx context.Context, id int64) error {
@@ -52,17 +52,17 @@ func (t *avatarRepository) DeleteAvatar(ctx context.Context, id int64) error {
 }
 
 func (t *avatarRepository) GetAvatarByProviderID(ctx context.Context, providerID int64) (*entities.Avatar, error) {
-	dbavatar, err := t.q.GetAvatarByProviderID(ctx, providerID)
+	dbAvatar, err := t.q.GetAvatarByProviderID(ctx, providerID)
 	if err != nil {
 		return nil, err
 	}
-	return dbmappers.DBAvatarToAvatar(&dbavatar), nil
+	return dbmappers.DBAvatarToAvatar(&dbAvatar), nil
 }
 
 func (t *avatarRepository) GetAvatarByID(ctx context.Context, id int64) (*entities.Avatar, error) {
-	dbavatar, err := t.q.GetAvatarByID(ctx, id)
+	dbAvatar, err := t.q.GetAvatarByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	return dbmappers.DBAvatarToAvatar(&dbavatar), nil
+	return dbmappers.DBAvatarToAvatar(&dbAvatar), nil
 }

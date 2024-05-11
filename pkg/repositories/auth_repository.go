@@ -11,7 +11,7 @@ import (
 //go:generate mockgen -destination=../../gen/mocks/mock_auth_repository.go -package=mocks . AuthRepository
 
 type AuthRepository interface {
-	CreateorUpdateUser(ctx context.Context, user *entities.User) (*entities.User, error)
+	CreateOrUpdateUser(ctx context.Context, user *entities.User) (*entities.User, error)
 }
 
 type authRepository struct {
@@ -20,11 +20,11 @@ type authRepository struct {
 
 func NewAuthRepository(q *queries.Queries) *authRepository { return &authRepository{q} }
 
-func (t *authRepository) CreateorUpdateUser(ctx context.Context, user *entities.User) (*entities.User, error) {
-	dbuser, err := t.q.CreateOrUpdateUser(ctx, dbmappers.UserToCreateOrUpdateUser(user))
+func (t *authRepository) CreateOrUpdateUser(ctx context.Context, user *entities.User) (*entities.User, error) {
+	dbUser, err := t.q.CreateOrUpdateUser(ctx, dbmappers.UserToCreateOrUpdateUser(user))
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
 		return nil, err
 	}
-	return dbmappers.CreateOrUpdateUserRowToUser(dbuser), nil
+	return dbmappers.CreateOrUpdateUserRowToUser(dbUser), nil
 }

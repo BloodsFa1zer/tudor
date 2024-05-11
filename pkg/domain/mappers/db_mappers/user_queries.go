@@ -16,7 +16,7 @@ func UserToCreateOrUpdateUser(user *entities.User) queries.CreateOrUpdateUserPar
 		Role:       user.Role,
 		Name_2:     StrToSqlStr(user.Name),
 		Photo_2:    StrToSqlStr(user.Photo),
-		Verified_2: BoolTopgBool(user.Verified),
+		Verified_2: BoolToPostgresBool(user.Verified),
 		Password_2: StrToSqlStr(user.Password),
 		Role_2:     StrToSqlStr(user.Role),
 	}
@@ -78,16 +78,16 @@ func StrToSqlStr(str string) sql.NullString {
 	return sql.NullString{String: "", Valid: false}
 }
 
-func IntTopgInt4(i int32) sql.NullInt32 {
+func IntToPostgresInt4(i int32) sql.NullInt32 {
 	if i != 0 {
 		return sql.NullInt32{Int32: int32(i), Valid: true}
 	}
 	return sql.NullInt32{Int32: 0, Valid: false}
 }
 
-func BoolTopgBool(b bool) sql.NullBool {
+func BoolToPostgresBool(b bool) sql.NullBool {
 	if b {
-		return sql.NullBool{Bool: b, Valid: true}
+		return sql.NullBool{Bool: true, Valid: true}
 	}
 	return sql.NullBool{Bool: false, Valid: false}
 }

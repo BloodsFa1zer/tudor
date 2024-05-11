@@ -48,7 +48,7 @@ func UpdateAdvRequestToAdvertisement(req *reqmodels.UpdateAdvertisementRequest, 
 
 func AdvertisementToCreateUpdateAdvertisementResponse(adv *entities.Advertisement) respmodels.AdvertisementResponse {
 	return respmodels.AdvertisementResponse{
-		Advertisement: respmodels.ResponseAdvertismet{
+		Advertisement: respmodels.ResponseAdvertisement{
 			ID:           adv.ID,
 			Title:        adv.Title,
 			ProviderID:   adv.Provider.ID,
@@ -73,9 +73,9 @@ func AdvertisementToCreateUpdateAdvertisementResponse(adv *entities.Advertisemen
 }
 
 func AdvertisementsToAdvertisementsResponses(adv []entities.Advertisement) *respmodels.AdvertisementsResponse {
-	advResp := make([]respmodels.ResponseAdvertismet, len(adv))
+	advResp := make([]respmodels.ResponseAdvertisement, len(adv))
 	for i := range adv {
-		advResp[i] = respmodels.ResponseAdvertismet{
+		advResp[i] = respmodels.ResponseAdvertisement{
 			ID:           adv[i].ID,
 			Title:        adv[i].Title,
 			ProviderID:   adv[i].Provider.ID,
@@ -104,7 +104,7 @@ func AdvertisementsToAdvertisementsResponses(adv []entities.Advertisement) *resp
 
 func AdvertisementPaginationToAdvertisementPaginationResponse(adv *entities.AdvertisementPagination) *respmodels.AdvertisementPaginationResponse {
 	return &respmodels.AdvertisementPaginationResponse{
-		ResponseAdvertismetPagin: respmodels.ResponseAdvertismetPagin{
+		ResponseAdvertisementPagination: respmodels.ResponseAdvertisementPagination{
 			Advertisements: AdvertisementsToAdvertisementsResponses(adv.Advertisements).Advertisements,
 			PaginationInfo: adv.PaginationInfo,
 		},

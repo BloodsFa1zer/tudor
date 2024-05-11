@@ -34,7 +34,7 @@ func SetupRouter(conf *config.Config, server *gin.Engine, a *controllers.AppCont
 	server.Static("/avatars", "./avatars")
 
 	// categories block
-	server.GET("open/allcategories", a.CatGetAll)
+	server.GET("open/allcategories", a.CategoriesGetAll)
 
 	// advertisements block
 	// open advertisements endpoints

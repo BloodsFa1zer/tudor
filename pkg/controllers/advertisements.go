@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type AdvertisementsController interface {
+type AdvertisementsControllerInterface interface {
 	AdvCreate(ctx *gin.Context)
 	AdvPatch(ctx *gin.Context)
 	AdvDelete(ctx *gin.Context)
@@ -25,7 +25,7 @@ type advertisementsController struct {
 	advertisementService services.AdvertisementService
 }
 
-func NewAdvertisementsController(sa services.AdvertisementService) AdvertisementsController {
+func NewAdvertisementsController(sa services.AdvertisementService) AdvertisementsControllerInterface {
 	return &advertisementsController{sa}
 }
 
@@ -40,6 +40,7 @@ func NewAdvertisementsController(sa services.AdvertisementService) Advertisement
 // @Success					200	{object}	respmodels.AdvertisementResponse
 // @Failure					400	{object}	respmodels.FailedResponse
 // @Router					/protected/advertisement-create [post]
+
 func (c *advertisementsController) AdvCreate(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	var inputModel reqmodels.CreateAdvertisementRequest
@@ -73,6 +74,7 @@ func (c *advertisementsController) AdvCreate(ctx *gin.Context) {
 // @Success					200	{object}	respmodels.AdvertisementResponse
 // @Failure					400	{object}	respmodels.FailedResponse
 // @Router					/protected/advertisement-patch [patch]
+
 func (c *advertisementsController) AdvPatch(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	var inputModel reqmodels.UpdateAdvertisementRequest
@@ -105,6 +107,7 @@ func (c *advertisementsController) AdvPatch(ctx *gin.Context) {
 // @Success					200	{object} respmodels.StringResponse
 // @Failure					400	{object} respmodels.FailedResponse
 // @Router					/protected/advertisement-delete [delete]
+
 func (c *advertisementsController) AdvDelete(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	if userID == 0 {
@@ -130,8 +133,9 @@ func (c *advertisementsController) AdvDelete(ctx *gin.Context) {
 // @Success			200	{object}	respmodels.AdvertisementsResponse
 // @Failure			400	{object}	respmodels.FailedResponse
 // @Router			/open/advertisements/getall [get]
-func (t *advertisementsController) AdvGetAll(ctx *gin.Context) {
-	advertisements, err := t.advertisementService.AdvGetAll(ctx)
+
+func (c *advertisementsController) AdvGetAll(ctx *gin.Context) {
+	advertisements, err := c.advertisementService.AdvGetAll(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, reqm.FailedResponse(err.Error()))
 		return
@@ -148,6 +152,7 @@ func (t *advertisementsController) AdvGetAll(ctx *gin.Context) {
 // @Success			200	{object}	respmodels.AdvertisementResponse
 // @Failure			400	{object}	respmodels.FailedResponse
 // @Router			/open/advertisements/getbyid/{id} [get]
+
 func (c *advertisementsController) AdvGetByID(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := strconv.ParseInt(idParam, 10, 64)
@@ -174,6 +179,7 @@ func (c *advertisementsController) AdvGetByID(ctx *gin.Context) {
 // @Success					200	{object}	respmodels.AdvertisementPaginationResponse
 // @Failure					400	{object}	respmodels.FailedResponse
 // @Router					/open/advertisements/adv-filter [post]
+
 func (c *advertisementsController) AdvGetFiltered(ctx *gin.Context) {
 	var filter reqmodels.AdvertisementFilterRequest
 	err := ctx.ShouldBindJSON(&filter)
@@ -202,6 +208,7 @@ func (c *advertisementsController) AdvGetFiltered(ctx *gin.Context) {
 // @Success			200	{object}	respmodels.AdvertisementsResponse
 // @Failure			400	{object}	respmodels.FailedResponse
 // @Router			/protected/advertisement-getmy [get]
+
 func (c *advertisementsController) AdvGetMy(ctx *gin.Context) {
 	userID := ctx.GetInt64("user_id")
 	if userID <= 0 {

@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-// ResponseAdvertismet godoc
-type ResponseAdvertismet struct {
+// ResponseAdvertisement godoc
+type ResponseAdvertisement struct {
 	ID           int64                          `json:"id"`
 	Title        string                         `json:"title"`
 	ProviderID   int64                          `json:"provider_id"`
@@ -29,24 +29,24 @@ type ResponseAdvertismet struct {
 
 // AdvertisementResponse godoc
 type AdvertisementResponse struct {
-	Advertisement ResponseAdvertismet `json:"data"`
-	Status        string              `json:"status"`
+	Advertisement ResponseAdvertisement `json:"data"`
+	Status        string                `json:"status"`
 }
 
 // AdvertisementsResponse godoc
 type AdvertisementsResponse struct {
-	Advertisements []ResponseAdvertismet `json:"data"`
-	Status         string                `json:"status"`
+	Advertisements []ResponseAdvertisement `json:"data"`
+	Status         string                  `json:"status"`
 }
 
 // AdvertisementPaginationResponse godoc
 type AdvertisementPaginationResponse struct {
-	ResponseAdvertismetPagin ResponseAdvertismetPagin `json:"data"`
-	Status                   string                   `json:"status"`
+	ResponseAdvertisementPagination ResponseAdvertisementPagination `json:"data"`
+	Status                          string                          `json:"status"`
 }
 
-// ResponseAdvertismetPagin godoc
-type ResponseAdvertismetPagin struct {
-	Advertisements []ResponseAdvertismet   `json:"advertisements"`
+// ResponseAdvertisementPagination godoc
+type ResponseAdvertisementPagination struct {
+	Advertisements []ResponseAdvertisement `json:"advertisements"`
 	PaginationInfo entities.PaginationInfo `json:"pagination_info"`
 }

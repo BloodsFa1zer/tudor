@@ -10,9 +10,9 @@ import (
 func userRegister(r *registry) controllers.UserController {
 	return controllers.NewUsersController(
 		services.NewUserService(
-			genTokFunc(r.config.JWTSecret),
-			hashPasFunc(),
-			comparePasFunc(),
+			generateTokenFunc(r.config.JWTSecret),
+			hashPasswordFunc(),
+			compareHashedPasswordFunc(),
 			emailSenderFunc(r.config.RedirectUrl, r.config.GoogleEmailSenderName, r.config.GoogleEmailAddress, r.config.GoogleEmailSecret),
 			repositories.NewUsersRepository(r.queries)), r.config.BasicAppUrl)
 }
@@ -24,9 +24,9 @@ func categoriesRegister(r *registry) controllers.CategoriesController {
 }
 
 func authRegister(r *registry) controllers.AuthController {
-	return controllers.NewAuthController(r.config.RedirectUrl, callbackfunc(),
+	return controllers.NewAuthController(r.config.RedirectUrl, callBackFunc(),
 		services.NewAuthService(
-			genTokFunc(r.config.JWTSecret),
+			generateTokenFunc(r.config.JWTSecret),
 			repositories.NewAuthRepository(r.queries)))
 }
 

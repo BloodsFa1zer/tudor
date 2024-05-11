@@ -52,7 +52,7 @@ func (mr *MockUsersRepositoryMockRecorder) CreateUser(arg0, arg1 interface{}) *g
 }
 
 // CreateorUpdateUser mocks base method.
-func (m *MockUsersRepository) CreateorUpdateUser(arg0 context.Context, arg1 *entities.User) (*entities.User, error) {
+func (m *MockUsersRepository) CreateOrUpdateUser(arg0 context.Context, arg1 *entities.User) (*entities.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateorUpdateUser", arg0, arg1)
 	ret0, _ := ret[0].(*entities.User)
@@ -61,9 +61,9 @@ func (m *MockUsersRepository) CreateorUpdateUser(arg0 context.Context, arg1 *ent
 }
 
 // CreateorUpdateUser indicates an expected call of CreateorUpdateUser.
-func (mr *MockUsersRepositoryMockRecorder) CreateorUpdateUser(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockUsersRepositoryMockRecorder) CreateOrUpdateUser(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateorUpdateUser", reflect.TypeOf((*MockUsersRepository)(nil).CreateorUpdateUser), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateorUpdateUser", reflect.TypeOf((*MockUsersRepository)(nil).CreateOrUpdateUser), arg0, arg1)
 }
 
 // DeleteUser mocks base method.

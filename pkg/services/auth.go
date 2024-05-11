@@ -12,15 +12,15 @@ type AuthService interface {
 
 type authService struct {
 	db       repositories.AuthRepository
-	genToken func(userid int64, userName string) (string, error)
+	genToken func(userId int64, userName string) (string, error)
 }
 
-func NewAuthService(genToken func(userid int64, userName string) (string, error), db repositories.AuthRepository) AuthService {
+func NewAuthService(genToken func(userId int64, userName string) (string, error), db repositories.AuthRepository) AuthService {
 	return &authService{db, genToken}
 }
 
 func (s *authService) ProviderAuth(ctx context.Context, userInfo *entities.User) (string, error) {
-	user, err := s.db.CreateorUpdateUser(ctx, userInfo)
+	user, err := s.db.CreateOrUpdateUser(ctx, userInfo)
 	if err != nil {
 		return "", err
 	}

@@ -9,7 +9,7 @@ import (
 )
 
 type UserService interface {
-	UserLogin(ctx context.Context, inputuser *entities.User) (string, *entities.User, error)
+	UserLogin(ctx context.Context, inputUser *entities.User) (string, *entities.User, error)
 	UserRegister(ctx context.Context, user *entities.User) (string, *entities.User, error)
 	UserInfo(ctx context.Context, userId int64) (*entities.User, error)
 	UserPatch(ctx context.Context, patch *entities.User) (string, *entities.User, error)
@@ -74,7 +74,7 @@ func (s *userService) UserInfo(ctx context.Context, userId int64) (*entities.Use
 }
 
 func (s *userService) ProviderAuth(ctx context.Context, userInfo *entities.User) (string, error) {
-	user, err := s.db.CreateorUpdateUser(ctx, userInfo)
+	user, err := s.db.CreateOrUpdateUser(ctx, userInfo)
 	if err != nil {
 		return "", err
 	}

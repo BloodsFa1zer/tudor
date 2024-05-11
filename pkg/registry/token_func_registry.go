@@ -7,7 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func genTokFunc(secret string) func(userid int64, email string) (string, error) {
+func generateTokenFunc(secret string) func(userid int64, email string) (string, error) {
 	return func(userid int64, userName string) (string, error) {
 		claims := &models.AuthClaims{
 			UserID: userid,

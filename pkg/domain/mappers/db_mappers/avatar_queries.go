@@ -15,15 +15,15 @@ func AvatarToCreateAvatar(avatar *entities.Avatar) queries.CreateAvatarParams {
 	}
 }
 
-func DBAvatarToAvatar(dbavatar *queries.Avatar) *entities.Avatar {
+func DBAvatarToAvatar(dbAvatar *queries.Avatar) *entities.Avatar {
 	return &entities.Avatar{
-		ID:       dbavatar.ID,
-		Filename: dbavatar.Filename,
-		Format:   strings.Split(dbavatar.Filename, ".")[1],
-		Data:     dbavatar.Data,
-		FileAddr: dbavatar.Fileadress,
+		ID:       dbAvatar.ID,
+		Filename: dbAvatar.Filename,
+		Format:   strings.Split(dbAvatar.Filename, ".")[1],
+		Data:     dbAvatar.Data,
+		FileAddr: dbAvatar.Fileadress,
 		Provider: &entities.User{
-			ID: dbavatar.ProviderID,
+			ID: dbAvatar.ProviderID,
 		},
 	}
 }

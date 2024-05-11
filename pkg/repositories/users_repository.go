@@ -19,7 +19,7 @@ type UsersRepository interface {
 	IsUserEmailExist(ctx context.Context, email string) (bool, error)
 	ListUsers(ctx context.Context, arg queries.ListUsersParams) ([]queries.User, error)
 	UpdateUser(ctx context.Context, user *entities.User) (*entities.User, error)
-	CreateorUpdateUser(ctx context.Context, user *entities.User) (*entities.User, error)
+	CreateOrUpdateUser(ctx context.Context, user *entities.User) (*entities.User, error)
 }
 
 type usersRepository struct {
@@ -29,11 +29,11 @@ type usersRepository struct {
 func NewUsersRepository(q *queries.Queries) *usersRepository { return &usersRepository{q} }
 
 func (t *usersRepository) CreateUser(ctx context.Context, user *entities.User) (*entities.User, error) {
-	dbuser, err := t.q.CreateUser(ctx, dbmappers.UserToCreateUserParams(user))
+	dbUser, err := t.q.CreateUser(ctx, dbmappers.UserToCreateUserParams(user))
 	if err != nil {
 		return nil, err
 	}
-	return dbmappers.QueryUserToUser(dbuser), nil
+	return dbmappers.QueryUserToUser(dbUser), nil
 }
 
 func (t *usersRepository) DeleteUser(ctx context.Context, id int64) error {
@@ -41,19 +41,19 @@ func (t *usersRepository) DeleteUser(ctx context.Context, id int64) error {
 }
 
 func (t *usersRepository) GetUserByEmail(ctx context.Context, email string) (*entities.User, error) {
-	dbuser, err := t.q.GetUserByEmail(ctx, email)
+	dbUser, err := t.q.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err
 	}
-	return dbmappers.QueryUserToUser(dbuser), nil
+	return dbmappers.QueryUserToUser(dbUser), nil
 }
 
 func (t *usersRepository) GetUserById(ctx context.Context, id int64) (*entities.User, error) {
-	dbuser, err := t.q.GetUserById(ctx, id)
+	dbUser, err := t.q.GetUserById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	return dbmappers.QueryUserToUser(dbuser), nil
+	return dbmappers.QueryUserToUser(dbUser), nil
 }
 
 func (t *usersRepository) IsUserEmailExist(ctx context.Context, email string) (bool, error) {
@@ -65,18 +65,18 @@ func (t *usersRepository) ListUsers(ctx context.Context, arg queries.ListUsersPa
 }
 
 func (t *usersRepository) UpdateUser(ctx context.Context, user *entities.User) (*entities.User, error) {
-	dbuser, err := t.q.UpdateUser(ctx, dbmappers.UserToUpdateUserParams(user))
+	dbUser, err := t.q.UpdateUser(ctx, dbmappers.UserToUpdateUserParams(user))
 	if err != nil {
 		return nil, err
 	}
-	return dbmappers.QueryUserToUser(dbuser), nil
+	return dbmappers.QueryUserToUser(dbUser), nil
 }
 
-func (t *usersRepository) CreateorUpdateUser(ctx context.Context, user *entities.User) (*entities.User, error) {
-	dbuser, err := t.q.CreateOrUpdateUser(ctx, dbmappers.UserToCreateOrUpdateUser(user))
+func (t *usersRepository) CreateOrUpdateUser(ctx context.Context, user *entities.User) (*entities.User, error) {
+	dbUser, err := t.q.CreateOrUpdateUser(ctx, dbmappers.UserToCreateOrUpdateUser(user))
 	if err != nil {
 		fmt.Printf("err: %v\n", err)
 		return nil, err
 	}
-	return dbmappers.CreateOrUpdateUserRowToUser(dbuser), nil
+	return dbmappers.CreateOrUpdateUserRowToUser(dbUser), nil
 }

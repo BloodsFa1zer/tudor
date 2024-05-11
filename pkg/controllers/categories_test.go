@@ -14,7 +14,7 @@ import (
 
 var (
 	// this is a function that returns a CategoriesController interface
-	newTestCategoryCtrller = func(db *mocks.MockCategoriesRepository) controllers.CategoriesController {
+	newTestCategoryCtrller = func(db *mocks.MockCategoriesRepository) controllers.CategoriesControllerInterface {
 		return controllers.NewCatController(services.NewCategoriesService(db))
 	}
 
@@ -59,7 +59,7 @@ func TestCatGetAll(t *testing.T) {
 			ctx, w := newTestContext(http.MethodGet, "/open/allcategories", "")
 
 			db.EXPECT().GetCategoriesWithChildren(ctx).Return(tc.especterCategories, tc.expectedError)
-			controller.CatGetAll(ctx)
+			controller.CategoriesGetAll(ctx)
 
 			if w.Code != tc.expectedStatusCode {
 				t.Errorf("expected status code %d, got %d", tc.expectedStatusCode, w.Code)

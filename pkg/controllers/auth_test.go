@@ -17,7 +17,7 @@ import (
 var (
 
 	// this is a function that returns a UserController with a mocked UsersRepository
-	newTestAuthCtrller = func(db *mocks.MockAuthRepository) controllers.AuthController {
+	newTestAuthCtrller = func(db *mocks.MockAuthRepository) controllers.AuthControllerInterface {
 		return controllers.NewAuthController("",
 			func(res http.ResponseWriter, req *http.Request) (*entities.User, error) {
 				return &entities.User{Name: "test", Email: "test@email.com", Verified: true, Role: "user"}, nil
@@ -49,6 +49,7 @@ func TestAuthWithProviderCallback(t *testing.T) {
 			`Found`, nil},
 		{"db_error", &entities.User{Name: "test", Email: "test@email.com", Verified: true, Role: "user"}, nil, http.StatusForbidden, "", errors.New("db_error")},
 	}
+
 	for _, tc := range tt {
 		t.Run(tc.scenario, func(t *testing.T) {
 			ctrl, db := newMockAuthRepository(t)

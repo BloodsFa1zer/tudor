@@ -24,9 +24,9 @@ func emailSenderFunc(redirectURL, fromName, fromEmail, fromPassword string) func
 	}
 }
 
-func newEmail(redirectURL, recepient, token string) string {
+func newEmail(redirectURL, recipient, token string) string {
 	message := emailTemplate
-	message = strings.Replace(message, "{USERNAME}", recepient, 1)
+	message = strings.Replace(message, "{USERNAME}", recipient, 1)
 	message = strings.Replace(message, "{TOKEN}", token, 1)
 	message = strings.Replace(message, "{PAGE}", redirectURL, 3)
 	return message

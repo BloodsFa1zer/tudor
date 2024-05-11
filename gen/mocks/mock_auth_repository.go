@@ -36,7 +36,7 @@ func (m *MockAuthRepository) EXPECT() *MockAuthRepositoryMockRecorder {
 }
 
 // CreateorUpdateUser mocks base method.
-func (m *MockAuthRepository) CreateorUpdateUser(arg0 context.Context, arg1 *entities.User) (*entities.User, error) {
+func (m *MockAuthRepository) CreateOrUpdateUser(arg0 context.Context, arg1 *entities.User) (*entities.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateorUpdateUser", arg0, arg1)
 	ret0, _ := ret[0].(*entities.User)
@@ -45,7 +45,7 @@ func (m *MockAuthRepository) CreateorUpdateUser(arg0 context.Context, arg1 *enti
 }
 
 // CreateorUpdateUser indicates an expected call of CreateorUpdateUser.
-func (mr *MockAuthRepositoryMockRecorder) CreateorUpdateUser(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockAuthRepositoryMockRecorder) CreateOrUpdateUser(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateorUpdateUser", reflect.TypeOf((*MockAuthRepository)(nil).CreateorUpdateUser), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateorUpdateUser", reflect.TypeOf((*MockAuthRepository)(nil).CreateOrUpdateUser), arg0, arg1)
 }

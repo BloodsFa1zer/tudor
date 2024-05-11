@@ -8,8 +8,8 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-func ConnectDataBase(dburl string) *pgx.Conn {
-	db, err := pgx.Connect(context.Background(), dburl)
+func ConnectDataBase(dbUrl string) *pgx.Conn {
+	db, err := pgx.Connect(context.Background(), dbUrl)
 	if err != nil {
 		log.Fatal("create database conection error:" + err.Error())
 	}

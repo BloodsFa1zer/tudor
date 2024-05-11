@@ -7,7 +7,7 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
-func callbackfunc() func(res http.ResponseWriter, req *http.Request) (*entities.User, error) {
+func callBackFunc() func(res http.ResponseWriter, req *http.Request) (*entities.User, error) {
 	return func(res http.ResponseWriter, req *http.Request) (*entities.User, error) {
 		user, err := gothic.CompleteUserAuth(res, req)
 		if err != nil {

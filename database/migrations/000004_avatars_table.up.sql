@@ -1,7 +1,7 @@
 CREATE TABLE avatars (
     id BIGSERIAL PRIMARY KEY,
     filename TEXT NOT NULL,
-    fileadress TEXT NOT NULL,
+    file_address TEXT NOT NULL,
     data BLOB NOT NULL,
     provider_id BIGINT NOT NULL UNIQUE
 );

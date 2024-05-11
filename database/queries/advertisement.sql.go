@@ -3,6 +3,7 @@
 //   sqlc v1.25.0
 // source: advertisement.sql
 
+// TODO: GET TO KNOW HOW TO WORK WITH SQLC
 package queries
 
 import (

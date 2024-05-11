@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	MaxAge  = 86400 * 30
-	IsProde = false
+	MaxAge       = 86400 * 30
+	IsProduction = false
 )
 
 func NewServer(conf *config.Config) *gin.Engine {
@@ -27,7 +27,7 @@ func authStore(conf *config.Config) {
 	store.MaxAge(MaxAge)
 	store.Options.Path = "/"
 	store.Options.HttpOnly = true
-	store.Options.Secure = IsProde
+	store.Options.Secure = IsProduction
 
 	gothic.Store = store
 

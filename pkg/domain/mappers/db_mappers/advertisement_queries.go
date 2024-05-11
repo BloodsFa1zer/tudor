@@ -69,10 +69,10 @@ func AdvertisementToUpdateAdvertisementParams(adv *entities.Advertisement) queri
 		ProviderID:  adv.Provider.ID,
 		Title:       StrToSqlStr(adv.Title),
 		Attachment:  StrToSqlStr(adv.Attachment),
-		Experience:  IntTopgInt4(int32(adv.Experience)),
+		Experience:  IntToPostgresInt4(int32(adv.Experience)),
 		Name:        StrToSqlStr(adv.Category.Name),
-		Time:        IntTopgInt4(int32(adv.Time)),
-		Price:       IntTopgInt4(int32(adv.Price)),
+		Time:        IntToPostgresInt4(int32(adv.Time)),
+		Price:       IntToPostgresInt4(int32(adv.Price)),
 		Currency:    StrToSqlStr(string(adv.Currency)),
 		Format:      StrToSqlStr(string(adv.Format)),
 		Language:    StrToSqlStr(adv.Language),
@@ -161,8 +161,9 @@ func GetAdvertisementsAllToAdvertisements(rows []queries.GetAdvertisementAllRow)
 	return advertisements
 }
 
-func FiltAdvToAdvPagination(params *queries.FilterAdvertisementsParams, filteredAdvs []queries.FilterAdvertisementsRow,
+func FilterAdvToAdvPagination(params *queries.FilterAdvertisementsParams, filteredAdvs []queries.FilterAdvertisementsRow,
 ) *entities.AdvertisementPagination {
+
 	advs := make([]entities.Advertisement, len(filteredAdvs))
 	for i := range filteredAdvs {
 		advs[i] = entities.Advertisement{
@@ -208,13 +209,13 @@ func FiltAdvToAdvPagination(params *queries.FilterAdvertisementsParams, filtered
 			Page:       int((params.Offsetadv / params.Limitadv) + 1),
 			PerPage:    int(params.Limitadv),
 			Offset:     int(params.Offsetadv),
-			Orderby: func() string {
+			OrderBy: func() string {
 				if params.Orderby == "" {
 					return "date"
 				}
 				return params.Orderby
 			}(),
-			Sortorder: func() string {
+			SortOrder: func() string {
 				if params.Sortorder == "" {
 					return "asc"
 				}
@@ -224,31 +225,31 @@ func FiltAdvToAdvPagination(params *queries.FilterAdvertisementsParams, filtered
 	}
 }
 
-func AdvertisementFiltRequestToFilterAdvertisementsParams(filter *reqmodels.AdvertisementFilterRequest) queries.FilterAdvertisementsParams {
-	if filter.Limitadv == 0 {
-		filter.Limitadv = 10
+func AdvertisementFilterRequestToFilterAdvertisementsParams(filter *reqmodels.AdvertisementFilterRequest) queries.FilterAdvertisementsParams {
+	if filter.LimitAdv == 0 {
+		filter.LimitAdv = 10
 	}
 
 	return queries.FilterAdvertisementsParams{
-		Orderby:   filter.Orderby,
-		Sortorder: filter.Sortorder,
+		Orderby:   filter.OrderBy,
+		Sortorder: filter.SortOrder,
 		Offsetadv: func() int32 {
 			if filter.Page == 0 {
 				return 0
 			}
-			return (filter.Page - 1) * filter.Limitadv
+			return (filter.Page - 1) * filter.LimitAdv
 		}(),
-		Limitadv:     filter.Limitadv,
+		Limitadv:     filter.LimitAdv,
 		Advcategory:  filter.Category,
-		Timelength:   filter.Timelength,
+		Timelength:   filter.TimeLength,
 		Currency:     string(entities.AdvertisementFormat(filter.Currency)),
 		Advformat:    string(entities.AdvertisementFormat(filter.Format)),
-		Minexp:       filter.Minexp,
-		Maxexp:       filter.Maxexp,
-		Minprice:     filter.Minprice,
-		Maxprice:     filter.Maxprice,
+		Minexp:       filter.MinExp,
+		Maxexp:       filter.MaxExp,
+		Minprice:     filter.MinPrice,
+		Maxprice:     filter.MaxPrice,
 		Advlanguage:  filter.Language,
-		Titlekeyword: filter.Titlekeyword,
+		Titlekeyword: filter.TitleKeyword,
 	}
 }
 

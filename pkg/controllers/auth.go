@@ -12,27 +12,31 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
-type AuthController interface {
+type AuthControllerInterface interface {
 	AuthWithProvider(ctx *gin.Context)
 	AuthWithProviderCallback(ctx *gin.Context)
 }
 
 type authController struct {
 	redirectPage string
-	callbackfunc func(res http.ResponseWriter, req *http.Request) (*entities.User, error)
+	callBackFunc func(res http.ResponseWriter, req *http.Request) (*entities.User, error)
 	services.AuthService
 }
 
 func NewAuthController(redirectPage string,
-	callbackfunc func(res http.ResponseWriter, req *http.Request) (*entities.User, error),
-	us services.AuthService) AuthController {
-	return &authController{redirectPage: redirectPage, callbackfunc: callbackfunc, AuthService: us}
+	callBackFunc func(res http.ResponseWriter, req *http.Request) (*entities.User, error),
+	us services.AuthService) AuthControllerInterface {
+
+	return &authController{redirectPage: redirectPage, callBackFunc: callBackFunc, AuthService: us}
 }
 
+// AuthWithProviderCallback handles the callback from the authentication provider after the user has completed the authentication process.
+// It retrieves the provider information and user details from the request, processes this information, and redirects the user to the appropriate page within the application.
+// This function is invoked when the authentication provider redirects the user back to the application after successful authentication.
 func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
 	provider := ctx.Param("provider")
 	ctx.Request = ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), "provider", provider))
-	user, err := c.callbackfunc(ctx.Writer, ctx.Request)
+	user, err := c.callBackFunc(ctx.Writer, ctx.Request)
 	if err != nil {
 		ctx.AbortWithError(http.StatusForbidden, gin.Error{Err: errors.New("something went wrong")})
 		return
@@ -58,6 +62,10 @@ func (c *authController) AuthWithProviderCallback(ctx *gin.Context) {
 // @Param						provider	path		string		true	"provider for auth"
 // @Success 					302
 // @Router						/api/auth/{provider} [get]
+
+// AuthWithProvider initiates the authentication process with an external provider.
+// It extracts the provider information from the request context and starts the authentication process.
+// This function is typically called when a user attempts to log in using a third-party authentication provider.
 func (c *authController) AuthWithProvider(ctx *gin.Context) {
 	provider := ctx.Param("provider")
 	ctx.Request = ctx.Request.WithContext(context.WithValue(ctx.Request.Context(), "provider", provider))

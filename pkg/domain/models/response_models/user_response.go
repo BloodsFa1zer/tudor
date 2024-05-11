@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type SignUpINresponse struct {
+type SignUpInResponse struct {
 	AccessToken struct {
 		Token string `json:"token"`
 	} `json:"data"`

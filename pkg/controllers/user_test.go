@@ -24,7 +24,7 @@ var (
 	router = gin.New()
 
 	// this is a function that returns a UserController with a mocked UsersRepository
-	newTestUserCtrller = func(db *mocks.MockUsersRepository) controllers.UserController {
+	newTestUserCtrller = func(db *mocks.MockUsersRepository) controllers.UserControllerInterface {
 		return controllers.NewUsersController(services.NewUserService(
 			func(userid int64, userName string) (string, error) { return "token", nil },
 			func(password string) string { return password },

@@ -5,7 +5,7 @@ import (
 	reqmodels "study_marketplace/pkg/domain/models/request_models"
 )
 
-func RegUserToUser(regUser *reqmodels.RegistractionUserRequest) *entities.User {
+func RegUserToUser(regUser *reqmodels.RegistrationUserRequest) *entities.User {
 	return &entities.User{
 		Name:     regUser.Name,
 		Email:    regUser.Email,

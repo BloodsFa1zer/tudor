@@ -28,19 +28,24 @@ func NewMiddleware(conf *config.Config) Middleware {
 	return &middleware{conf}
 }
 
+// CORS Allows server to use only secure(same-origin) resources to take data from
 func (m *middleware) CORS() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		cors := cors.New(
 			cors.Config{
+				// origins to take data from
 				AllowOrigins: m.conf.AllowedOrigins,
+				// methods that are secure to use
 				AllowMethods: []string{"GET", "POST", "PATCH", "DELETE", "HEAD", "OPTIONS"},
 				AllowHeaders: []string{"*"},
 			})
 		cors(ctx)
+		// if the method is "OPTIONS" browser probably wants to check what is allowed by the developer
 		if ctx.Request.Method == "OPTIONS" {
 			ctx.Status(http.StatusOK)
 			return
 		}
+		// if the method is not "OPTIONS" app just acts as if there is no any CORS-related checks
 		ctx.Next()
 	}
 
